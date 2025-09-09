@@ -1,13 +1,11 @@
-// RUTA: src/components/sections/TestimonialGrid.tsx
+// src/components/sections/TestimonialGrid.tsx
 /**
  * @file Cuadrícula de Testimonios
  * @description Muestra una cuadrícula de testimonios de clientes, cada uno renderizado
  * a través del componente `TestimonialCard`. Es una sección clave para la prueba social.
- *
- * @TODOS: Mantener estos comentarios de documentación en futuros snapshots.
  */
 import { Container } from "@/components/ui/Container";
-import { TestimonialCard } from "@/components/ui/TestimonialCard";
+import { TestimonialCard } from "@/components/feedback/TestimonialCard";
 
 interface Testimonial {
   quote: string;
@@ -37,13 +35,4 @@ export function TestimonialGrid({ title, testimonials }: TestimonialGridProps) {
     </section>
   );
 }
-
-// --- MEJORAS FUTURAS ---
-// 1. **Testimonios en Video**: El componente podría adaptarse para aceptar una prop `videoUrl`
-//    en la interfaz `Testimonial`. Si está presente, el `TestimonialCard` podría mostrar
-//    un thumbnail de video con un botón de play, abriendo el video en un modal.
-// 2. **Paginación o "Cargar más"**: Si hay muchos testimonios, en lugar de mostrarlos todos,
-//    se podría implementar una paginación o un botón "Cargar más testimonios" para
-//    mejorar el rendimiento inicial de la página.
-
-// RUTA: src/components/sections/TestimonialGrid.tsx
+// src/components/sections/TestimonialGrid.tsx

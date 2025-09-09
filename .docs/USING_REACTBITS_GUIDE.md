@@ -1,21 +1,19 @@
-// .docs/USING_REACTBITS_GUIDE.md
-/\*\*
+// /.docs/USING_REACTBITS_GUIDE.md
+/**
+ * @file /.docs/USING_REACTBITS_GUIDE.md
+ * @description Manual de Uso y Guía Táctica para la Integración de Código
+ *              Externo en el Proyecto Curcumin Simplex.
+ * @author IA Ingeniera de Software Senior v2.0
+ * @version 2.0.0
+ */
 
-- @file .docs/USING_REACTBITS_GUIDE.md
-- @description Manual de Uso Canónico y Guía Táctica para la Integración de
--              Componentes ReactBits en el Proyecto Curcumin-Complex. Esta es la
--              SSoT para el proceso de "Naturalización" de componentes externos.
-- @author L.I.A. Legacy
-- @version 1.0.0
-  \*/
-
-# Manual de Uso: Integrando Componentes ReactBits en Curcumin-Complex
+# Manual de Uso: Integrando Código Externo en Curcumin Simplex
 
 ## 1. Propósito y Filosofía
 
-Este documento es la guía de campo para cualquier desarrollador que integre un componente de la librería `ReactBits` en el ecosistema de **`curcumin-complex`**.
+Este documento es la **guía de campo** para cualquier desarrollador que integre un componente o fragmento de código de UI de terceros en el ecosistema de `curcumin-simplex`.
 
-Nuestra filosofía es la **Asimilación Arquitectónica**. No consumimos componentes; los "naturalizamos". Cada componente externo debe ser meticulosamente refactorizado para convertirse en un ciudadano de primera clase de nuestra arquitectura, adhiriéndose a nuestros principios de **resiliencia, observabilidad, internacionalización (IMAS) y diseño semántico**.
+Nuestra filosofía es la **Asimilación Arquitectónica**. No consumimos componentes; los "naturalizamos". Cada componente externo debe ser meticulosamente refactorizado para convertirse en un ciudadano de primera clase de nuestra arquitectura, adhiriéndose a nuestros principios de **resiliencia, observabilidad, internacionalización (i18n-B) y diseño semántico**.
 
 **Directiva No Negociable:** Seguir este protocolo no es opcional. Garantiza que la velocidad ganada al usar componentes externos no se traduzca en deuda técnica o degradación de la calidad.
 
@@ -23,94 +21,79 @@ Nuestra filosofía es la **Asimilación Arquitectónica**. No consumimos compone
 
 ## 2. El Protocolo de Naturalización: Paso a Paso
 
-Todo componente de `ReactBits` debe pasar por las siguientes cuatro fases para ser considerado "listo para producción".
+Todo componente de UI de terceros debe pasar por las siguientes fases para ser considerado "listo para producción".
 
-### **Fase 1: Extracción y Verificación**
+### **Fase 1: Extracción y Aislamiento**
 
-- **Plataforma:** `dev.reactbits.app` (El Showcase de Componentes)
+1.  **Obtener Código Fuente:** Copie el código fuente del componente deseado (TSX + Tailwind CSS es el formato ideal).
+2.  **Crear el Aparato:** Cree un nuevo archivo `.tsx` en la ubicación semántica correcta dentro de `src/components/`.
+3.  **Instalar Dependencias:** Si el componente requiere librerías que no tenemos, instálelas usando `pnpm`, conforme a la **Directiva 002**.
+4.  **Saneamiento Inicial:** Pegue el código y ejecute `pnpm run format` para alinear el estilo.
 
-1.  **Auditoría de Calidad:** Antes de considerar un componente, verifique su estado en la SSoT de `component-health`.
-    - **Aprobado:** `status: "complete"` y `quality >= 8.0`.
-    - **Rechazado:** Cualquier componente marcado como `incomplete` o `placeholder` (ej. Buttons, Forms, Loaders) está prohibido para su uso.
-2.  **Selección de Variante:** Seleccione y copie el código de la variante **TypeScript + Tailwind CSS**. Esta es la única variante compatible con nuestra stack.
-3.  **Identificación de Dependencias:** Anote las dependencias `npm` que el componente requiere (ej. `framer-motion`, `gsap`).
+### **Fase 2: Nivelación Arquitectónica**
 
-### **Fase 2: Aislamiento en el Proyecto**
+Esta es la fase de integración profunda. El componente es refactorizado para "hablar" el lenguaje de nuestra arquitectura, cumpliendo la **Directiva 003**.
 
-- **Plataforma:** Codebase de `curcumin-complex`.
+-   **Checklist de Nivelación:**
+    1.  **Declarar Entorno:** Añada `"use client";` si el componente es interactivo.
+    2.  **Importar React:** Asegúrese de que `import React from "react";` esté presente.
+    3.  **Añadir Logging:** Incorpore el `console.log("[Observabilidad] Renderizando [NombreComponente]");`.
+    4.  **Internacionalizar (i18n-B):**
+        -   **Identificar Textos:** Encuentre todas las cadenas de texto visibles para el usuario que estén hardcodeadas.
+        -   **Refactorizar a Props:** Modifique la interfaz de `props` del componente para que reciba todos esos textos desde el exterior.
+    5.  **Aplicar Sistema de Theming:**
+        -   Revise todas las clases de Tailwind y reemplace valores fijos por nuestras variables semánticas.
+        -   **Colores:** `bg-blue-500` -> `bg-primary`, `text-gray-200` -> `text-foreground/80`.
+        -   **Geometría:** Asegúrese de que `border-radius`, `padding`, etc., sean consistentes con nuestro diseño.
+    6.  **Crear Documentación:**
+        -   Añada un bloque **TSDoc completo**.
+        -   Cree el **Documento Espejo** en `/.docs-espejo/`.
 
-1.  **Creación del Aparato:** Cree un nuevo archivo `.tsx` en la ubicación correcta de nuestra arquitectura de Atomic Design. Para la mayoría de los componentes de UI, será `src/components/ui/`.
-    - _Ejemplo:_ `src/components/ui/ThreadsBackground.tsx`
-2.  **Instalación de Dependencias:** Si se identificaron dependencias en la Fase 1 que no existen en nuestro `package.json`, instálelas:
-    ```bash
-    pnpm install framer-motion
-    ```
-3.  **Saneamiento Inicial:** Pegue el código y ejecute `pnpm format` para alinear el estilo.
+### **Fase 3: Integración Final**
 
-### **Fase 3: Nivelación Arquitectónica**
-
-Esta es la fase de integración profunda. El componente es refactorizado para "hablar" el lenguaje de nuestra arquitectura.
-
-- **[ ] Checklist de Nivelación:**
-  1.  **Declarar Entorno:** Añada `"use client";` al inicio del archivo si el componente utiliza hooks o gestiona estado.
-  2.  **Unificar Utilidades:** Reemplace cualquier importación de `clsx` o `tailwind-merge` con nuestra SSoT:
-      ```typescript
-      import { cn } from "@/lib/utils";
-      ```
-  3.  **Integrar Logging:**
-      - Importe el logger de cliente: `import { clientLogger } from "@/lib/client-logger";`
-      - Añada un log de `trace` para registrar el renderizado del componente, siguiendo la firma canónica:
-      ```typescript
-      clientLogger.trace("[ComponentName]", "Renderizando aparato.", { props });
-      ```
-  4.  **Internacionalizar (IMAS):**
-      - **a. Identificar Textos:** Encuentre todas las cadenas de texto visibles para el usuario que estén hardcodeadas en el JSX.
-      - **b. Crear Archivo de Mensajes:** Cree el archivo `.json` espejo en `src/messages/components/ui/ComponentName.json`.
-      - **c. Registrar en Manifiesto:** Añada la nueva ruta al objeto `messagesManifest` en `src/messages/manifest.ts`.
-      - **d. Refactorizar Componente:** Importe `useTranslations` y reemplace los textos fijos por llamadas a `t('clave')`.
-  5.  **Crear Documentación:**
-      - Genere el **Documento Espejo** en `.docs-espejo/components/ui/ComponentName.tsx.md`.
-      - Añada **TSDoc completo** al componente, documentando su propósito y `props`.
-
-### **Fase 4: Especialización y Branding**
-
-La fase final asegura que el componente no solo funcione, sino que se vea y se sienta como parte de `curcumin-complex`.
-
-1.  **Aplicar Sistema de Diseño:** Revise todas las clases de Tailwind.
-    - **Colores:** Reemplace colores genéricos (`bg-blue-500`, `text-neutral-200`) por nuestras variables semánticas (`bg-brand-primary`, `text-white/80`).
-    - **Geometría:** Ajuste valores como `padding`, `margin`, y `border-radius` (`rounded-xl` -> `rounded-lg`) para que coincidan con nuestros tokens de diseño.
-2.  **Integrar Telemetría (si aplica):** Si la interacción con el componente es un evento de negocio significativo (ej. clic en un botón de un funnel), utilice `useTelemetry` para registrarlo.
-3.  **Adaptar `Props`:** Modifique la interfaz de `props` del componente para que se alinee con los datos y la lógica de negocio de `curcumin-complex`.
+1.  **Actualizar Contratos:** Añada las nuevas claves de texto al `i18n.schema.ts` (como `.optional()`) y a los archivos de mensajes en `src/messages/`.
+2.  **Consumir el Componente:** Importe y utilice el componente ahora nivelado en `page.tsx` o donde sea necesario, pasándole las traducciones desde el diccionario.
 
 ---
 
-## 3. Ejemplo Práctico: Naturalización de "Glow Button"
+## 3. Ejemplo Práctico: Naturalización de un Componente `Card`
 
-- **Objetivo:** Integrar el componente `GlowButton` de ReactBits.
+**Objetivo:** Integrar un componente `Card` simple encontrado en una fuente externa.
 
-1.  **Fase 1 (Extracción):** Se verifica que tiene estado `complete` (hipotéticamente) y se copia el código TS+Tailwind.
-2.  **Fase 2 (Aislamiento):** Se crea `src/components/ui/GlowButton.tsx`.
+**Código Original (Externo):**
+```tsx
+export const Card = () => (
+  <div className="bg-slate-700 p-4 rounded-lg border border-slate-600">
+    <h3 className="text-lg text-white font-bold">Título de la Tarjeta</h3>
+    <p className="text-slate-300 mt-2">Este es un texto de ejemplo para la tarjeta.</p>
+  </div>
+);
+Proceso de Naturalización:
+Fase 1: Se crea src/components/data-display/Card.tsx. No hay nuevas dependencias.
+Fase 2 (Nivelación): El archivo se refactoriza:
+code
+TypeScript
+// src/components/data-display/Card.tsx
+import React from "react";
 
-3.  **Fase 3 (Nivelación):**
-    - Se añade `"use client";`.
-    - Se añade el log: `clientLogger.trace("[GlowButton]", "Renderizando.");`
-    - Se crea `src/messages/components/ui/GlowButton.json` con la clave `buttonText`.
-    - Se refactoriza el JSX:
-      ```diff
-      - <span className="relative">Glow Button</span>
-      + <span className="relative">{t('buttonText')}</span>
-      ```
-    - Se crea el documento espejo y el TSDoc.
+interface CardProps {
+  title: string;
+  content: string;
+}
 
-4.  **Fase 4 (Especialización):**
-    - Se adaptan los colores al sistema de diseño de `curcumin-complex`:
-      ```diff
-      - <span className="... bg-purple-800 ..."></span>
-      - <span className="... bg-pink-800 ..."></span>
-      + <span className="... bg-brand-primary-dark ..."></span>
-      + <span className="... bg-brand-accent ..."></span>
-      ```
-    - Se añade un `onClick` en las props que invoca `trackEvent('GLOW_BUTTON_CLICK')`.
-
-**Resultado:** El `GlowButton` ahora es un componente nativo de nuestro ecosistema, listo para ser usado de forma segura en cualquier parte de la aplicación.
-// .docs/USING_REACTBITS_GUIDE.md
+export function Card({ title, content }: CardProps): React.ReactElement {
+  console.log("[Observabilidad] Renderizando Card");
+  return (
+    <div className="bg-background/50 p-4 rounded-lg border border-white/10">
+      <h3 className="text-lg text-primary font-bold">{title}</h3>
+      <p className="text-foreground/80 mt-2">{content}</p>
+    </div>
+  );
+}
+Se añade TSDoc y se crea el documento espejo.
+Fase 3 (Integración):
+Se añade card: z.object({ title: z.string(), content: z.string() }).optional() a i18n.schema.ts.
+Se añade el contenido correspondiente a es-ES.json.
+Se utiliza en page.tsx: <Card title={t.card.title} content={t.card.content} />.
+Resultado: El componente Card ahora es un ciudadano nativo de nuestro ecosistema, 100% alineado con nuestra arquitectura y listo para ser usado de forma segura.
+// /.docs/USING_REACTBITS_GUIDE.md`

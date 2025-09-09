@@ -1,13 +1,19 @@
-// RUTA: src/components/sections/IngredientAnalysis.tsx
-/**
- * @file Sección de Análisis de Ingredientes
- * @description Muestra una cuadrícula (grid) donde cada celda detalla un ingrediente
- * clave del producto, con su nombre y descripción. Ayuda a construir credibilidad
- * y a educar al usuario sobre la fórmula.
- *
- * @TODOS: Mantener estos comentarios de documentación en futuros snapshots.
- */
+// src/components/sections/IngredientAnalysis.tsx
+import React from "react";
 import { Container } from "@/components/ui/Container";
+
+/**
+ * @file IngredientAnalysis.tsx
+ * @description Sección de Análisis de Ingredientes. Muestra una cuadrícula
+ *              que detalla los componentes clave del producto para educar
+ *              al usuario y construir credibilidad.
+ * @version 1.0.0
+ * @date 2025-09-09
+ * @dependencies react, @/components/ui/Container
+ *
+ * @prop {string} title - El título principal de la sección.
+ * @prop {Array<{name: string, description: string}>} ingredients - Array de objetos, cada uno representando un ingrediente.
+ */
 
 interface Ingredient {
   name: string;
@@ -19,26 +25,34 @@ interface IngredientAnalysisProps {
   ingredients: Ingredient[];
 }
 
+/**
+ * @component IngredientAnalysis
+ * @description Renderiza una sección informativa sobre los ingredientes.
+ * @param {IngredientAnalysisProps} props Las propiedades con el contenido.
+ * @returns {React.ReactElement} El elemento JSX que representa la sección.
+ */
 export function IngredientAnalysis({
   title,
   ingredients,
-}: IngredientAnalysisProps) {
+}: IngredientAnalysisProps): React.ReactElement {
+  console.log("[Observabilidad] Renderizando IngredientAnalysis");
+
   return (
-    <section className="py-16 bg-white">
+    <section className="py-16 sm:py-24 bg-background">
       <Container>
-        <h2 className="text-3xl font-bold text-center text-brand-text-dark mb-12">
+        <h2 className="text-3xl font-bold text-center text-foreground mb-12 sm:text-4xl">
           {title}
         </h2>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto">
-          {ingredients.map((ingredient) => (
+          {ingredients.map((ingredient, index) => (
             <div
-              key={ingredient.name}
-              className="p-6 border border-gray-200 rounded-lg shadow-sm text-center transition-all duration-300 hover:shadow-xl hover:-translate-y-1"
+              key={index}
+              className="p-6 border border-white/10 rounded-lg text-center transition-all duration-300 hover:shadow-xl hover:border-primary/50 hover:-translate-y-1"
             >
-              <h3 className="text-xl font-bold text-brand-header-blue mb-2">
+              <h3 className="text-xl font-bold text-primary mb-2">
                 {ingredient.name}
               </h3>
-              <p className="text-brand-text-light">{ingredient.description}</p>
+              <p className="text-foreground/80">{ingredient.description}</p>
             </div>
           ))}
         </div>
@@ -46,13 +60,4 @@ export function IngredientAnalysis({
     </section>
   );
 }
-
-// --- MEJORAS FUTURAS ---
-// 1. **Iconos por Ingrediente**: Se podría añadir una propiedad `icon` a la interfaz `Ingredient`
-//    para mostrar un icono representativo (ej. una hoja para un ingrediente botánico)
-//    encima del nombre, haciendo la sección más visual y fácil de escanear.
-// 2. **Modal con más información**: Al hacer clic en un ingrediente, se podría abrir un
-//    modal (diálogo) que muestre información más detallada, como estudios científicos
-//    relacionados, dosis recomendada o país de origen.
-
-// RUTA: src/components/sections/IngredientAnalysis.tsx
+// src/components/sections/IngredientAnalysis.tsx

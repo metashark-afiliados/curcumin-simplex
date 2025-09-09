@@ -1,4 +1,4 @@
-// .docs/directives/009_EXTERNAL_KNOWLEDGE_PROTOCOL.md
+// /.docs/directives/009_EXTERNAL_KNOWLEDGE_PROTOCOL.md
 /**
  * @file .docs/directives/009_EXTERNAL_KNOWLEDGE_PROTOCOL.md
  * @description Directiva de Desarrollo No Negociable 009. Establece el
@@ -16,20 +16,21 @@ La base de conocimiento interna sobre las dependencias del proyecto debe estar s
 
 ## 2. Reglas Mandatorias
 
-Ante la recepción de un snapshot de una dependencia externa (ej. `next-intl`), se debe seguir el siguiente protocolo:
+Ante la recepción de un snapshot de una dependencia externa, se debe seguir el siguiente protocolo:
 
-1.  **Análisis de API Pública:** Auditar a estrutura do snapshot, especialmente os ficheiros de declaración de tipos (`.d.ts`), para comprender a API pública correcta: nomes de funcións exportadas, sinaturas e tipos de datos.
+1.  **Análisis de API Pública:** Auditar la estructura del snapshot, especialmente los ficheros de declaración de tipos (`.d.ts`), para comprender la API pública correcta: nombres de función exportados, signaturas y tipos de datos.
 
-2.  **Actualización da Base de Coñecemento:** Asimilar a información obtida do snapshot para actualizar a miña base de coñecemento interna sobre esa librería. Debo comprender como a librería espera ser utilizada.
+2.  **Actualización de la Base de Conocimiento:** Asimilar la información obtenida del snapshot para actualizar mi base de conocimiento interna sobre esa librería. Debo comprender cómo la librería espera ser utilizada.
 
-3.  **Rexistro de Coñecemento (Auditoría):** Crear ou actualizar un documento de rexistro na carpeta `/.docs/knowledge-base/` específico para a librería analizada (ex. `next-intl-api.md`). Este documento debe resumir:
-    *   A versión da librería analizada.
-    *   Os puntos de entrada (`exports`) clave e o seu propósito.
-    *   Exemplos de uso correcto da API, baseados na evidencia do snapshot.
-    *   A data da última actualización da análise.
+3.  **Registro de Conocimiento (Banco de Componentes):** Crear o actualizar un documento de registro en la carpeta `/.docs/knowledge-base/` específico para la librería analizada (ej. `react-fast-marquee-api.md`). Este documento debe resumir:
+    *   El nombre y la versión de la librería analizada.
+    *   Los puntos de entrada (`exports`) clave y su propósito.
+    *   Diagnóstico de integración (ej. si es `"use client"`, compatibilidad de versiones).
+    *   Ejemplos de uso correcto de la API, basados en la evidencia del snapshot.
+    *   La fecha del último análisis.
 
-4.  **Aplicación do Coñecemento:** Utilizar o coñecemento actualizado para resolver erros de integración ou refactorizar o código do proxecto para que se aliñe coas mellores prácticas da librería.
+4.  **Aplicación del Conocimiento:** Utilizar el conocimiento actualizado para resolver errores de integración o refactorizar el código del proyecto para que se aliñe con las mejores prácticas de la librería.
 
 ## 3. Justificación
 
-Este protocolo transforma a depuración de reactiva a proactiva. En lugar de depender de documentación externa que podería estar desactualizada, baséase na verdade absoluta do código fonte da dependencia. Garante que as nosas integracións sexan robustas e documenta o coñecemento adquirido para futuras referencias, cumprindo cos principios de **Análise Profunda e Persistente** e **Confianza Absoluta**.
+Este protocolo transforma la depuración de reactiva a proactiva. En lugar de depender de documentación externa que podría estar desactualizada, se basa en la verdad absoluta del código fuente de la dependencia. Garante que las nuestras integraciones sean robustas y documenta el conocimiento adquirido para futuras referencias, cumpliendo con los principios de **Análisis Profundo y Persistente** y **Confianza Absoluta**.

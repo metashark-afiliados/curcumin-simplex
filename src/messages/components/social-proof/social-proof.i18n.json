@@ -1,0 +1,78 @@
+{
+  "es-ES": {
+    "socialProof": {
+      "title": "Con la confianza de marcas líderes en bienestar",
+      "logos": [
+        {
+          "src": "/img/sections/social-proof/logo_marca-a.svg",
+          "alt": "Logo Marca A"
+        },
+        {
+          "src": "/img/sections/social-proof/logo_marca-b.svg",
+          "alt": "Logo Marca B"
+        },
+        {
+          "src": "/img/sections/social-proof/logo_marca-c.svg",
+          "alt": "Logo Marca C"
+        }
+      ]
+    }
+  },
+  "pt-BR": {
+    "socialProof": {
+      "title": "Com a confiança de marcas líderes em bem-estar",
+      "logos": [
+        {
+          "src": "/img/sections/social-proof/logo_marca-a.svg",
+          "alt": "Logo Marca A"
+        },
+        {
+          "src": "/img/sections/social-proof/logo_marca-b.svg",
+          "alt": "Logo Marca B"
+        },
+        {
+          "src": "/img/sections/social-proof/logo_marca-c.svg",
+          "alt": "Logo Marca C"
+        }
+      ]
+    }
+  },
+  "en-US": {
+    "socialProof": {
+      "title": "Trusted by leading wellness brands",
+      "logos": [
+        {
+          "src": "/img/sections/social-proof/logo_marca-a.svg",
+          "alt": "Brand A Logo"
+        },
+        {
+          "src": "/img/sections/social-proof/logo_marca-b.svg",
+          "alt": "Brand B Logo"
+        },
+        {
+          "src": "/img/sections/social-proof/logo_marca-c.svg",
+          "alt": "Brand C Logo"
+        }
+      ]
+    }
+  },
+  "it-IT": {
+    "socialProof": {
+      "title": "Scelto dai principali marchi del benessere",
+      "logos": [
+        {
+          "src": "/img/sections/social-proof/logo_marca-a.svg",
+          "alt": "Logo Marchio A"
+        },
+        {
+          "src": "/img/sections/social-proof/logo_marca-b.svg",
+          "alt": "Logo Marchio B"
+        },
+        {
+          "src": "/img/sections/social-proof/logo_marca-c.svg",
+          "alt": "Logo Marchio C"
+        }
+      ]
+    }
+  }
+}

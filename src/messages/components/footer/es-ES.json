@@ -1,0 +1,10 @@
+{
+  "footer": {
+    "copyright": "© 2025 Curcumin Simplex. Todos los derechos reservados.",
+    "links": [
+      { "label": "Términos", "href": "/terms" },
+      { "label": "Privacidad", "href": "/privacy" }
+    ],
+    "disclaimer": "Este producto no está destinado a diagnosticar, tratar, curar o prevenir ninguna enfermedad."
+  }
+}

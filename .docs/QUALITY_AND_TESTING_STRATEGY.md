@@ -1,81 +1,66 @@
-// .docs/QUALITY_AND_TESTING_STRATEGY.md
+// /.docs/QUALITY_AND_TESTING_STRATEGY.md
 /**
- * @file .docs/QUALITY_AND_TESTING_STRATEGY.md
- * @description Manifiesto de Estrategia de Calidad y Pruebas. Esta es la
- *              Única Fuente de Verdad (SSoT) que define cómo medimos,
- *              garantizamos y automatizamos la calidad en el proyecto Curcumin-Complex.
- * @author L.I.A. Legacy
- * @version 1.0.0
+ * @file /.docs/QUALITY_AND_TESTING_STRATEGY.md
+ * @description Manifiesto de Estrategia de Calidad y Pruebas para Curcumin Simplex.
+ * @author IA Ingeniera de Software Senior v2.0
+ * @version 2.0.0
  */
-# Manifiesto de Calidad y Pruebas: Curcumin-Complex
+
+# Manifiesto de Calidad y Pruebas: Curcumin Simplex
 
 ## 1. Filosofía de Calidad
 
-Nuestra filosofía de calidad se basa en el principio de **"Confianza Automatizada"**. No confiamos en la inspección manual para prevenir errores; construimos un sistema automatizado y por capas que actúa como una red de seguridad, permitiéndonos desarrollar y refactorizar con velocidad y confianza.
+Nuestra filosofía de calidad se basa en el principio de **"Resiliencia en el Build, Confianza en el Contenido"**. Para un proyecto de Generación de Sitios Estáticos (SSG) como `curcumin-simplex`, el riesgo principal no reside en la lógica de ejecución compleja, sino en la integridad de los datos y la configuración que alimentan el proceso de construcción.
 
-La calidad no es una fase final; es una propiedad intrínseca del proceso de desarrollo, reforzada en cada commit y en cada Pull Request.
+La calidad no se persigue con costosas suites de pruebas automatizadas, sino que se garantiza a través de **guardianes de calidad estáticos y validación de contratos de datos** que actúan como una red de seguridad en cada build.
 
 ---
 
-## 2. La Arquitectura de Pruebas: La Pirámide Adaptada
+## 2. Estrategia de Calidad Estática (La Base)
 
-Nuestro enfoque de pruebas sigue el modelo clásico de la pirámide, adaptado a una aplicación Next.js moderna.
+Nuestra primera y más importante línea de defensa es el análisis estático. Estos guardianes se ejecutan antes y durante el proceso de build.
 
-```mermaid
-graph TD
-    subgraph " "
-        direction TB
-        E2E["**Pruebas End-to-End** <br> *(Playwright)* <br> Flujos de Usuario Críticos"];
-        Integration["**Pruebas de Integración/Componente** <br> * (Vitest + RTL + Axe)* <br> Comportamiento de Aparatos de UI"];
-        Unit["**Pruebas Unitarias** <br> * (Vitest)* <br> Lógica Atómica y Pura"];
-    end
-    style E2E fill:#f9d7d7,stroke:#c0392b,stroke-width:2px
-    style Integration fill:#f7dc6f,stroke:#f1c40f,stroke-width:2px
-    style Unit fill:#d5f5e3,stroke:#27ae60,stroke-width:2px
-Nivel 1: Pruebas Unitarias (La Base)
-Herramienta: Vitest
-Propósito: Verificar la corrección de las piezas de lógica más pequeñas y aisladas de la aplicación (los "átomos" de la lógica).
-Qué Probar:
-Funciones de Utilidad: Todo en src/lib/utils.ts y src/lib/helpers/. Por ejemplo, setNestedProperty o formatDate.
-Lógica de Schemas: La lógica compleja dentro de los schemas Zod (ej. refine, transform).
-Ubicación de Archivos: [ruta-del-aparato].test.ts (ej. src/lib/helpers/set-nested-property.test.ts).
-Principio Clave: Estas pruebas deben ser extremadamente rápidas y no deben tener dependencias del DOM, de React o de APIs externas.
-Nivel 2: Pruebas de Integración y Componentes (El Núcleo)
-Herramientas: Vitest, React Testing Library (RTL), jest-axe.
-Propósito: Garantizar que nuestros aparatos de UI (componentes de React) se rendericen correctamente, sean plenamente funcionales e interactivos, y cumplan con los estándares de accesibilidad.
-Qué Probar:
-Renderizado Condicional: ¿El componente muestra el estado correcto basado en sus props? (ej. un Button en estado loading).
-Interacción del Usuario: Simular eventos de usuario (click, type, submit) y afirmar que el componente reacciona como se espera.
-Accesibilidad (A11y): Utilizar jest-axe para verificar que el HTML renderizado no tiene violaciones de accesibilidad (expect(await axe(container)).toHaveNoViolations()).
-Comportamiento de Hooks: Probar hooks personalizados de forma aislada para validar su lógica de estado.
-Ubicación de Archivos: tests/integration/components/[...ruta-del-aparato].test.tsx.
-Nivel 3: Pruebas End-to-End (E2E) (La Cima)
-Herramienta: Playwright
-Propósito: Simular flujos de usuario completos en un navegador real, validando que múltiples componentes y sistemas (frontend, server actions, APIs externas) funcionan juntos correctamente. Son las pruebas más valiosas pero también las más lentas.
-Qué Probar (Flujos de Usuario Críticos - SSoT):
-Funnel de Conversión Principal:
-Navegar a la HomePage.
-Rellenar el OrderForm con datos válidos.
-Hacer clic en el botón de envío.
-(Crucial) Interceptar la petición de red saliente y verificar que se envía al endpoint del productor con todos los campos correctos (nombre, teléfono, campos ocultos).
-Navegación y Consumo de Contenido:
-Navegar a la HomePage.
-Hacer clic en el enlace del "Blog" en el Header.
-Verificar que la página de índice del blog (/blog) se carga y muestra al menos una tarjeta de artículo.
-Hacer clic en una ArticleCard y verificar que la página del artículo se carga correctamente.
-3. Estrategia de Calidad del Código Estático
-La calidad no solo se mide en tiempo de ejecución, sino también en reposo.
-Linting (ESLint): La SSoT es eslint.config.mjs. Fuerza la consistencia del código, previene patrones de error comunes y asegura el cumplimiento de las reglas de los hooks de React y la accesibilidad.
-Formato (Prettier): La SSoT es .prettierrc. Garantiza un estilo de código 100% consistente en todo el proyecto, eliminando el debate sobre el formato.
-Seguridad de Tipos (TypeScript): La SSoT es tsconfig.json. La directiva "strict": true es la primera y más importante línea de defensa contra errores de tipo.
-Estos guardianes se ejecutan automáticamente en el hook pre-commit de Husky y en el pipeline de CI.
-4. Cobertura de Código (Code Coverage)
-La cobertura de código es una métrica para medir qué porcentaje de nuestro código está siendo probado. No es un objetivo en sí mismo, sino un indicador de la salud de nuestra suite de pruebas.
-Herramienta: Vitest --coverage
-Objetivos Mínimos (Mandatorios): La configuración en vitest.config.mts DEBE hacer que el pipeline de CI falle si no se cumplen los siguientes umbrales:
-Ramas (Branches): 80%
-Funciones (Functions): 85%
-Líneas (Lines): 85%
-Declaraciones (Statements): 85%
-El objetivo no es alcanzar el 100%, sino asegurar que toda la lógica crítica y compleja esté cubierta por pruebas robustas.
-// .docs/QUALITY_AND_TESTING_STRATEGY.md
+1.  **Seguridad de Tipos (TypeScript):**
+    *   **SSoT:** `tsconfig.json`
+    *   **Directiva:** La opción `"strict": true` es **no negociable**. Es la herramienta más eficaz para prevenir errores de tipo, props incorrectas y lógica inconsistente antes de que el código se ejecute.
+
+2.  **Consistencia de Código (Linting y Formato):**
+    *   **SSoT:** `eslint.config.mjs`, `prettier.config.js` (si se crea).
+    *   **Directiva:** Todo el código debe adherirse a las reglas definidas por ESLint y Prettier. Los scripts `pnpm run lint` y `pnpm run format` deben ejecutarse regularmente para mantener la base de código limpia y legible.
+
+3.  **Validación de Contratos de Datos (Zod):**
+    *   **SSoT:** `src/lib/schemas/*.ts`
+    *   **Directiva:** Esta es nuestra **principal herramienta de "pruebas de integración" para el contenido**. Los schemas de Zod para la configuración (`sections.config.ts`) y la internacionalización (`i18n.schema.ts`) actúan como un contrato estricto. El proceso de build **debe fallar** si cualquier archivo `.json` de contenido o variable de `.env` no cumple con la estructura definida. Esto garantiza que el contenido siempre será consistente con lo que los componentes esperan recibir.
+
+---
+
+## 3. Estrategia de Verificación Funcional
+
+Dado el enfoque SSG del proyecto, las pruebas End-to-End (E2E) automatizadas son innecesarias. Se reemplazan por un protocolo de **Pruebas de Verificación Manual (MVT - Manual Verification Testing)**.
+
+### Protocolo de MVT (Checklist Pre-Despliegue)
+
+Antes de considerar un build como "listo para producción", se debe realizar la siguiente verificación manual en un entorno local o de vista previa:
+
+-   **[ ] Verificación Visual Multi-Navegador:**
+    -   Renderizar la página en las últimas versiones de Chrome y Safari (o un navegador basado en WebKit).
+    -   Confirmar que el layout no está roto y que todos los elementos son visibles y están alineados correctamente.
+
+-   **[ ] Verificación de Responsividad:**
+    -   Utilizar las herramientas de desarrollador del navegador para simular la vista en un dispositivo móvil (ej. 375px de ancho) y una tablet (ej. 768px de ancho).
+    -   Confirmar que el diseño se adapta correctamente y que no hay desbordamientos de contenido.
+
+-   **[ ] Verificación del Funnel de Conversión (Hipotético):**
+    -   Localizar el componente del formulario de pedido.
+    -   Llenar los campos con datos de prueba.
+    -   Abrir la pestaña "Red" de las herramientas de desarrollador.
+    -   Hacer clic en el botón de envío.
+    -   **Confirmar** que se realiza una petición `POST` al endpoint correcto del socio afiliado y que el `payload` contiene todos los campos esperados (visibles y ocultos).
+
+-   **[ ] Verificación de Navegación:**
+    -   Hacer clic en todos los enlaces del `Header` y `Footer`.
+    -   Confirmar que navegan a las secciones o páginas correctas.
+
+Completar este checklist garantiza que los flujos de usuario más críticos funcionan como se espera.
+
+// /.docs/QUALITY_AND_TESTING_STRATEGY.md

@@ -1,103 +1,112 @@
-import Image from "next/image";
+// src/app/page.tsx
+/**
+ * @file page.tsx
+ * @description Componente de página principal que actúa como el "Ensamblador Lego".
+ * @description_es Este Server Component es el responsable de orquestar el layout de la
+ *               página principal. Lee la configuración de secciones activas y el
+ *               diccionario de contenido, y renderiza dinámicamente cada sección
+ *               en el orden especificado.
+ * @version 2.1.0
+ */
+import React from "react";
+import { getDictionary } from "@/lib/i18n";
+import { activeSections, type SectionName } from "@/lib/config/sections.config";
+import { Hero } from "@/components/sections/Hero";
+import { SocialProofLogos } from "@/components/sections/SocialProofLogos";
+import { BenefitsSection } from "@/components/sections/BenefitsSection";
+import { IngredientAnalysis } from "@/components/sections/IngredientAnalysis";
+import { ThumbnailCarousel } from "@/components/sections/ThumbnailCarousel";
+// import { TestimonialGrid } from "@/components/sections/TestimonialGrid";
+// import { FaqAccordion } from "@/components/sections/FaqAccordion";
+// import { GuaranteeSection } from "@/components/sections/GuaranteeSection";
 
-export default function Home() {
-  return (
-    <div className="font-sans grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
+/**
+ * @function SectionRenderer
+ * @description Componente auxiliar que mapea un nombre de sección a su componente React.
+ * @param {object} props - Propiedades del componente.
+ * @param {SectionName} props.sectionName - El nombre de la sección a renderizar.
+ * @param {any} props.dictionary - El diccionario completo de i18n.
+ * @returns {React.ReactElement | null} El componente de sección renderizado o null si no se encuentra.
+ */
+function SectionRenderer({
+  sectionName,
+  dictionary,
+}: {
+  sectionName: SectionName;
+  dictionary: any;
+}) {
+  // El uso de `any` aquí es un compromiso práctico. El schema de Zod ya ha
+  // garantizado que `dictionary` tiene la forma correcta.
+  switch (sectionName) {
+    case "Hero":
+      return dictionary.hero ? (
+        <Hero
+          title={dictionary.hero.title}
+          subtitle={dictionary.hero.subtitle}
         />
-        <ol className="font-mono list-inside list-decimal text-sm/6 text-center sm:text-left">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] font-mono font-semibold px-1 py-0.5 rounded">
-              src/app/page.tsx
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
+      ) : null;
+    case "SocialProofLogos":
+      return dictionary.socialProof ? (
+        <SocialProofLogos
+          title={dictionary.socialProof.title}
+          logos={dictionary.socialProof.logos}
+        />
+      ) : null;
+    case "BenefitsSection":
+      return dictionary.benefitsSection ? (
+        <BenefitsSection
+          title={dictionary.benefitsSection.title}
+          subtitle={dictionary.benefitsSection.subtitle}
+          benefits={dictionary.benefitsSection.benefits}
+        />
+      ) : null;
+    case "IngredientAnalysis":
+      return dictionary.ingredientAnalysis ? (
+        <IngredientAnalysis
+          title={dictionary.ingredientAnalysis.title}
+          ingredients={dictionary.ingredientAnalysis.ingredients}
+        />
+      ) : null;
+    case "ThumbnailCarousel":
+      return dictionary.thumbnailCarousel ? (
+        <ThumbnailCarousel
+          thumbnails={dictionary.thumbnailCarousel.thumbnails}
+          affiliateUrl={dictionary.thumbnailCarousel.affiliateUrl}
+          playButtonAriaLabel={dictionary.thumbnailCarousel.playButtonAriaLabel}
+          playButtonTitle={dictionary.thumbnailCarousel.playButtonTitle}
+        />
+      ) : null;
+    // case "TestimonialGrid":
+    //   return <TestimonialGrid testimonials={...} />;
+    default:
+      console.warn(
+        `[Page] Componente para la sección "${sectionName}" no implementado.`
+      );
+      return null;
+  }
+}
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
-        </div>
-      </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
-    </div>
+/**
+ * @page Home
+ * @description La página de inicio de Curcumin Simplex.
+ * @returns {Promise<React.ReactElement>} El elemento JSX que representa la página completa.
+ */
+export default async function Home(): Promise<React.ReactElement> {
+  console.log(
+    "[Observabilidad] Renderizando página Home (Ensamblador de Secciones)"
+  );
+  const t = await getDictionary();
+
+  return (
+    <>
+      {activeSections.map((section) => (
+        <SectionRenderer
+          key={section.name}
+          sectionName={section.name}
+          dictionary={t}
+        />
+      ))}
+    </>
   );
 }
+// src/app/page.tsx

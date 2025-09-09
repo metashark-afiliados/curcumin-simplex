@@ -1,10 +1,20 @@
+
+/**
+ * @file tsconfig.json
+ * @description Configuración de TypeScript "Autosuficiente" para Curcumin Simplex.
+ * @description_es Este archivo define explícitamente TODAS las reglas del compilador
+ *               necesarias para ejecutar Next.js, eliminando la dependencia de
+ *               `extends` para resolver problemas de resolución de módulos en el entorno.
+ * @version 4.0.0
+ */
 {
   "compilerOptions": {
-    "target": "ES2017",
+    "target": "es5",
     "lib": ["dom", "dom.iterable", "esnext"],
     "allowJs": true,
     "skipLibCheck": true,
     "strict": true,
+    "forceConsistentCasingInFileNames": true,
     "noEmit": true,
     "esModuleInterop": true,
     "module": "esnext",
@@ -13,6 +23,8 @@
     "isolatedModules": true,
     "jsx": "preserve",
     "incremental": true,
+
+    // --- Configuración Específica del Proyecto ---
     "plugins": [
       {
         "name": "next"
@@ -25,3 +37,4 @@
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
   "exclude": ["node_modules"]
 }
+

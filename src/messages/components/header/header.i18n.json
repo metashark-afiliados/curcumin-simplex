@@ -1,0 +1,38 @@
+{
+  "es-ES": {
+    "header": {
+      "ctaButton": "Pedir Ahora",
+      "affiliateUrl": "https://example.com/order?lang=es",
+      "logoUrl": "/img/logos/header_logo_principal.svg",
+      "logoAlt": "Logo de Curcumin Simplex",
+      "homeAriaLabel": "Volver a la página de inicio"
+    }
+  },
+  "pt-BR": {
+    "header": {
+      "ctaButton": "Pedir Agora",
+      "affiliateUrl": "https://example.com/order?lang=pt",
+      "logoUrl": "/img/logos/header_logo_principal.svg",
+      "logoAlt": "Logo da Curcumin Simplex",
+      "homeAriaLabel": "Voltar para a página inicial"
+    }
+  },
+  "en-US": {
+    "header": {
+      "ctaButton": "Order Now",
+      "affiliateUrl": "https://example.com/order?lang=en",
+      "logoUrl": "/img/logos/header_logo_principal.svg",
+      "logoAlt": "Curcumin Simplex Logo",
+      "homeAriaLabel": "Go back to the homepage"
+    }
+  },
+  "it-IT": {
+    "header": {
+      "ctaButton": "Ordina Ora",
+      "affiliateUrl": "https://example.com/order?lang=it",
+      "logoUrl": "/img/logos/header_logo_principal.svg",
+      "logoAlt": "Logo di Curcumin Simplex",
+      "homeAriaLabel": "Torna alla homepage"
+    }
+  }
+}

@@ -1,0 +1,58 @@
+{
+  "es-ES": {
+    "benefitsSection": {
+      "title": "¿Por Qué Elegir Curcumin Simplex?",
+      "subtitle": "Nuestra fórmula no es solo un ingrediente. Es un sistema completo diseñado para ofrecerte resultados que puedes sentir.",
+      "benefits": [
+        "Potente Acción Antioxidante",
+        "Soporte para la Salud Articular",
+        "Mejora la Función Digestiva",
+        "Fórmula de Alta Absorción",
+        "Ingredientes 100% Naturales",
+        "Fabricado con Estándares de Calidad"
+      ]
+    }
+  },
+  "pt-BR": {
+    "benefitsSection": {
+      "title": "Por Que Escolher a Curcumin Simplex?",
+      "subtitle": "Nossa fórmula não é apenas um ingrediente. É um sistema completo projetado para oferecer resultados que você pode sentir.",
+      "benefits": [
+        "Potente Ação Antioxidante",
+        "Suporte para a Saúde das Articulações",
+        "Melhora a Função Digestiva",
+        "Fórmula de Alta Absorção",
+        "Ingredientes 100% Naturais",
+        "Fabricado com Padrões de Qualidade"
+      ]
+    }
+  },
+  "en-US": {
+    "benefitsSection": {
+      "title": "Why Choose Curcumin Simplex?",
+      "subtitle": "Our formula isn't just one ingredient. It's a complete system designed to deliver results you can feel.",
+      "benefits": [
+        "Powerful Antioxidant Action",
+        "Supports Joint Health",
+        "Enhances Digestive Function",
+        "High-Absorption Formula",
+        "100% Natural Ingredients",
+        "Manufactured with Quality Standards"
+      ]
+    }
+  },
+  "it-IT": {
+    "benefitsSection": {
+      "title": "Perché Scegliere Curcumin Simplex?",
+      "subtitle": "La nostra formula non è solo un ingrediente. È un sistema completo progettato per offrire risultati che puoi sentire.",
+      "benefits": [
+        "Potente Azione Antiossidante",
+        "Supporto per la Salute delle Articolazioni",
+        "Migliora la Funzione Digestiva",
+        "Formula ad Alto Assorbimento",
+        "Ingredienti 100% Naturali",
+        "Prodotto con Standard di Qualità"
+      ]
+    }
+  }
+}

@@ -1,27 +1,39 @@
-// RUTA: src/app/(components)/layout/ScrollingBanner.tsx
+// src/components/layout/ScrollingBanner.tsx
 "use client";
 
 import Marquee from "react-fast-marquee";
 import { AlertTriangle } from "lucide-react";
 
+/**
+ * @file ScrollingBanner.tsx
+ * @description Un banner de marquesina que se desplaza horizontalmente en la parte superior del sitio.
+ *              Ideal para mostrar mensajes de urgencia o importantes de forma continua.
+ * @version 2.1.0
+ * @date 2025-09-09
+ * @dependencies react-fast-marquee, lucide-react
+ *
+ * @param {string} message - El mensaje de texto que se mostrará en el banner.
+ */
+
 interface ScrollingBannerProps {
   message: string;
-  // Hacemos el estilo opcional para que pueda usar los valores por defecto o los personalizados
-  style?: React.CSSProperties;
 }
 
-export function ScrollingBanner({ message, style }: ScrollingBannerProps) {
-  // Clases base que no cambian
-  const baseClasses = "py-2 text-sm font-bold text-white";
-
-  // Estilos por defecto si no se pasan estilos personalizados
-  const defaultStyle = {
-    background: "linear-gradient(to right, #F97316, #EF4444, #F97316)", // Naranja/Rojo de la paleta anterior
-  };
+/**
+ * @component ScrollingBanner
+ * @description Renderiza un banner animado con un mensaje. Es un componente cliente
+ *              debido a la dependencia `react-fast-marquee` para la animación.
+ * @param {ScrollingBannerProps} props Las propiedades del componente.
+ * @returns {React.ReactElement} El elemento JSX que representa el banner.
+ */
+export function ScrollingBanner({
+  message,
+}: ScrollingBannerProps): React.ReactElement {
+  console.log("[Observabilidad] Renderizando ScrollingBanner");
 
   return (
-    <div className={baseClasses} style={style || defaultStyle}>
-      <Marquee speed={50} autoFill={true}>
+    <div className="py-2 text-sm font-bold text-white bg-[--image-banner-alert]">
+      <Marquee speed={50} autoFill={true} pauseOnHover={true}>
         <div className="flex items-center mx-12">
           <AlertTriangle className="h-4 w-4 mr-3 flex-shrink-0" />
           <span className="uppercase tracking-wider">{message}</span>
@@ -30,4 +42,4 @@ export function ScrollingBanner({ message, style }: ScrollingBannerProps) {
     </div>
   );
 }
-// RUTA: src/app/(components)/layout/ScrollingBanner.tsx
+// src/components/layout/ScrollingBanner.tsx

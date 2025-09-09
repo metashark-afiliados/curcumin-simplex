@@ -1,0 +1,9 @@
+{
+  "header": {
+    "ctaButton": "Pedir Ahora",
+    "affiliateUrl": "https://example.com/order?lang=es",
+    "logoUrl": "/img/logos/header_logo_principal.svg",
+    "logoAlt": "Logo de Curcumin Simplex",
+    "homeAriaLabel": "Volver a la página de inicio"
+  }
+}

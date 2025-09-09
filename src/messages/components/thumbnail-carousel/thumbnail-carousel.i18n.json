@@ -1,0 +1,86 @@
+{
+  "es-ES": {
+    "thumbnailCarousel": {
+      "thumbnails": [
+        {
+          "src": "/img/sections/thumbnail-carousel/carousel_actividad-aire-libre.jpg",
+          "alt": "Persona disfrutando de una actividad al aire libre"
+        },
+        {
+          "src": "/img/sections/thumbnail-carousel/carousel_ingredientes-naturales.jpg",
+          "alt": "Ingredientes naturales y frescos sobre una mesa"
+        },
+        {
+          "src": "/img/sections/thumbnail-carousel/carousel_producto.jpg",
+          "alt": "Primer plano del producto Curcumin Simplex"
+        }
+      ],
+      "affiliateUrl": "https://example.com/order?lang=es",
+      "playButtonAriaLabel": "Ver presentación del producto y pedir ahora",
+      "playButtonTitle": "Icono de reproducción"
+    }
+  },
+  "pt-BR": {
+    "thumbnailCarousel": {
+      "thumbnails": [
+        {
+          "src": "/img/sections/thumbnail-carousel/carousel_actividad-aire-libre.jpg",
+          "alt": "Pessoa desfrutando de uma atividade ao ar livre"
+        },
+        {
+          "src": "/img/sections/thumbnail-carousel/carousel_ingredientes-naturales.jpg",
+          "alt": "Ingredientes naturais e frescos em uma mesa"
+        },
+        {
+          "src": "/img/sections/thumbnail-carousel/carousel_producto.jpg",
+          "alt": "Close-up do produto Curcumin Simplex"
+        }
+      ],
+      "affiliateUrl": "https://example.com/order?lang=pt",
+      "playButtonAriaLabel": "Ver apresentação do produto e pedir agora",
+      "playButtonTitle": "Ícone de reprodução"
+    }
+  },
+  "en-US": {
+    "thumbnailCarousel": {
+      "thumbnails": [
+        {
+          "src": "/img/sections/thumbnail-carousel/carousel_actividad-aire-libre.jpg",
+          "alt": "Person enjoying an outdoor activity"
+        },
+        {
+          "src": "/img/sections/thumbnail-carousel/carousel_ingredientes-naturales.jpg",
+          "alt": "Natural and fresh ingredients on a table"
+        },
+        {
+          "src": "/img/sections/thumbnail-carousel/carousel_producto.jpg",
+          "alt": "Close-up of the Curcumin Simplex product"
+        }
+      ],
+      "affiliateUrl": "https://example.com/order?lang=en",
+      "playButtonAriaLabel": "Watch product presentation and order now",
+      "playButtonTitle": "Play icon"
+    }
+  },
+  "it-IT": {
+    "thumbnailCarousel": {
+      "thumbnails": [
+        {
+          "src": "/img/sections/thumbnail-carousel/carousel_actividad-aire-libre.jpg",
+          "alt": "Persona che gode di un'attività all'aperto"
+        },
+        {
+          "src": "/img/sections/thumbnail-carousel/carousel_ingredientes-naturales.jpg",
+          "alt": "Ingredienti naturali e freschi su un tavolo"
+        },
+        {
+          "src": "/img/sections/thumbnail-carousel/carousel_producto.jpg",
+          "alt": "Primo piano del prodotto Curcumin Simplex"
+        }
+      ],
+      "affiliateUrl": "https://example.com/order?lang=it",
+      "playButtonAriaLabel": "Guarda la presentazione del prodotto e ordina ora",
+      "playButtonTitle": "Icona di riproduzione"
+    }
+  }
+}

@@ -1,37 +1,55 @@
 // src/components/layout/Footer.tsx
+
 import Link from "next/link";
 import { Container } from "@/components/ui/Container";
-import { Button } from "@/components/ui/Button";
+
+/**
+ * @file Footer.tsx
+ * @description Componente de presentación para el pie de página principal del sitio.
+ * @version 2.0.0
+ * @date 2025-09-09
+ * @dependencies next/link, @/components/ui/Container
+ *
+ * @prop {string} copyright - Texto del copyright.
+ * @prop {Array<{label: string, href: string}>} links - Array de objetos para los enlaces legales.
+ * @prop {string} disclaimer - Texto del descargo de responsabilidad.
+ */
+
+interface FooterLink {
+  label: string;
+  href: string;
+}
 
 interface FooterProps {
   copyright: string;
-  links: { label: string; href: string }[];
+  links: FooterLink[];
   disclaimer: string;
-  ctaText: string;
-  affiliateUrl: string;
 }
 
+/**
+ * @component Footer
+ * @description Renderiza el pie de página. Es un componente de presentación puro que
+ * recibe todo su contenido a través de props para facilitar la internacionalización
+ * estática y las pruebas.
+ * @param {FooterProps} props Las propiedades con el contenido textual.
+ * @returns {React.ReactElement} El elemento JSX que representa el pie de página.
+ */
 export function Footer({
   copyright,
   links,
   disclaimer,
-  ctaText,
-  affiliateUrl,
-}: FooterProps) {
+}: FooterProps): React.ReactElement {
+  console.log("[Observabilidad] Renderizando Footer");
+
   return (
-    <div className="text-gray-300 pt-16 pb-10">
+    <footer className="text-gray-400 pt-16 pb-10 mt-20 border-t border-gray-800">
       <Container>
-        <div className="text-center mb-12">
-          <Button
-            href={affiliateUrl}
-            className="bg-brand-cta-buy text-brand-text-dark font-bold hover:bg-brand-cta-buy-dark shadow-lg shadow-yellow-500/30 hover:scale-110 transition-all duration-300 ease-in-out"
-          >
-            {ctaText}
-          </Button>
-        </div>
         <div className="flex flex-col md:flex-row justify-between items-center text-center md:text-left">
           <p className="text-sm">{copyright}</p>
-          <div className="flex flex-wrap justify-center gap-x-6 gap-y-2 mt-4 md:mt-0">
+          <nav
+            className="flex flex-wrap justify-center gap-x-6 gap-y-2 mt-4 md:mt-0"
+            aria-label="Footer navigation"
+          >
             {links.map((link) => (
               <Link
                 key={link.href}
@@ -41,12 +59,14 @@ export function Footer({
                 {link.label}
               </Link>
             ))}
-          </div>
+          </nav>
         </div>
         <div className="mt-8 text-xs text-gray-500 border-t border-gray-700 pt-6">
           <p>{disclaimer}</p>
         </div>
       </Container>
-    </div>
+    </footer>
   );
 }
+
+// src/components/layout/Footer.tsx
