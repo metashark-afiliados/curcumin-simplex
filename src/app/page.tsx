@@ -6,11 +6,12 @@
  *               página principal. Lee la configuración de secciones activas y el
  *               diccionario de contenido, y renderiza dinámicamente cada sección
  *               en el orden especificado.
- * @version 2.1.0
+ * @version 2.2.0
  */
 import React from "react";
 import { getDictionary } from "@/lib/i18n";
 import { activeSections, type SectionName } from "@/lib/config/sections.config";
+import type { Dictionary } from "@/lib/schemas/i18n.schema"; // <<-- 1. IMPORTACIÓN DEL TIPO
 import { Hero } from "@/components/sections/Hero";
 import { SocialProofLogos } from "@/components/sections/SocialProofLogos";
 import { BenefitsSection } from "@/components/sections/BenefitsSection";
@@ -25,7 +26,7 @@ import { ThumbnailCarousel } from "@/components/sections/ThumbnailCarousel";
  * @description Componente auxiliar que mapea un nombre de sección a su componente React.
  * @param {object} props - Propiedades del componente.
  * @param {SectionName} props.sectionName - El nombre de la sección a renderizar.
- * @param {any} props.dictionary - El diccionario completo de i18n.
+ * @param {Dictionary} props.dictionary - El diccionario completo de i18n, ahora fuertemente tipado.
  * @returns {React.ReactElement | null} El componente de sección renderizado o null si no se encuentra.
  */
 function SectionRenderer({
@@ -33,10 +34,9 @@ function SectionRenderer({
   dictionary,
 }: {
   sectionName: SectionName;
-  dictionary: any;
+  dictionary: Dictionary; // <<-- 2. APLICACIÓN DEL TIPO CORRECTO
 }) {
-  // El uso de `any` aquí es un compromiso práctico. El schema de Zod ya ha
-  // garantizado que `dictionary` tiene la forma correcta.
+  // El contrato de datos ahora es verificado por TypeScript en tiempo de compilación.
   switch (sectionName) {
     case "Hero":
       return dictionary.hero ? (

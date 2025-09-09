@@ -3,7 +3,7 @@
  * @file Button.tsx
  * @description Un componente de botón atómico y polimórfico con un sistema
  *              completo de variantes estilísticas y de tamaño.
- * @version 3.4.0
+ * @version 3.5.0
  * @dependencies react, next/link, clsx, tailwind-merge
  */
 import React from "react";
@@ -63,6 +63,7 @@ type ButtonProps = ButtonAsButton | ButtonAsLink;
  * @returns {React.ReactElement} El elemento JSX que representa el botón o enlace.
  */
 export function Button(props: ButtonProps): React.ReactElement {
+  // <<-- 1. DESESTRUCTURACIÓN ÚNICA Y PRINCIPAL
   const { variant = "default", size = "default", className, children } = props;
   console.log(
     `[Observabilidad] Renderizando Button (Variant: ${variant}, Size: ${size})`
@@ -77,7 +78,8 @@ export function Button(props: ButtonProps): React.ReactElement {
 
   if ("href" in props && props.href) {
     // Es un enlace
-    const { className, variant, size, children, ...rest } = props;
+    // <<-- 2. Se eliminan las props ya gestionadas, pasando solo el resto.
+    const { ...rest } = props;
     return (
       <Link className={finalClassName} {...rest}>
         {children}
@@ -85,10 +87,8 @@ export function Button(props: ButtonProps): React.ReactElement {
     );
   } else {
     // Es un botón
-    const { className, variant, size, children, ...rest } =
-      props as ButtonAsButton;
-    // La prop `type` ahora se pasa a través de `...rest`,
-    // preservando su tipo correcto (`"button" | "submit" | ...`).
+    // <<-- 3. Se eliminan las props ya gestionadas, pasando solo el resto.
+    const { ...rest } = props as ButtonAsButton;
     return (
       <button className={finalClassName} {...rest}>
         {children}
