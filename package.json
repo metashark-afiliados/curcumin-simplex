@@ -1,7 +1,14 @@
 {
-  "name": "curcumin-simplex-next",
-  "version": "0.1.0",
+  "name": "curcumin-simplex",
+  "version": "1.3.0",
   "private": true,
+  "type": "module",
+  "description": "Website de alta conversión para Curcumin Complex.",
+  "author": "Raz Podestá",
+  "license": "MIT",
+  "repository": {
+    "type": "git"
+  },
   "scripts": {
     "dev": "next dev",
     "build": "next build",
