@@ -1,43 +1,56 @@
-// RUTA: src/app/(components)/ui/TestimonialCard.tsx
+// src/components/feedback/TestimonialCard.tsx
+/**
+ * @file TestimonialCard.tsx
+ * @description Card individual para exibir um testemunho de cliente.
+ * @version 2.0.0
+ * @author IA Ingeniera de Software Senior v2.0
+ */
+import React from "react";
 import Image from "next/image";
 
 interface TestimonialCardProps {
   quote: string;
   author: string;
   location: string;
-  imageSrc: string; // Ex: "/images/testimonials/peggy.jpg"
+  imageSrc: string;
 }
 
 /**
- * Card individual para exibir um testemunho.
- * @param quote - A citação do cliente.
- * @param author - O nome do cliente.
- * @param location - A localização do cliente (ex: cidade, estado).
- * @param imageSrc - O caminho para a foto do cliente.
+ * @component TestimonialCard
+ * @description Renderiza una tarjeta de testimonio individual con una cita,
+ *              autor y avatar. Ha sido nivelado para usar el sistema de diseño
+ *              semántico del proyecto.
+ * @returns {React.ReactElement} El elemento JSX de la tarjeta.
  */
 export function TestimonialCard({
   quote,
   author,
   location,
   imageSrc,
-}: TestimonialCardProps) {
+}: TestimonialCardProps): React.ReactElement {
+  console.log("[Observabilidad] Renderizando TestimonialCard");
+
   return (
-    <div className="bg-white p-6 rounded-lg shadow-lg">
-      <div className="flex items-start">
+    <article className="h-full rounded-lg border border-white/10 bg-background/50 p-6 shadow-lg transition-shadow hover:shadow-primary/20">
+      <div className="flex items-start gap-4">
         <Image
           src={imageSrc}
           alt={`Foto de ${author}`}
-          width={60}
-          height={60}
-          className="rounded-full mr-4 border-2 border-brand-blue" // PONTO DE MELHORIA: `border-brand-cyan` não existe no seu config. Troquei por `border-brand-blue` que é uma cor definida e vibrante.
+          width={48}
+          height={48}
+          className="h-12 w-12 rounded-full object-cover border-2 border-primary/50"
         />
         <div>
-          <p className="text-gray-800 italic">{`"${quote}"`}</p>
-          <p className="mt-4 font-bold text-brand-blue">{author}</p>
-          <p className="text-sm text-gray-500">{location}</p>
+          <blockquote className="text-foreground">
+            <p>{`"${quote}"`}</p>
+          </blockquote>
+          <footer className="mt-4">
+            <p className="font-bold text-primary">{author}</p>
+            <p className="text-sm text-muted-foreground">{location}</p>
+          </footer>
         </div>
       </div>
-    </div>
+    </article>
   );
 }
-// RUTA: src/app/(components)/ui/TestimonialCard.tsx
+// src/components/feedback/TestimonialCard.tsx

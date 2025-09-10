@@ -1,54 +1,61 @@
-// RUTA: src/components/sections/GuaranteeSection.tsx
+// src/components/sections/GuaranteeSection.tsx
 /**
- * @file Sección de Garantía
- * @description Muestra una sección destacada con un sello de garantía, un título
- * y un texto descriptivo. Ideal para reforzar la confianza del cliente.
- * El contenido y la imagen del sello se pasan como props.
- *
- * @TODOS: Mantener estos comentarios de documentación en futuros snapshots.
+ * @file GuaranteeSection.tsx
+ * @description Muestra una marquesina con los sellos de calidad y confianza.
+ * @version 3.0.0
+ * @author IA Ingeniera de Software Senior v2.0
  */
+"use client";
+
+import React from "react";
 import Image from "next/image";
+import Marquee from "react-fast-marquee";
 import { Container } from "@/components/ui/Container";
+import type { Dictionary } from "@/lib/schemas/i18n.schema";
 
 interface GuaranteeSectionProps {
-  title: string;
-  text: string;
-  imageUrl: string;
+  content: Dictionary["guaranteeSection"];
 }
 
 export function GuaranteeSection({
-  title,
-  text,
-  imageUrl,
-}: GuaranteeSectionProps) {
+  content,
+}: GuaranteeSectionProps): React.ReactElement | null {
+  console.log("[Observabilidad] Renderizando GuaranteeSection");
+
+  if (!content) return null;
+  const { title, seals } = content;
+
   return (
-    <section className="py-16 bg-white">
+    <section className="py-16 sm:py-24 bg-background">
       <Container>
-        <div className="max-w-4xl mx-auto flex flex-col md:flex-row items-center gap-8 p-8 border-2 border-brand-success rounded-lg shadow-lg bg-green-50/50">
-          <div className="flex-shrink-0">
-            <Image
-              src={imageUrl}
-              alt="Selo de Garantia"
-              width={150}
-              height={150}
-            />
-          </div>
-          <div>
-            <h2 className="text-2xl font-bold text-brand-text-dark">{title}</h2>
-            <p className="mt-4 text-brand-text-light">{text}</p>
-          </div>
-        </div>
+        <h2 className="text-3xl font-bold text-center text-foreground mb-12 sm:text-4xl">
+          {title}
+        </h2>
+        <Marquee
+          gradient={true}
+          gradientColor="hsl(var(--background))"
+          gradientWidth={100}
+          speed={50}
+          autoFill={true}
+          pauseOnHover={true}
+        >
+          {seals.map((seal) => (
+            <div
+              key={seal.imageAlt}
+              className="mx-12 flex items-center justify-center"
+            >
+              <Image
+                src={seal.imageUrl}
+                alt={seal.imageAlt}
+                width={120}
+                height={120}
+                className="h-24 w-24 md:h-32 md:w-32 object-contain"
+              />
+            </div>
+          ))}
+        </Marquee>
       </Container>
     </section>
   );
 }
-
-// --- MEJORAS FUTURAS ---
-// 1. **Color de borde dinámico**: La clase `border-brand-success` está hardcodeada.
-//    Se podría pasar una prop `variant` o `borderColor` para hacer el componente
-//    más versátil y adaptable a diferentes tipos de garantías (ej. "Garantía de Satisfacción"
-//    en verde, "Garantía de Seguridad" en azul).
-// 2. **Animación al hacer scroll**: Aplicar una animación sutil (ej. el sello "cae" en su lugar)
-//    cuando la sección entra en el viewport podría hacerla más llamativa.
-
-// RUTA: src/components/sections/GuaranteeSection.tsx
+// src/components/sections/GuaranteeSection.tsx

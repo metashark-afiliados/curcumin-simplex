@@ -1,0 +1,58 @@
+{
+  "es-ES": {
+    "doubleScrollingBanner": {
+      "testimonials": [
+        {
+          "imageSrc": "/img/sections/testimonial-grid/avatar1.jpg",
+          "altText": "Foto de Carlos M.",
+          "name": "Carlos M.",
+          "rating": 5
+        },
+        {
+          "imageSrc": "/img/sections/testimonial-grid/avatar2.jpg",
+          "altText": "Foto de Ana P.",
+          "name": "Ana P.",
+          "rating": 5
+        }
+      ],
+      "logos": [
+        {
+          "imageSrc": "/img/sections/social-proof/logo_marca-a.svg",
+          "altText": "Logo Marca A"
+        },
+        {
+          "imageSrc": "/img/sections/social-proof/logo_marca-b.svg",
+          "altText": "Logo Marca B"
+        }
+      ]
+    }
+  },
+  "it-IT": {
+    "doubleScrollingBanner": {
+      "testimonials": [
+        {
+          "imageSrc": "/img/sections/testimonial-grid/avatar1.jpg",
+          "altText": "Foto di Carlos M.",
+          "name": "Carlos M.",
+          "rating": 5
+        },
+        {
+          "imageSrc": "/img/sections/testimonial-grid/avatar2.jpg",
+          "altText": "Foto di Ana P.",
+          "name": "Ana P.",
+          "rating": 5
+        }
+      ],
+      "logos": [
+        {
+          "imageSrc": "/img/sections/social-proof/logo_marca-a.svg",
+          "altText": "Logo Marchio A"
+        },
+        {
+          "imageSrc": "/img/sections/social-proof/logo_marca-b.svg",
+          "altText": "Logo Marchio B"
+        }
+      ]
+    }
+  }
+}

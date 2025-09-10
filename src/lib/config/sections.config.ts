@@ -4,14 +4,12 @@ import { z } from "zod";
 /**
  * @file sections.config.ts
  * @description SSoT para la configuración de renderizado de secciones de la página.
- *              Define el schema y la lógica para parsear la configuración
- *              desde las variables de entorno.
- * @version 2.0.0
- * @date 2025-09-09
+ * @version 4.0.0
  */
 
-// Define los nombres válidos de las secciones para una validación estricta.
+// Define los nombres válidos de TODAS las secciones para una validación estricta.
 export const sectionNames = [
+  // Secciones de Campaña Original
   "Hero",
   "SocialProofLogos",
   "BenefitsSection",
@@ -21,6 +19,11 @@ export const sectionNames = [
   "DoubleScrollingBanner",
   "FaqAccordion",
   "GuaranteeSection",
+  "OrderSection",
+  // Secciones del Portal / Global Fitwell
+  "NewsGrid",
+  "HeroNews",
+  "ProductShowcase",
 ] as const;
 
 const SectionNameSchema = z.enum(sectionNames);
@@ -38,10 +41,15 @@ export type SectionConfig = z.infer<typeof SectionConfigSchema>;
  * @function parseSectionsConfig
  * @description Itera sobre los nombres de sección definidos, lee las variables
  *              de entorno correspondientes, las parsea y valida.
+ * @deprecated Esta lógica ahora solo es relevante para campañas antiguas. Las nuevas
+ *             campañas definen su layout en su `theme.json`.
  * @returns {SectionConfig[]} Un array ordenado de las configuraciones de sección.
  */
 function parseSectionsConfig(): SectionConfig[] {
-  console.log("[Observabilidad] Parseando configuración de secciones desde .env");
+  // El log de observabilidad se mantiene por si se usa en contextos legacy.
+  console.log(
+    "[Observabilidad] Parseando configuración de secciones desde .env (Lógica Legacy)"
+  );
   const configuredSections: SectionConfig[] = [];
 
   for (const name of sectionNames) {
@@ -63,22 +71,17 @@ function parseSectionsConfig(): SectionConfig[] {
           `[Configuración] Error al parsear la variable de entorno para la sección ${name}:`,
           error
         );
-        // Opcional: lanzar un error para detener el build si la config es crítica
-        // throw new Error(`Configuración inválida para SECTION_${name}`);
       }
     }
   }
-  // Valida el array completo al final
+
   z.array(SectionConfigSchema).parse(configuredSections);
 
   return configuredSections.sort((a, b) => a.order - b.order);
 }
 
 /**
- * Configuración de las secciones exportada y lista para ser usada.
- * Se filtra para incluir solo las secciones habilitadas.
+ * @deprecated Usar `theme.layout.sections` para nuevas campañas.
  */
-export const activeSections = parseSectionsConfig().filter(
-  (s) => s.isEnabled
-);
+export const activeSections = parseSectionsConfig().filter((s) => s.isEnabled);
 // src/lib/config/sections.config.ts

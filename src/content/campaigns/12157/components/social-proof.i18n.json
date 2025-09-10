@@ -1,0 +1,40 @@
+{
+  "es-ES": {
+    "socialProof": {
+      "title": "Calidad y Pureza Certificadas",
+      "logos": [
+        {
+          "src": "/img/sections/social-proof-logos/seal_natural-certified.jpg",
+          "alt": "Sello de Certificación Natural"
+        },
+        {
+          "src": "/img/sections/social-proof-logos/seal_premium-quality.jpg",
+          "alt": "Sello de Calidad Premium"
+        },
+        {
+          "src": "/img/sections/social-proof-logos/seal_lab-tested.jpg",
+          "alt": "Sello de Testeado en Laboratorio"
+        }
+      ]
+    }
+  },
+  "it-IT": {
+    "socialProof": {
+      "title": "Qualità e Purezza Certificate",
+      "logos": [
+        {
+          "src": "/img/sections/social-proof-logos/seal_natural-certified.jpg",
+          "alt": "Sigillo di Certificazione Naturale"
+        },
+        {
+          "src": "/img/sections/social-proof-logos/seal_premium-quality.jpg",
+          "alt": "Sigillo di Qualità Premium"
+        },
+        {
+          "src": "/img/sections/social-proof-logos/seal_lab-tested.jpg",
+          "alt": "Sigillo di Testato in Laboratorio"
+        }
+      ]
+    }
+  }
+}

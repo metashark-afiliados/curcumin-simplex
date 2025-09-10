@@ -1,38 +1,54 @@
 {
   "es-ES": {
     "header": {
-      "ctaButton": "Pedir Ahora",
-      "affiliateUrl": "https://example.com/order?lang=es",
-      "logoUrl": "/img/logos/header_logo_principal.svg",
-      "logoAlt": "Logo de Curcumin Simplex",
-      "homeAriaLabel": "Volver a la página de inicio"
-    }
-  },
-  "pt-BR": {
-    "header": {
-      "ctaButton": "Pedir Agora",
-      "affiliateUrl": "https://example.com/order?lang=pt",
-      "logoUrl": "/img/logos/header_logo_principal.svg",
-      "logoAlt": "Logo da Curcumin Simplex",
-      "homeAriaLabel": "Voltar para a página inicial"
+      "logoUrl": "/img/logos/globalfitwell-logo-v2.svg",
+      "logoAlt": "Logo de Global Fitwell",
+      "campaignPills": [
+        {
+          "label": "Campaña: Curcumina Complex",
+          "href": "/campaigns/curcumina-complex"
+        }
+      ],
+      "ctaButton": "Únete Ahora"
     }
   },
   "en-US": {
     "header": {
-      "ctaButton": "Order Now",
-      "affiliateUrl": "https://example.com/order?lang=en",
-      "logoUrl": "/img/logos/header_logo_principal.svg",
-      "logoAlt": "Curcumin Simplex Logo",
-      "homeAriaLabel": "Go back to the homepage"
+      "logoUrl": "/img/logos/globalfitwell-logo-v2.svg",
+      "logoAlt": "Global Fitwell Logo",
+      "campaignPills": [
+        {
+          "label": "Campaign: Curcumina Complex",
+          "href": "/campaigns/curcumina-complex"
+        }
+      ],
+      "ctaButton": "Join Now"
+    }
+  },
+  "pt-BR": {
+    "header": {
+      "logoUrl": "/img/logos/globalfitwell-logo-v2.svg",
+      "logoAlt": "Logo da Global Fitwell",
+      "campaignPills": [
+        {
+          "label": "Campanha: Curcumina Complex",
+          "href": "/campaigns/curcumina-complex"
+        }
+      ],
+      "ctaButton": "Junte-se Agora"
     }
   },
   "it-IT": {
     "header": {
-      "ctaButton": "Ordina Ora",
-      "affiliateUrl": "https://example.com/order?lang=it",
-      "logoUrl": "/img/logos/header_logo_principal.svg",
-      "logoAlt": "Logo di Curcumin Simplex",
-      "homeAriaLabel": "Torna alla homepage"
+      "logoUrl": "/img/logos/globalfitwell-logo-v2.svg",
+      "logoAlt": "Logo di Global Fitwell",
+      "campaignPills": [
+        {
+          "label": "Campagna: Curcumina Complex",
+          "href": "/campaigns/curcumina-complex"
+        }
+      ],
+      "ctaButton": "Unisciti Ora"
     }
   }
 }

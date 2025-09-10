@@ -1,76 +1,62 @@
 
 /**
  * @file globals.css
- * @description Archivo CSS global y Única Fuente de Verdad (SSoT) para el sistema
- *              de diseño del proyecto, siguiendo el paradigma "CSS-first" de Tailwind CSS v4.
- * @version 2.1.0
- * @see https://tailwindcss.com/docs/theme
+ * @description Archivo CSS global y SSoT para el sistema de diseño de Global Fitwell.
+ * @version 3.0.0
  */
 
-/*
- * 1. Importación de las capas base de Tailwind.
- */
 @import "tailwindcss";
 
-/*
- * 2. Definición del Tema (SSoT del Sistema de Diseño).
- */
 @theme {
-  /* Paleta de Colores Semántica Principal */
+  /* Paleta de Colores Semántica Principal - Global Fitwell */
   --color-primary: hsl(var(--primary));
   --color-primary-foreground: hsl(var(--primary-foreground));
   --color-background: hsl(var(--background));
   --color-foreground: hsl(var(--foreground));
-
-  /* Colores Semánticos para Variantes de Componentes */
-  --color-destructive: hsl(var(--destructive));
-  --color-destructive-foreground: hsl(var(--destructive-foreground));
-  --color-success: hsl(var(--success));
-  --color-success-foreground: hsl(var(--success-foreground));
   --color-accent: hsl(var(--accent));
   --color-accent-foreground: hsl(var(--accent-foreground));
+
+  /* Colores Semánticos para Variantes */
   --color-secondary: hsl(var(--secondary));
-  --color-secondary-foreground: hsl(var(--secondary-foreground));
   --color-muted: hsl(var(--muted));
   --color-muted-foreground: hsl(var(--muted-foreground));
 
   /* Tokens de Familia de Fuentes */
-  --font-sans: var(--font-inter), sans-serif;
-  --font-serif: "Georgia", "Times New Roman", serif;
+  --font-sans: "Satoshi", sans-serif;
+  --font-serif: "Monument Extended", serif;
 
-  /* Tokens para Estilos Complejos (ej. Gradientes) */
+  /* Tokens para Estilos Complejos */
   --image-banner-alert: linear-gradient(
     to right,
-    hsl(var(--banner-alert-start)),
-    hsl(var(--banner-alert-end))
+    hsl(var(--accent) / 0.8),
+    hsl(var(--accent))
   );
 }
 
-/*
- * 3. Estilos Base Personalizados.
- */
 @layer base {
+  /* Valores HSL base para los colores - Paleta Global Fitwell */
   :root {
-    /* Valores HSL base para los colores */
-    --primary: 217 91% 60%;
-    --primary-foreground: 0 0% 98%;
-    --background: 240 10% 3.9%;
-    --foreground: 0 0% 98%;
-
-    --destructive: 0 84% 60%;
-    --destructive-foreground: 0 0% 98%;
-    --success: 142 76% 36%;
-    --success-foreground: 142 80% 96%;
-    --accent: 38 92% 50%;
-    --accent-foreground: 38 95% 10%;
-    --secondary: 240 4% 46%;
-    --secondary-foreground: 0 0% 98%;
-    --muted: 240 4% 26%;
-    --muted-foreground: 240 5% 65%;
+    --primary: 220 60% 26%; /* Azul Cobalto Metalizado */
+    --primary-foreground: 220 15% 95%;
+    --background: 222 25% 8%; /* Negro azulado profundo */
+    --foreground: 220 15% 95%; /* Blanco suave */
+    --accent: 84 100% 59%; /* Verde Lima Neón Fosforescente */
+    --accent-foreground: 84 100% 10%;
+    
+    --secondary: 220 15% 25%;
+    --muted: 220 15% 15%;
+    --muted-foreground: 220 10% 60%;
   }
 
   body {
     background-color: theme(colors.background);
     color: theme(colors.foreground);
+    font-family: theme(fontFamily.sans);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  h1, h2, h3 {
+    font-family: theme(fontFamily.serif);
   }
 }

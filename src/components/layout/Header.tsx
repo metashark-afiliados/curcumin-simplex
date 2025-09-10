@@ -1,72 +1,71 @@
 // src/components/layout/Header.tsx
-
+/**
+ * @file Header.tsx
+ * @description Encabezado principal del portal Global Fitwell.
+ * @version 4.0.0
+ */
 import React from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { Button } from "@/components/ui/Button";
 import { Container } from "@/components/ui/Container";
-
-/**
- * @file Header.tsx
- * @description Componente de presentación para el encabezado principal del sitio.
- * @version 2.2.0
- * @date 2025-09-09
- * @dependencies react, next/image, next/link, @/components/ui/Button, @/components/ui/Container
- *
- * @prop {string} ctaText - Texto para el botón de llamada a la acción.
- * @prop {string} affiliateUrl - URL de afiliado para el CTA.
- * @prop {string} logoUrl - URL de la imagen del logo.
- * @prop {string} logoAlt - Texto alternativo para el logo.
- * @prop {string} homeAriaLabel - Etiqueta ARIA para el enlace del logo.
- */
+import { Rocket } from "lucide-react";
 
 interface HeaderProps {
-  ctaText: string;
-  affiliateUrl: string;
+  campaignPills: { label: string; href: string }[];
+  ctaButton: string;
   logoUrl: string;
   logoAlt: string;
-  homeAriaLabel: string;
 }
 
-/**
- * @component Header
- * @description Renderiza el encabezado principal de la página. Es un componente de presentación
- * puro que recibe todo su contenido a través de props.
- * @param {HeaderProps} props Las propiedades con el contenido textual y las URLs.
- * @returns {React.ReactElement} El elemento JSX que representa el encabezado.
- */
 export function Header({
-  ctaText,
-  affiliateUrl,
+  campaignPills,
+  ctaButton,
   logoUrl,
   logoAlt,
-  homeAriaLabel,
 }: HeaderProps): React.ReactElement {
-  console.log("[Observabilidad] Renderizando Header");
+  console.log("[Observabilidad] Renderizando Header del Portal");
 
   return (
-    <header className="py-4">
+    <header className="py-3 sticky top-0 z-50 backdrop-blur-lg bg-background/70 border-b border-muted/50">
       <Container>
-        <div className="flex h-16 items-center justify-between">
-          <Link href="/" aria-label={homeAriaLabel}>
-            <div className="relative h-12 w-48" role="img" aria-label={logoAlt}>
+        <div className="flex h-16 items-center justify-between gap-8">
+          <Link href="/" aria-label={logoAlt} className="flex-shrink-0">
+            <div className="relative h-10 w-40" role="img" aria-label={logoAlt}>
               <Image
                 src={logoUrl}
                 alt={logoAlt}
                 fill
                 className="object-contain"
-                sizes="192px"
                 priority
+                sizes="160px"
               />
             </div>
           </Link>
 
-          <div className="flex items-center gap-4">
+          <div className="hidden md:flex items-center gap-3">
+            {campaignPills.map((pill) => (
+              <Button
+                key={pill.href}
+                href={pill.href}
+                variant="secondary"
+                size="sm"
+                className="rounded-full"
+              >
+                <Rocket className="h-4 w-4 mr-2" />
+                {pill.label}
+              </Button>
+            ))}
+          </div>
+
+          <div className="flex items-center gap-4 ml-auto">
             <Button
-              href={affiliateUrl}
-              className="text-sm px-6 py-2.5 text-white bg-blue-700 hover:bg-blue-800"
+              href="/join"
+              variant="accent"
+              size="sm"
+              className="shadow-lg shadow-accent/20 hover:shadow-xl hover:shadow-accent/30 transition-shadow"
             >
-              {ctaText}
+              {ctaButton}
             </Button>
           </div>
         </div>
@@ -74,5 +73,4 @@ export function Header({
     </header>
   );
 }
-
 // src/components/layout/Header.tsx

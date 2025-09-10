@@ -1,0 +1,48 @@
+{
+  "es-ES": {
+    "guaranteeSection": {
+      "title": "Nuestros Sellos de Calidad y Confianza",
+      "seals": [
+        {
+          "imageUrl": "/img/guarantee-section/seal_garantia-1.jpg",
+          "imageAlt": "Sello de Garantía 1"
+        },
+        {
+          "imageUrl": "/img/guarantee-section/seal_garantia-2.jpg",
+          "imageAlt": "Sello de Garantía 2"
+        },
+        {
+          "imageUrl": "/img/guarantee-section/seal_garantia-3.jpg",
+          "imageAlt": "Sello de Garantía 3"
+        },
+        {
+          "imageUrl": "/img/guarantee-section/seal_garantia-4.jpg",
+          "imageAlt": "Sello de Garantía 4"
+        }
+      ]
+    }
+  },
+  "it-IT": {
+    "guaranteeSection": {
+      "title": "I Nostri Sigilli di Qualità e Fiducia",
+      "seals": [
+        {
+          "imageUrl": "/img/guarantee-section/seal_garantia-1.jpg",
+          "imageAlt": "Sigillo di Garanzia 1"
+        },
+        {
+          "imageUrl": "/img/guarantee-section/seal_garantia-2.jpg",
+          "imageAlt": "Sigillo di Garanzia 2"
+        },
+        {
+          "imageUrl": "/img/guarantee-section/seal_garantia-3.jpg",
+          "imageAlt": "Sigillo di Garanzia 3"
+        },
+        {
+          "imageUrl": "/img/guarantee-section/seal_garantia-4.jpg",
+          "imageAlt": "Sigillo di Garanzia 4"
+        }
+      ]
+    }
+  }
+}

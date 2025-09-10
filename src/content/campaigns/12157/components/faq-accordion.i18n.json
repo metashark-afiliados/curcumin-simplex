@@ -1,0 +1,40 @@
+{
+  "es-ES": {
+    "faqAccordion": {
+      "title": "Preguntas Frecuentes",
+      "faqs": [
+        {
+          "question": "¿Es seguro este producto?",
+          "answer": "Absolutamente. Nuestro producto está elaborado con ingredientes 100% naturales y fabricado en instalaciones certificadas, siguiendo los más altos estándares de calidad y seguridad."
+        },
+        {
+          "question": "¿En cuánto tiempo veré resultados?",
+          "answer": "Los resultados pueden variar según el individuo, pero muchos de nuestros clientes reportan sentir mejoras notables en las primeras 2 a 4 semanas de uso continuo."
+        },
+        {
+          "question": "¿Cómo debo tomar el suplemento?",
+          "answer": "Recomendamos tomar dos cápsulas al día con un vaso de agua, preferiblemente con una comida para mejorar la absorción. No exceda la dosis recomendada."
+        }
+      ]
+    }
+  },
+  "it-IT": {
+    "faqAccordion": {
+      "title": "Domande Frequenti",
+      "faqs": [
+        {
+          "question": "Questo prodotto è sicuro?",
+          "answer": "Assolutamente. Il nostro prodotto è realizzato con ingredienti naturali al 100% e fabbricato in strutture certificate, seguendo i più alti standard di qualità e sicurezza."
+        },
+        {
+          "question": "In quanto tempo vedrò i risultati?",
+          "answer": "I risultati possono variare da individuo a individuo, ma molti dei nostri clienti riferiscono di sentire miglioramenti notevoli nelle prime 2-4 settimane di uso continuato."
+        },
+        {
+          "question": "Come dovrei assumere l'integratore?",
+          "answer": "Si consiglia di assumere due capsule al giorno con un bicchiere d'acqua, preferibilmente durante un pasto per migliorare l'assorbimento. Non superare la dose raccomandata."
+        }
+      ]
+    }
+  }
+}
