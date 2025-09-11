@@ -2,9 +2,11 @@
 /**
  * @file layout.tsx (Grupo de Desarrollo)
  * @description Layout para el entorno de desarrollo.
- *              CORRECCIÓN: Se reintroduce 'await' para cumplir el contrato de LayoutProps.
- * @version 3.1.0
+ *              Valida la corrección del error de tipo de Next.js
+ *              (TS1360) al esperar explícitamente los parámetros (`await params`).
+ * @version 4.1.0
  * @author RaZ podesta - MetaShark Tech
+ * @see .docs-espejo/app/[locale]/(dev)/dev/layout.tsx.md
  */
 import DevHeader from "@/components/dev/DevHeader";
 import React from "react";
@@ -19,6 +21,7 @@ interface DevLayoutProps {
 }
 
 export default async function DevLayout({ children, params }: DevLayoutProps) {
+  // <<-- CORRECCIÓN VALIDADA: 'params' es esperado correctamente.
   const awaitedParams = await params;
   clientLogger.info(
     `[DevLayout] Aplicando layout para locale: ${awaitedParams.locale}`

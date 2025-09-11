@@ -3,31 +3,28 @@
 
 import React from "react";
 import Image from "next/image";
-import { motion, type Variants } from "framer-motion"; // <<-- 1. IMPORTACIÓN DEL TIPO 'Variants'
+import { motion, type Variants } from "framer-motion";
 import { Container } from "@/components/ui/Container";
+import type { Dictionary } from "@/lib/schemas/i18n.schema";
 
 /**
  * @file ProductShowcase.tsx
- * @description Vitrina de productos con animación de entrada para Global Fitwell.
- * @version 1.1.0
+ * @description Vitrina de productos. Actualizado para aceptar `content`.
+ * @version 2.0.0
+ * @author RaZ podesta - MetaShark Tech
  */
-interface Product {
-  name: string;
-  description: string;
-  imageUrl: string;
-}
+
+// <<-- CORRECCIÓN: La prop ahora es un objeto `content`
 interface ProductShowcaseProps {
-  title: string;
-  products: Product[];
+  content: NonNullable<Dictionary["productShowcase"]>;
 }
 
 export function ProductShowcase({
-  title,
-  products,
+  content,
 }: ProductShowcaseProps): React.ReactElement {
   console.log("[Observabilidad] Renderizando ProductShowcase");
+  const { title, products } = content;
 
-  // <<-- 2. APLICACIÓN DEL CONTRATO DE TIPO EXPLÍCITO Y CORRECTO
   const cardVariants: Variants = {
     hidden: { opacity: 0, y: 20 },
     show: {
@@ -54,7 +51,7 @@ export function ProductShowcase({
             <motion.div
               key={product.name}
               className="group relative overflow-hidden rounded-xl border border-white/5 bg-gradient-to-br from-white/5 to-transparent p-6 text-center"
-              variants={cardVariants} // <<-- 3. AHORA 'cardVariants' ES VÁLIDO
+              variants={cardVariants}
             >
               <div className="relative h-48 w-full mb-4">
                 <Image

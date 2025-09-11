@@ -1,37 +1,42 @@
-// .docs-espejo/app/[locale]/(campaigns)/[campaignId]/page.tsx.md
+# /.docs-espejo/app/[locale]/(campaigns)/[campaignId]/page.tsx.md
 /**
- * @file page.tsx.md
- * @description Documento espejo para la página de campañas dinámicas.
+ * @file .docs-espejo/app/[locale]/(campaigns)/[campaignId]/page.tsx.md
+ * @description Documento espejo para el componente de página de campaña dinámica.
  * @version 1.0.0
  * @author RaZ podesta - MetaShark Tech
  */
 
-# Manifiesto Conceptual: Página de Campañas Dinámicas
+# Manifiesto Conceptual: El Motor de Renderizado de Campañas
 
 ## 1. Rol Estratégico
 
-La `CampaignPage` es el **corazón del motor de conversión**. Es un aparato de enrutamiento dinámico que actúa como un "reproductor" o "ensamblador" universal para cualquier landing page de campaña. Su diseño se basa en el principio de **"Configuración sobre Código"**: la estructura, el contenido y el estilo de la página que renderiza no están definidos en su propio código, sino en los manifiestos de datos (`theme.json`, `content.json`) a los que apunta el `campaign.map.json`.
-
-Su única responsabilidad es interpretar los parámetros de la URL (`campaignId`, `locale`, `variantId`), orquestar la carga de los activos de datos correctos y delegar el renderizado de cada sección al `SectionRenderer`.
+El aparato `CampaignPage` es el **corazón dinámico del dominio de campañas**. Su única responsabilidad es actuar como un **ensamblador de alto nivel**. No contiene lógica de presentación, sino que orquesta el flujo de datos y renderizado para construir cualquier landing page de campaña definida por la arquitectura de datos soberanos (MACS). Es el punto final donde la configuración (`campaign.map.json`, `theme.json`) se traduce en una interfaz de usuario visible.
 
 ## 2. Arquitectura y Flujo de Ejecución
 
-Es un **Server Component** asíncrono.
+Este aparato es un **React Server Component (RSC)** asíncrono. Su flujo de ejecución es el siguiente:
 
-1.  **Recepción de Parámetros:** Recibe `params` (`campaignId`, `locale`) y `searchParams` (`v` para el `variantId`) de Next.js.
-2.  **Resolución de Parámetros:** Se aplica un `await` a `params` para cumplir con el contrato de tipos de Next.js. Se extrae el `variantId` del `searchParams`, con un fallback al valor `'01'`.
-3.  **Orquestación de Datos:** Invoca a `getCampaignData`, el orquestador principal del dominio de campañas, pasándole los tres identificadores. Esta función maneja toda la complejidad de resolver, cargar y validar los datos de la campaña y el tema.
-4.  **Inyección de Tema:** Envuelve todo su contenido en el `CampaignThemeProvider`, pasándole el objeto `theme` obtenido. Este provider se encarga de inyectar las variables CSS específicas de la campaña en el DOM del cliente.
-5.  **Renderizado por Mapeo:** Itera sobre el array `theme.layout.sections` (que define el orden y la composición de la página) y, para cada sección, invoca al `SectionRenderer`, delegándole la responsabilidad de renderizar el componente correcto con los datos apropiados.
+1.  **Recepción de Contexto de Ruta:** Recibe `params` (conteniendo `campaignId` y `locale`) y `searchParams` (conteniendo el `variantId` opcional en la clave `v`) como promesas desde el enrutador de Next.js.
+2.  **Resolución de Parámetros:** Utiliza `await` para resolver las promesas de `params` y `searchParams`, obteniendo acceso seguro a los identificadores de la campaña, el idioma y la variante.
+3.  **Obtención de Datos de Campaña:** Invoca al orquestador `getCampaignData`, pasándole los identificadores resueltos. Esta es su principal dependencia y el punto de entrada a toda la lógica de carga de datos de campaña.
+4.  **Preparación para el Renderizado:** Una vez que `getCampaignData` devuelve el `dictionary` y el `theme`, la página extrae la lista de secciones a renderizar desde `theme.layout.sections`.
+5.  **Inyección de Tema:** Envuelve todo el contenido en el `CampaignThemeProvider`, pasándole el objeto `theme` completo. Esto asegura que las variables CSS específicas de la campaña se inyecten en el servidor, evitando FOUC.
+6.  **Renderizado Iterativo:** Itera sobre la lista de secciones y, para cada una, invoca al `SectionRenderer`. Le delega la responsabilidad de encontrar y renderizar el componente React correcto, pasándole el `dictionary` completo y el `locale`.
 
-## 3. Contrato de API (`Props`)
+## 3. Contrato de API
 
--   `params: { campaignId: string; locale: Locale }`: Contiene los segmentos dinámicos de la ruta.
--   `searchParams: { [key: string]: string | ... }`: Contiene los parámetros de la URL, crucialmente `v` para la selección de variantes.
+### Props de Entrada
+
+*   `params: { campaignId: string, locale: Locale }`: Parámetros de la ruta dinámica.
+*   `searchParams: { v?: string }`: Parámetros de consulta para seleccionar la variante.
+
+### Lógica de Generación Estática (`generateStaticParams`)
+
+*   Exporta una función que genera las rutas base para todas las combinaciones de `campaignId` y `locale` conocidas. Esto permite a Next.js pre-renderizar las versiones por defecto de las campañas durante el build (SSG). Las variantes con `?v=` se renderizarán dinámicamente bajo demanda.
 
 ## 4. Zona de Melhorias Futuras
 
-1.  **Manejo de Errores Elegante:** Implementar un `try-catch` alrededor de `getCampaignData` para mostrar una página de error de campaña personalizada si los manifiestos de datos no se encuentran o son inválidos, en lugar de una página 500 genérica de Next.js.
-2.  **Generación de Metadatos Dinámicos:** Implementar una función `generateMetadata` que cargue el `content.json` de la campaña para generar etiquetas `<title>` y `<meta description>` dinámicas y específicas para cada variante, mejorando el SEO.
-3.  **Streaming de Secciones con Suspense:** Para campañas muy largas, se podría envolver el mapeo de `SectionRenderer` en un `<Suspense>` para hacer streaming de las secciones, mejorando el Time to First Byte (TTFB) y el LCP.
-// .docs-espejo/app/[locale]/(campaigns)/[campaignId]/page.tsx.md
+1.  **Gestión de Errores Sofisticada:** En lugar de dejar que un error en `getCampaignData` rompa la página, se podría implementar un `try...catch` para mostrar una página de error de campaña personalizada o redirigir a una página de fallback.
+2.  **Soporte para Múltiples Campañas:** La función `generateStaticParams` podría leer un índice de nivel superior para descubrir dinámicamente todos los `campaignId` disponibles en `src/content/campaigns`, en lugar de tener `12157` harcodeado.
+3.  **Metadata Dinámica:** Implementar una función `generateMetadata` que cargue el `dictionary` para obtener un título y descripción específicos para cada variante de campaña, mejorando el SEO.
+4.  **Streaming con Suspense:** Para campañas muy largas, las secciones "below the fold" podrían envolverse en `<Suspense>`, permitiendo que la parte superior de la página se envíe al cliente más rápido mientras las secciones inferiores aún se están renderizando en el servidor.

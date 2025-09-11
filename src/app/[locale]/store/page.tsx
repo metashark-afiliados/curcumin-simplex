@@ -1,11 +1,12 @@
 // src/app/[locale]/store/page.tsx
 /**
  * @file page.tsx (Store)
- * @description Página orquestadora de la tienda. Ensambla los componentes atómicos
- *              de filtros y cuadrícula de productos.
- * @version 3.0.0
+ * @description Página orquestadora de la tienda.
+ *              Refactorizada para esperar correctamente las props de RSC y
+ *              mejorar el manejo de contenido no disponible.
+ * @version 4.0.0
  * @author RaZ podesta - MetaShark Tech
- * @see .docs-espejo/app/[locale]/store/page.md
+ * @see .docs-espejo/app/[locale]/store/page.tsx.md
  */
 import React from "react";
 import { getDictionary } from "@/lib/i18n";
@@ -25,7 +26,7 @@ interface StorePageProps {
 export default async function StorePage({
   params,
 }: StorePageProps): Promise<React.ReactElement> {
-  // <<-- CORRECCIÓN: Se reintroduce 'await' para cumplir el contrato de PageProps
+  // <<-- CORRECCIÓN APLICADA: Se espera la resolución de los parámetros.
   const awaitedParams = await params;
 
   clientLogger.info(
@@ -36,14 +37,15 @@ export default async function StorePage({
   const content = t.storePage;
   const lightRaysConfig = t.lightRays;
 
+  // <<-- MEJORA DE ROBUSTEZ: Manejo explícito de contenido no encontrado.
   if (!content) {
     clientLogger.warn(
-      `[StorePage] Contenido no encontrado para locale '${awaitedParams.locale}'. Renderizando fallback.`
+      `[StorePage] Contenido 'storePage' no encontrado para locale '${awaitedParams.locale}'. Renderizando fallback.`
     );
     return (
       <PageHeader
         title="Contenido no disponible"
-        subtitle="La tienda no está disponible en este idioma."
+        subtitle={`La tienda no está disponible en el idioma '${awaitedParams.locale}'.`}
       />
     );
   }

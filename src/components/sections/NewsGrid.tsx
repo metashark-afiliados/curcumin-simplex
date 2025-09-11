@@ -6,30 +6,23 @@ import Image from "next/image";
 import Link from "next/link";
 import { motion, type Variants } from "framer-motion";
 import { Container } from "@/components/ui/Container";
+import type { Dictionary } from "@/lib/schemas/i18n.schema";
 
 /**
  * @file NewsGrid.tsx
- * @description Sección de cuadrícula de noticias para la homepage del portal.
- * @version 1.0.0
+ * @description Cuadrícula de noticias. Actualizado para aceptar `content`.
+ * @version 2.0.0
+ * @author RaZ podesta - MetaShark Tech
  */
 
-interface Article {
-  category: string;
-  title: string;
-  summary: string;
-  imageUrl: string;
-  href: string;
-}
+// <<-- CORRECCIÓN: La prop ahora es un objeto `content`
 interface NewsGridProps {
-  title: string;
-  articles: Article[];
+  content: NonNullable<Dictionary["newsGrid"]>;
 }
 
-export function NewsGrid({
-  title,
-  articles,
-}: NewsGridProps): React.ReactElement {
+export function NewsGrid({ content }: NewsGridProps): React.ReactElement {
   console.log("[Observabilidad] Renderizando NewsGrid");
+  const { title, articles } = content;
 
   const cardVariants: Variants = {
     hidden: { opacity: 0, y: 20 },

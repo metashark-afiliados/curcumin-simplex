@@ -2,16 +2,22 @@
 /**
  * @file eslint.config.mjs
  * @description Manifiesto de Configuración y SSoT para ESLint ("Flat Config").
- *              CORRECCIÓN: Se ha modificado la importación de `globals` para asegurar
- *              una resolución de módulo correcta y estable.
- * @version 3.1.0
- * @author Raz Podestá - MetaShark Tech
+ *              Refactorizado a un estándar de élite para ser holístico,
+ *              integrando ordenamiento de importaciones, reglas de accesibilidad,
+ *              configuración granular para TypeScript y una integración perfecta con Prettier.
+ * @version 4.0.0
+ * @author RaZ podesta - MetaShark Tech
  */
 import { dirname } from "path";
 import { fileURLToPath } from "url";
 import { FlatCompat } from "@eslint/eslintrc";
 import globals from "globals";
+import eslintPluginJsxA11y from "eslint-plugin-jsx-a11y";
+import eslintPluginPrettierRecommended from "eslint-plugin-prettier/recommended";
 import eslintPluginReactHooks from "eslint-plugin-react-hooks";
+import eslintPluginSimpleImportSort from "eslint-plugin-simple-import-sort";
+import typescriptPlugin from "@typescript-eslint/eslint-plugin";
+import typescriptParser from "@typescript-eslint/parser";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -19,6 +25,7 @@ const compat = new FlatCompat({
   baseDirectory: __dirname,
 });
 
+/** @type {import('eslint').Linter.FlatConfig[]} */
 const eslintConfig = [
   {
     ignores: [
@@ -32,15 +39,45 @@ const eslintConfig = [
     ],
   },
 
-  ...compat.extends("next/core-web-vitals", "next/typescript", "prettier"),
+  ...compat.extends("next/core-web-vitals"),
 
   {
     plugins: {
+      "simple-import-sort": eslintPluginSimpleImportSort,
+      "jsx-a11y": eslintPluginJsxA11y,
+    },
+    rules: {
+      ...eslintPluginJsxA11y.configs.recommended.rules,
+      "simple-import-sort/imports": "error",
+      "simple-import-sort/exports": "error",
+    },
+  },
+
+  {
+    files: ["src/**/*.{ts,tsx}"],
+    plugins: {
       "react-hooks": eslintPluginReactHooks,
+      "@typescript-eslint": typescriptPlugin,
+    },
+    languageOptions: {
+      parser: typescriptParser,
+      parserOptions: {
+        project: "./tsconfig.json",
+      },
     },
     rules: {
       ...eslintPluginReactHooks.configs.recommended.rules,
+      ...typescriptPlugin.configs["eslint-recommended"].rules,
+      ...typescriptPlugin.configs.recommended.rules,
+      "@typescript-eslint/no-unused-vars": [
+        "warn",
+        { argsIgnorePattern: "^_" },
+      ],
+      "@typescript-eslint/no-explicit-any": "warn",
     },
+  },
+
+  {
     languageOptions: {
       globals: {
         ...globals.browser,
@@ -48,6 +85,8 @@ const eslintConfig = [
       },
     },
   },
+
+  eslintPluginPrettierRecommended,
 ];
 
 export default eslintConfig;

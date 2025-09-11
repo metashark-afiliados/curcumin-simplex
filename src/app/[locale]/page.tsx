@@ -2,10 +2,9 @@
 /**
  * @file page.tsx (Homepage)
  * @description Página de inicio del portal de contenidos "Global Fitwell".
- *              ACTUALIZACIÓN: Se ha corregido el paso de props al componente
- *              `DevHomepageHeader` para alinearlo con su nuevo contrato de API,
- *              pasando `devRouteMenuDictionary` en lugar del obsoleto `routeTester`.
- * @version 4.1.0
+ *              Corregido para pasar las props a los componentes de sección
+ *              según sus nuevos contratos (prop `content`).
+ * @version 5.1.0
  * @author RaZ podesta - MetaShark Tech
  * @see .docs-espejo/app/[locale]/page.md
  */
@@ -15,6 +14,8 @@ import { NewsGrid } from "@/components/sections/NewsGrid";
 import { HeroNews } from "@/components/sections/HeroNews";
 import { clientLogger } from "@/lib/logging";
 import { DevHomepageHeader } from "@/components/layout/DevHomepageHeader";
+import { SocialProofLogos } from "@/components/sections/SocialProofLogos";
+import { ProductShowcase } from "@/components/sections/ProductShowcase";
 import { type Locale } from "@/lib/i18n.config";
 
 interface HomePageProps {
@@ -38,16 +39,18 @@ export default async function HomePage({
     <>
       {process.env.NODE_ENV === "development" &&
         t.devHomepageHeader &&
-        t.devRouteMenu && ( // <<-- CORRECCIÓN: Se verifica la existencia de la clave correcta
+        t.devRouteMenu && (
           <DevHomepageHeader
             dictionary={t.devHomepageHeader}
-            // <<-- CORRECCIÓN: Se pasa el diccionario correcto a la prop correcta
             devRouteMenuDictionary={t.devRouteMenu}
           />
         )}
 
-      {t.heroNews && <HeroNews {...t.heroNews} />}
-      {t.newsGrid && <NewsGrid {...t.newsGrid} />}
+      {/* <<-- CORRECCIÓN: Se pasa el objeto `content` completo a cada componente. --> */}
+      {t.heroNews && <HeroNews content={t.heroNews} />}
+      {t.socialProof && <SocialProofLogos content={t.socialProof} />}
+      {t.productShowcase && <ProductShowcase content={t.productShowcase} />}
+      {t.newsGrid && <NewsGrid content={t.newsGrid} />}
     </>
   );
 }

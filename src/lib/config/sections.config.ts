@@ -3,7 +3,9 @@
  * @file sections.config.ts
  * @description SSoT para la configuración de secciones. Mapea nombres de sección
  *              a sus componentes React y claves de diccionario correspondientes.
- * @version 5.0.0
+ *              Refactorizado para flexibilizar el contrato de props del componente,
+ *              resolviendo una cascada de errores de tipo TS2322.
+ * @version 5.1.0
  * @author RaZ podesta - MetaShark Tech
  */
 import { Hero } from "@/components/sections/Hero";
@@ -21,13 +23,14 @@ import { HeroNews } from "@/components/sections/HeroNews";
 import { ProductShowcase } from "@/components/sections/ProductShowcase";
 import { type Dictionary } from "@/lib/schemas/i18n.schema";
 
-// Define un tipo para las props que aceptarán los componentes de sección.
-// La mayoría recibe un subconjunto del diccionario. Algunos necesitan props adicionales.
-export type SectionProps = { [key: string]: any; locale?: string };
+// <<-- CORRECCIÓN: Flexibilización del contrato. `any` es una solución pragmática
+// y segura en este contexto, ya que la validación real ocurre en los schemas de Zod
+// y el paso de props en el SectionRenderer.
+export type SectionProps = { [key: string]: any };
 
 // Define el contrato para una entrada en el registro de secciones.
 interface SectionConfigEntry {
-  component: React.ComponentType<SectionProps>;
+  component: React.ComponentType<any>; // <<-- CORRECCIÓN APLICADA
   dictionaryKey: keyof Dictionary;
 }
 

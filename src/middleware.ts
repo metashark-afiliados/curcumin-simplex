@@ -2,61 +2,55 @@
 /**
  * @file middleware.ts
  * @description Orquestador de pipeline para el middleware.
- *              Refactorizado para eliminar los manejadores de placeholder
- *              (auth, geoip) del pipeline activo, simplificando el flujo de
- *              ejecución solo a la lógica actualmente implementada (i18n).
- * @version 5.0.0
+ *              Refactorizado para hacer que el objeto `config` sea estático,
+ *              resolviendo un error crítico de build de Next.js, mientras se
+ *              mantiene la lógica de activación condicional dentro de la función.
+ * @version 9.1.0
  * @author RaZ podesta - MetaShark Tech
  */
 import { NextResponse, type NextRequest } from "next/server";
-import { isMiddlewareEnabled } from "@/config/deployment.config";
 import { i18nHandler } from "@/middleware/handlers/i18n/index";
-// import { authHandler } from "@/middleware/handlers/auth/index"; // Eliminado
-// import { geoIpHandler } from "@/middleware/handlers/geoip/index"; // Eliminado
-import { clientLogger } from "@/lib/logging";
 
-// El pipeline ahora solo contiene los manejadores que están activos.
+const deployTarget = process.env.NEXT_PUBLIC_DEPLOY_TARGET || "vercel";
+const isMiddlewareEnabled = deployTarget === "vercel";
+
 const handlers = [i18nHandler];
 
 export async function middleware(request: NextRequest) {
+  // <<-- CORRECCIÓN: La lógica condicional se mueve aquí.
+  // Si el middleware está deshabilitado por el target de despliegue,
+  // se sale inmediatamente.
   if (!isMiddlewareEnabled) {
     return NextResponse.next();
   }
 
-  clientLogger.info(
-    `[Middleware] Pipeline iniciado para: ${request.nextUrl.pathname}`
-  );
+  const originalPathname = request.nextUrl.pathname;
 
   try {
     for (const handler of handlers) {
       const result = await handler(request);
       if (result) {
-        clientLogger.info(
-          `[Middleware] Pipeline terminado por handler. Status: ${result.status}`
+        console.log(
+          `[Middleware] Handler actuó en "${originalPathname}". Redirigiendo a "${result.headers.get("location")}". Status: ${result.status}`
         );
         return result;
       }
     }
 
-    clientLogger.info(
-      `[Middleware] Pipeline completado. Pasando al renderizador de Next.js.`
-    );
     return NextResponse.next();
   } catch (error) {
-    clientLogger.error(
-      `[Middleware] Error no controlado en el pipeline de handlers.`,
-      {
-        pathname: request.nextUrl.pathname,
-        error: error instanceof Error ? error.message : String(error),
-      }
+    const errorDetails = error instanceof Error ? error.message : String(error);
+    console.error(
+      `[Middleware] Error no controlado en el pipeline para ${originalPathname}.`,
+      { error: errorDetails }
     );
     return new NextResponse("Internal Server Error", { status: 500 });
   }
 }
 
 export const config = {
-  matcher: isMiddlewareEnabled
-    ? ["/((?!api|_next/static|_next/image|favicon.ico|.*\\..*).*)"]
-    : [],
+  // <<-- CORRECCIÓN: El matcher ahora es estático y declarativo.
+  // El compilador de Next.js puede procesarlo sin errores.
+  matcher: ["/((?!api|_next/static|_next/image|img|.*\\..*).*)"],
 };
 // src/middleware.ts

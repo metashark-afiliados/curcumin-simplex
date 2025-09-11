@@ -2,9 +2,10 @@
 /**
  * @file page.tsx (Campaña Dinámica)
  * @description Ensamblador "Lego" para todas las landing pages de campañas.
- *              CORRECCIÓN: Se reintroduce el uso de `await params` para cumplir
- *              con el contrato de PageProps de Next.js y resolver el error TS2344.
- * @version 4.0.0
+ *              Refactorizado para esperar (await) las props `params` y `searchParams`
+ *              antes de su uso, resolviendo un error de ejecución crítico en RSC.
+ *              Se mejora la lógica de extracción del `variantId` para mayor robustez.
+ * @version 6.0.0
  * @author RaZ podesta - MetaShark Tech
  * @see .docs-espejo/app/[locale]/(campaigns)/[campaignId]/page.tsx.md
  */
@@ -39,17 +40,17 @@ export async function generateStaticParams() {
   return params;
 }
 
-export default async function CampaignPage({
-  params,
-  searchParams,
-}: CampaignPageProps) {
-  // <<-- CORRECCIÓN: Se reintroduce 'await' para cumplir el contrato de PageProps
+export default async function CampaignPage(props: CampaignPageProps) {
+  // <<-- CORRECCIÓN CRÍTICA: Se esperan las props antes de usarlas.
+  const { params, searchParams } = props;
   const awaitedParams = await params;
+  const awaitedSearchParams = await searchParams;
 
+  // <<-- MEJORA DE ROBUSTEZ: Se valida que `v` sea un string no vacío.
   const variantId =
-    typeof searchParams.v === "string" && searchParams.v
-      ? searchParams.v
-      : "01";
+    typeof awaitedSearchParams.v === "string" && awaitedSearchParams.v
+      ? awaitedSearchParams.v
+      : "01"; // Fallback a la variante '01' si no se especifica o está vacío.
 
   clientLogger.info(
     `[CampaignPage] Renderizando Campaña. ID: ${awaitedParams.campaignId}, Locale: ${awaitedParams.locale}, Variante: ${variantId}`

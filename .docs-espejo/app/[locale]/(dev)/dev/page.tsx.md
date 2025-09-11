@@ -1,35 +1,39 @@
-// .docs-espejo/app/[locale]/(dev)/dev/page.tsx.md
+# /.docs-espejo/app/[locale]/(dev)/dev/page.tsx.md
 /**
- * @file page.tsx.md
- * @description Documento espejo para la página del dashboard de desarrollo.
+ * @file .docs-espejo/app/[locale]/(dev)/dev/page.tsx.md
+ * @description Documento espejo para la página principal del Developer Command Center.
  * @version 1.0.0
  * @author RaZ podesta - MetaShark Tech
  */
 
-# Manifiesto Conceptual: Dashboard del Developer Command Center (DCC)
+# Manifiesto Conceptual: El Portal de Herramientas de Desarrollo
 
 ## 1. Rol Estratégico
 
-Esta página (`/dev`) es el **portal de entrada y el panel de control principal** para todas las herramientas de Experiencia de Desarrollador (DX). Su propósito es presentar al equipo de desarrollo y marketing un menú visual y claro de las capacidades de simulación y testeo del proyecto.
+La página `DevDashboardPage` es el **punto de entrada y el directorio principal** del Developer Command Center (DCC). Su función es presentar al desarrollador un resumen claro y accesible de todas las herramientas de desarrollo disponibles en el proyecto, actuando como un portal de navegación interno.
 
-Actúa como un "mapa" que guía al usuario hacia la herramienta correcta, ya sea para visualizar un componente atómico en el `ComponentCanvas`, previsualizar una landing page completa en el `CampaignSimulator`, o auditar el sistema de diseño en la página de `Branding`.
+Su diseño se basa en tarjetas interactivas, donde cada tarjeta representa una herramienta (ej. "Component Canvas", "Campaign Simulator") y sirve como un enlace directo a ella.
 
 ## 2. Arquitectura y Flujo de Ejecución
 
-Es un **Server Component** asíncrono.
+Este aparato es un **React Server Component (RSC)** asíncrono.
 
-1.  **Recepción de Locale:** Obtiene el `locale` de los parámetros de la ruta.
-2.  **Carga de Contenido:** Invoca `getDictionary(locale)` para cargar todo el texto necesario para la página (título, subtítulo y el nombre/descripción de cada tarjeta de herramienta).
-3.  **Definición de Estructura:** Dentro del componente, se define un array de configuración (`devToolsConfig`). Este array define la **estructura** de las tarjetas: su `key` para enlazar con los datos de i18n, la `href` generada a partir de la SSoT de rutas (`navigation.ts`), y el `icon` a renderizar. Esta separación entre la estructura (código) y el contenido (i18n) es deliberada.
-4.  **Renderizado por Mapeo:** El componente itera sobre `devToolsConfig`. Para cada herramienta, busca el contenido textual correspondiente en el diccionario cargado y renderiza un componente `Link` estilizado como una tarjeta, combinando la estructura del código con el contenido de i18n.
+1.  **Recepción de Contexto:** Recibe el `locale` de la URL como una promesa en sus `params`.
+2.  **Resolución de Parámetros:** Resuelve la promesa `params` con `await` para obtener el `locale` actual.
+3.  **Obtención de Contenido:** Invoca a `getDictionary(locale)` para cargar el contenido textual de la página (títulos, descripciones de las tarjetas). Incluye manejo de errores robusto para el caso de que el diccionario falle en cargar.
+4.  **Generación de Rutas:** Construye una estructura de datos (`devToolsConfig`) que mapea la información estática de cada herramienta (clave, icono) con la ruta dinámica generada por el manifiesto de navegación `routes`.
+5.  **Renderizado de la UI:**
+    *   Renderiza un encabezado con el título y subtítulo obtenidos del diccionario.
+    *   Itera sobre `devToolsConfig` y, para cada herramienta, renderiza un componente `Link` estilizado como una tarjeta. El contenido de la tarjeta (nombre, descripción) se extrae del diccionario, asegurando la internacionalización completa.
 
-## 3. Contrato de API (`Props`)
+## 3. Contrato de API
 
--   `params: { locale: Locale }`: El objeto que contiene el `locale` de la URL, esencial para la carga del diccionario y la generación de URLs internacionalizadas.
+### Props de Entrada
+
+*   `params: { locale: Locale }`: El objeto de parámetros de la ruta.
 
 ## 4. Zona de Melhorias Futuras
 
-1.  **Configuración de Herramientas Externa:** Mover el `devToolsConfig` a un archivo de configuración separado (ej. `src/config/dev-tools.config.ts`) para desacoplarlo completamente del componente de renderizado.
-2.  **Indicadores de Estado de Herramienta:** Añadir un `status: 'stable' | 'beta' | 'deprecated'` a la configuración de cada herramienta y renderizar un `badge` visual en la tarjeta para comunicar su estado actual al equipo.
-3.  **Accesos Directos Dinámicos:** Implementar una sección de "Acceso Rápido" que muestre enlaces a los componentes o campañas modificados más recientemente, analizando las confirmaciones de Git.
-// .docs-espejo/app/[locale]/(dev)/dev/page.tsx.md
+1.  **Descubrimiento Dinámico de Herramientas:** En lugar de tener `devToolsConfig` harcodeado, se podría crear un "Registro de Herramientas" similar al `ComponentRegistry`, y esta página leería ese registro para renderizar las tarjetas dinámicamente.
+2.  **Indicadores de Estado:** Cada tarjeta podría mostrar un indicador de estado (ej. un punto verde o rojo) basado en el resultado de una prueba de salud rápida para esa herramienta, proporcionando feedback visual inmediato.
+3.  **Accesos Directos:** Podría incluir una sección de "Acciones Rápidas" o "Enlaces Frecuentes" basada en el historial de navegación del desarrollador (usando `localStorage`).

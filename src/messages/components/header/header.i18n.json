@@ -1,42 +1,62 @@
 {
   "es-ES": {
     "header": {
-      "logoUrl": "/img/logos/globalfitwell-logo-v2.svg",
+      "logoUrl": "/img/layout/header/globalfitwell-logo-v2.svg",
       "logoAlt": "Logo de Global Fitwell",
-      "campaignPills": [
-        { "label": "Campaña: Curcumina", "href": "/campaigns/12157" }
+      "navLinks": [
+        { "label": "Inicio", "href": "/" },
+        { "label": "Tienda", "href": "/store" },
+        { "label": "Sobre Nosotros", "href": "/about" }
       ],
-      "ctaButton": "Únete Ahora"
+      "ctaButton": {
+        "label": "Ver Campaña",
+        "href": "/campaigns/12157"
+      }
     }
   },
   "it-IT": {
     "header": {
-      "logoUrl": "/img/logos/globalfitwell-logo-v2.svg",
+      "logoUrl": "/img/layout/header/globalfitwell-logo-v2.svg",
       "logoAlt": "Logo di Global Fitwell",
-      "campaignPills": [
-        { "label": "Campagna: Curcumina", "href": "/campaigns/12157" }
+      "navLinks": [
+        { "label": "Home", "href": "/" },
+        { "label": "Negozio", "href": "/store" },
+        { "label": "Chi Siamo", "href": "/about" }
       ],
-      "ctaButton": "Unisciti Ora"
+      "ctaButton": {
+        "label": "Vedi Campagna",
+        "href": "/campaigns/12157"
+      }
     }
   },
   "en-US": {
     "header": {
-      "logoUrl": "/img/logos/globalfitwell-logo-v2.svg",
+      "logoUrl": "/img/layout/header/globalfitwell-logo-v2.svg",
       "logoAlt": "Global Fitwell Logo",
-      "campaignPills": [
-        { "label": "Campaign: Curcumin", "href": "/campaigns/12157" }
+      "navLinks": [
+        { "label": "Home", "href": "/" },
+        { "label": "Store", "href": "/store" },
+        { "label": "About Us", "href": "/about" }
       ],
-      "ctaButton": "Join Now"
+      "ctaButton": {
+        "label": "View Campaign",
+        "href": "/campaigns/12157"
+      }
     }
   },
   "pt-BR": {
     "header": {
-      "logoUrl": "/img/logos/globalfitwell-logo-v2.svg",
+      "logoUrl": "/img/layout/header/globalfitwell-logo-v2.svg",
       "logoAlt": "Logo da Global Fitwell",
-      "campaignPills": [
-        { "label": "Campanha: Curcumina", "href": "/campaigns/12157" }
+      "navLinks": [
+        { "label": "Início", "href": "/" },
+        { "label": "Loja", "href": "/store" },
+        { "label": "Sobre Nós", "href": "/about" }
       ],
-      "ctaButton": "Junte-se Agora"
+      "ctaButton": {
+        "label": "Ver Campanha",
+        "href": "/campaigns/12157"
+      }
     }
   }
 }

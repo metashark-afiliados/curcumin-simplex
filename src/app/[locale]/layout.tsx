@@ -2,11 +2,10 @@
 /**
  * @file layout.tsx (Principal con Locale)
  * @description Layout principal para todas las rutas internacionalizadas.
- *              Refactorizado para actuar como el inyector de la SSoT de diseño
- *              global, consumiendo los tokens desde `branding.config.ts` y
- *              haciéndolos disponibles como variables CSS para toda la aplicación.
- * @version 6.0.0
+ *              Corregido para pasar las props al Header según su nuevo contrato.
+ * @version 7.1.0
  * @author RaZ podesta - MetaShark Tech
+ * @see .docs-espejo/app/[locale]/layout.tsx.md
  */
 import type { Metadata } from "next";
 import { Inter, Poppins } from "next/font/google";
@@ -57,11 +56,7 @@ export default async function LocaleLayout({
     `[LocaleLayout] Renderizando para locale: ${awaitedParams.locale} e inyectando tema global.`
   );
 
-  // <<-- MEJORA: Lógica de inyección de tema -->>
-  // 1. Genera la cadena de texto CSS a partir de la SSoT de diseño.
-  const themeVariablesStyle = generateThemeVariablesStyle();
-
-  // 2. Carga el diccionario de contenido.
+  const themeStyleString = generateThemeVariablesStyle();
   const t = await getDictionary(awaitedParams.locale);
 
   return (
@@ -70,22 +65,12 @@ export default async function LocaleLayout({
       className={`${inter.variable} ${poppins.variable}`}
     >
       <body>
-        {/*
-          3. Inyecta las variables de diseño en una etiqueta <style>.
-             Esto hace que los tokens de diseño estén disponibles globalmente
-             para que `globals.css` y todos los componentes los consuman.
-             Se utiliza `dangerouslySetInnerHTML` como es la práctica estándar
-             de React para inyectar HTML/CSS dinámico de forma segura.
-        */}
-        <style dangerouslySetInnerHTML={{ __html: themeVariablesStyle }} />
-
+        {themeStyleString && (
+          <style dangerouslySetInnerHTML={{ __html: themeStyleString }} />
+        )}
         <ScrollingBanner message={t.scrollingBanner.message} />
-        <Header
-          campaignPills={t.header.campaignPills}
-          ctaButton={t.header.ctaButton}
-          logoUrl={t.header.logoUrl}
-          logoAlt={t.header.logoAlt}
-        />
+        {/* <<-- CORRECCIÓN: Se pasa el objeto `content` completo. --> */}
+        <Header content={t.header} />
         <main>{children}</main>
         <Footer
           copyright={t.footer.copyright}

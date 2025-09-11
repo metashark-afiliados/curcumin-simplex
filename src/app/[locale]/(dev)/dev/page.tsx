@@ -2,13 +2,13 @@
 /**
  * @file page.tsx (Developer Command Center Dashboard)
  * @description Página de inicio para el entorno de desarrollo.
- *              CORRECCIÓN: Se reintroduce 'await' para cumplir el contrato de PageProps.
- * @version 3.1.0
+ *              Corregido el tipado en el `catch` para un logging seguro.
+ * @version 4.1.0
  * @author RaZ podesta - MetaShark Tech
+ * @see .docs-espejo/app/[locale]/(dev)/dev/page.tsx.md
  */
 import React from "react";
 import Link from "next/link";
-// ... (resto de las importaciones)
 import { Container } from "@/components/ui/Container";
 import { getDictionary } from "@/lib/i18n";
 import { clientLogger } from "@/lib/logging";
@@ -29,8 +29,31 @@ export default async function DevDashboardPage({
   const awaitedParams = await params;
   clientLogger.info("[DevDashboardPage] Renderizando DCC");
 
-  const t = await getDictionary(awaitedParams.locale);
-  // ... (resto de la lógica del componente)
+  let t: Dictionary;
+  try {
+    t = await getDictionary(awaitedParams.locale);
+  } catch (error) {
+    // <<-- CORRECCIÓN: Se verifica el tipo de 'error' antes de usarlo.
+    const errorContext =
+      error instanceof Error
+        ? { message: error.message, stack: error.stack }
+        : { error: String(error) };
+    clientLogger.error(
+      "[DevDashboardPage] Fallo al cargar el diccionario.",
+      errorContext
+    );
+    return (
+      <Container className="py-12">
+        <h1 className="text-4xl font-bold text-center text-destructive">
+          Error Crítico: No se pudo cargar el diccionario de contenido.
+        </h1>
+        <p className="text-center text-muted-foreground">
+          Revise los logs del servidor para más detalles.
+        </p>
+      </Container>
+    );
+  }
+
   const content = t.devDashboardPage;
 
   const devToolsConfig = [
@@ -55,8 +78,12 @@ export default async function DevDashboardPage({
     return (
       <Container className="py-12">
         <h1 className="text-4xl font-bold text-center text-destructive">
-          Error: Contenido del Dashboard no encontrado.
+          Error: Contenido del Dashboard no encontrado en el diccionario.
         </h1>
+        <p className="text-center text-muted-foreground">
+          Asegúrese de que la clave 'devDashboardPage' existe en los archivos de
+          i18n.
+        </p>
       </Container>
     );
   }

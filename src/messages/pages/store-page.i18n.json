@@ -10,6 +10,11 @@
           { "label": "Nutrición", "count": 8 },
           { "label": "Rendimiento", "count": 5 },
           { "label": "Recuperación", "count": 3 }
+        ],
+        "priceTitle": "Rango de Precios",
+        "prices": [
+          { "label": "Hasta €50", "count": 12 },
+          { "label": "€50 - €100", "count": 4 }
         ]
       },
       "products": [
@@ -47,6 +52,11 @@
           { "label": "Nutrition", "count": 8 },
           { "label": "Performance", "count": 5 },
           { "label": "Recovery", "count": 3 }
+        ],
+        "priceTitle": "Price Range",
+        "prices": [
+          { "label": "Up to $50", "count": 12 },
+          { "label": "$50 - $100", "count": 4 }
         ]
       },
       "products": [
@@ -84,6 +94,11 @@
           { "label": "Nutrição", "count": 8 },
           { "label": "Desempenho", "count": 5 },
           { "label": "Recuperação", "count": 3 }
+        ],
+        "priceTitle": "Faixa de Preço",
+        "prices": [
+          { "label": "Até R$250", "count": 12 },
+          { "label": "R$250 - R$500", "count": 4 }
         ]
       },
       "products": [
@@ -121,6 +136,11 @@
           { "label": "Nutrizione", "count": 8 },
           { "label": "Prestazione", "count": 5 },
           { "label": "Recupero", "count": 3 }
+        ],
+        "priceTitle": "Fascia di Prezzo",
+        "prices": [
+          { "label": "Fino a €50", "count": 12 },
+          { "label": "€50 - €100", "count": 4 }
         ]
       },
       "products": [

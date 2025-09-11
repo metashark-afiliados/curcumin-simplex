@@ -1,25 +1,39 @@
 // src/lib/schemas/components/header.schema.ts
-import { z } from "zod";
-
 /**
  * @file header.schema.ts
  * @description Esquema de Zod que define el contrato de datos para el contenido
- *              de internacionalización del componente Header de Global Fitwell.
- * @version 4.0.0
+ *              del nuevo Header profesional. Corregido con tipado explícito para
+ *              soportar correctamente la recursividad.
+ * @version 5.1.0
+ * @author RaZ podesta - MetaShark Tech
  */
+import { z } from "zod";
+
+// --- Tipado Explícito para Recursividad ---
+type NavLink = {
+  label: string;
+  href: string;
+  subLinks?: NavLink[];
+};
+
+// <<-- CORRECCIÓN: Se añade el tipo explícito z.ZodType<NavLink>
+const NavLinkSchema: z.ZodType<NavLink> = z.lazy(() =>
+  z.object({
+    label: z.string(),
+    href: z.string(),
+    subLinks: z.array(NavLinkSchema).optional(),
+  })
+);
 
 export const HeaderLocaleSchema = z.object({
   header: z.object({
-    logoUrl: z.string(),
+    logoUrl: z.string().startsWith("/"),
     logoAlt: z.string(),
-    campaignPills: z.array(
-      // <<-- CORREGIDO: de navLinks a campaignPills
-      z.object({
-        label: z.string(),
-        href: z.string(),
-      })
-    ),
-    ctaButton: z.string(),
+    navLinks: z.array(NavLinkSchema),
+    ctaButton: z.object({
+      label: z.string(),
+      href: z.string(),
+    }),
   }),
 });
 

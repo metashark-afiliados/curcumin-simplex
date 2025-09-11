@@ -2,33 +2,27 @@
 "use client";
 
 import React from "react";
-import { motion, type Variants } from "framer-motion"; // <<-- 1. IMPORTACIÓN DEL TIPO 'Variants'
+import { motion, type Variants } from "framer-motion";
 import { Container } from "@/components/ui/Container";
 import { ArrowRight } from "lucide-react";
+import type { Dictionary } from "@/lib/schemas/i18n.schema";
 
 /**
  * @file HeroNews.tsx
- * @description Sección Hero moderna con animación y noticia destacada para Global Fitwell.
- * @version 1.2.0
+ * @description Sección Hero. Actualizado para aceptar una única prop `content`.
+ * @version 2.0.0
+ * @author RaZ podesta - MetaShark Tech
  */
 
+// <<-- CORRECCIÓN: La prop ahora es un objeto `content`
 interface HeroNewsProps {
-  mainTitle: string;
-  featuredArticle: {
-    tag: string;
-    title: string;
-    author: string;
-    readTime: number;
-  };
+  content: NonNullable<Dictionary["heroNews"]>;
 }
 
-export function HeroNews({
-  mainTitle,
-  featuredArticle,
-}: HeroNewsProps): React.ReactElement {
+export function HeroNews({ content }: HeroNewsProps): React.ReactElement {
   console.log("[Observabilidad] Renderizando HeroNews");
+  const { mainTitle, featuredArticle } = content;
 
-  // <<-- 2. APLICACIÓN DEL CONTRATO DE TIPO EXPLÍCITO
   const FADE_UP_ANIMATION_VARIANTS: Variants = {
     hidden: { opacity: 0, y: 15 },
     show: {

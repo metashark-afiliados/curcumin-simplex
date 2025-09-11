@@ -3,9 +3,9 @@
  * @file DevRouteMenu.tsx
  * @description Menú de Navegación de Rutas de Desarrollo.
  *              Refactorizado para consumir la SSoT de utilidades de i18n,
- *              eliminando la lógica duplicada de detección de locale.
+ *              y para renderizar iconos dinámicamente usando el componente DynamicIcon.
  * @devonly
- * @version 4.0.0
+ * @version 5.0.0
  * @author RaZ podesta - MetaShark Tech
  */
 "use client";
@@ -13,15 +13,16 @@
 import React, { Fragment, useState, useRef, useEffect } from "react";
 import { useRouter, usePathname } from "next/navigation";
 import { Globe, ChevronDown, ExternalLink } from "lucide-react";
-import { clientLogger } from "@/lib/logging";
-import { getCurrentLocaleFromPathname } from "@/lib/i18n.utils"; // <<-- MEJORA: Importa desde SSoT
-import type { Dictionary } from "@/lib/schemas/i18n.schema";
 import { twMerge } from "tailwind-merge";
+import { clientLogger } from "@/lib/logging";
+import { getCurrentLocaleFromPathname } from "@/lib/i18n.utils";
+import type { Dictionary } from "@/lib/schemas/i18n.schema";
 import {
   generateDevRoutes,
   type RouteGroup,
   type RouteItem,
 } from "./utils/route-menu.generator";
+import { DynamicIcon } from "@/components/ui/DynamicIcon"; // <<-- IMPORTACIÓN DEL NUEVO APARATO
 
 interface DevRouteMenuProps {
   dictionary: NonNullable<Dictionary["devRouteMenu"]>;
@@ -38,7 +39,6 @@ export function DevRouteMenu({
   const menuRef = useRef<HTMLDivElement>(null);
   const [isOpen, setIsOpen] = useState(false);
 
-  // <<-- MEJORA: Lógica de detección de locale ahora es una llamada a la SSoT.
   const currentLocale = getCurrentLocaleFromPathname(pathname);
   const devRoutes = generateDevRoutes(dictionary, currentLocale);
 
@@ -76,7 +76,8 @@ export function DevRouteMenu({
           role="menuitem"
         >
           <span className="flex items-center gap-2">
-            {routeItem.icon}
+            {/* <<-- REFACTORIZACIÓN: Uso de DynamicIcon --> */}
+            <DynamicIcon name={routeItem.iconName} className="h-4 w-4 text-current" />
             {routeItem.name}
           </span>
           <ExternalLink className="h-4 w-4 text-muted-foreground opacity-50" />

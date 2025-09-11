@@ -1,34 +1,51 @@
-# /.docs-espejo/tailwind.config.md
+// .docs-espejo/tailwind.config.ts.md
 /**
- * @file tailwind.config.md
- * @description Documento espejo para la configuración de Tailwind CSS.
+ * @file .docs-espejo/tailwind.config.ts.md
+ * @description Documento Espejo y SSoT conceptual para la configuración de Tailwind CSS.
  * @version 1.0.0
  * @author RaZ podesta - MetaShark Tech
  */
 
-# Manifiesto Conceptual: Configuración de Tailwind CSS
+# Manifiesto Conceptual: tailwind.config.ts
 
 ## 1. Rol Estratégico
 
-Este aparato, `tailwind.config.ts`, sirve como el punto de entrada de configuración para el motor de Tailwind CSS. En la arquitectura moderna de **Tailwind CSS v4**, su rol estratégico se ha simplificado radicalmente para enfocarse en una única responsabilidad crítica: **la detección de contenido**.
+En la arquitectura de Tailwind CSS v4, el rol del archivo `tailwind.config.ts` es significativamente más enfocado que en versiones anteriores. Actúa como la **SSoT para la Detección de Contenido y la Extensibilidad**.
 
-Su propósito es definir de manera explícita qué archivos y directorios del proyecto deben ser escaneados por el motor de Tailwind para detectar el uso de clases de utilidad.
+Sus responsabilidades estratégicas son:
+*   **Definir el Alcance de Escaneo (`content`):** Su función más crítica es instruir al motor de Tailwind sobre qué archivos debe escanear para detectar el uso de clases de utilidad. Una configuración precisa aquí es vital para la correcta generación del CSS y para la optimización del tamaño del bundle final (Tree Shaking).
+*   **Registrar Plugins:** Sirve como el punto de entrada para registrar cualquier plugin de terceros o personalizado que extienda la funcionalidad base de Tailwind (ej. `@tailwindcss/typography`, `tailwindcss-animate`).
 
-## 2. Arquitectura y Lógica de Configuración
+A diferencia de v3, la configuración del tema (`theme`) es ahora responsabilidad de `src/app/globals.css` a través de la directiva `@theme`, adhiriéndose a una filosofía "CSS-first".
 
-1.  **Propiedad `content`:** Esta es la única propiedad fundamental en uso. Es un array de patrones de ruta (globs) que le dice a Tailwind: "Busca en todos los archivos que coincidan con estos patrones, lee su contenido y genera el CSS solo para las clases que encuentres". Este mecanismo es la base del *tree-shaking* de Tailwind, que garantiza que el CSS final de producción sea lo más pequeño posible.
-2.  **Delegación del Tema:** A diferencia de Tailwind v3, toda la configuración del sistema de diseño (colores, fuentes, espaciado, breakpoints, etc.) **no reside aquí**. Ha sido delegada al archivo `src/app/globals.css`, donde se define utilizando la directiva `@theme`. Esto alinea la configuración del diseño con el propio CSS, una filosofía "CSS-first".
-3.  **Propiedad `plugins`:** Un array vacío que está preparado para la adición de cualquier plugin de terceros que pueda ser necesario en el futuro.
+## 2. Arquitectura y Flujo de Ejecución
 
-La lógica de este archivo es declarativa: provee una lista de rutas al motor de Tailwind, que se encarga del resto del procesamiento durante el `build`.
+Este es un archivo de configuración estático consumido por el plugin `@tailwindcss/postcss` durante el proceso de build.
+
+1.  **Invocación:** El plugin de PostCSS es activado por el proceso de build de Next.js.
+2.  **Lectura de Configuración:** El plugin lee `tailwind.config.ts` para obtener los patrones `glob` definidos en la propiedad `content`.
+3.  **Escaneo de Archivos:** El motor de Tailwind utiliza estos patrones para escanear todos los archivos `.tsx`, `.ts`, etc., y construye un inventario de todas las clases de utilidad utilizadas en el proyecto.
+4.  **Generación de CSS:** El motor genera el CSS correspondiente a las clases encontradas y lo inyecta en el pipeline de build.
 
 ## 3. Contrato de API
 
-Este aparato es consumido por el proceso de build de Tailwind CSS, específicamente por el plugin `@tailwindcss/postcss`. No expone una API para ser utilizada por el código de la aplicación.
+La "API" es la estructura del objeto `Config` exportado, definida por el paquete `tailwindcss`.
+
+*   `content: string[]`: Array de patrones `glob`.
+*   `plugins: any[]`: Array para los plugins.
+*   `theme: object`: (Uso avanzado en v4) Permite extender o sobrescribir el tema, aunque la práctica recomendada es usar `@theme` en CSS.
 
 ## 4. Zona de Melhorias Futuras
 
-1.  **Patrones de Contenido Más Granulares:** A medida que el proyecto crezca, se podrían añadir patrones más específicos a la lista de `content` para incluir nuevos tipos de archivos (ej. `.mdx` si se añade un blog con MDX) o para escanear dependencias en `node_modules` que también usen Tailwind.
-2.  **Integración de `prettier-plugin-tailwindcss`:** Aunque no se configura aquí, la instalación de este plugin en `devDependencies` es una mejora de valor crucial para ordenar automáticamente las clases de Tailwind, lo cual ya está hecho.
-3.  **Plugin de Tema Personalizado:** Si la lógica de theming en `globals.css` se volviera extremadamente compleja (por ejemplo, con múltiples temas intercambiables), se podría considerar la creación de un plugin de Tailwind personalizado para encapsular esa lógica, el cual sería registrado en el array `plugins`.
-# /.docs-espejo/tailwind.config.md
+*   **Integración de `prettier-plugin-tailwindcss`:** Añadir el plugin oficial de Prettier para ordenar automáticamente las clases de Tailwind en el código, mejorando la legibilidad y consistencia.
+*   **Plugin `@tailwindcss/typography`:** Integrar este plugin para estilizar de forma sencilla bloques de contenido generados por CMS o Markdown (ej. en las páginas legales).
+*   **Plugin `tailwindcss-animate`:** Añadir este plugin para un conjunto de animaciones predefinidas y personalizables, simplificando la implementación de microinteracciones.
+*   **Tema Centralizado (JavaScript):** Para proyectos con lógica de theming muy compleja, se podría volver a centralizar la configuración del `theme` en este archivo y usar un plugin para generar las variables CSS correspondientes, revirtiendo al patrón de v3 si fuera necesario.
+*   **Configuración de `separator`:** Modificar el separador de variantes (por defecto `:`) si entrara en conflicto con alguna sintaxis de un preprocesador de CSS (no es el caso actual).
+*   **Habilitar `important`:** Configurar la opción `important` para generar utilidades con `!important`, útil al sobrescribir estilos de librerías de terceros.
+*   **Prefijos de Clases:** Añadir un `prefix` a todas las clases de Tailwind (ej. `tw-`) para evitar colisiones en proyectos que integran múltiples frameworks de CSS.
+*   **Estrategia de `dark-mode`:** Cambiar la estrategia de modo oscuro de `class` a `media` si se prefiere depender de la configuración del sistema operativo del usuario.
+*   **Extensión de Variantes:** Utilizar la configuración de `theme.extend.variants` para habilitar variantes adicionales (ej. `disabled`) para utilidades que no las tienen por defecto.
+*   **Función de Configuración:** Exportar una función en lugar de un objeto para generar la configuración de forma dinámica si fuera necesario (ej. basándose en variables de entorno).
+
+// .docs-espejo/tailwind.config.ts.md

@@ -1,49 +1,33 @@
 // src/components/sections/SocialProofLogos.tsx
-/**
- * @file SocialProofLogos.tsx
- * @description Componente de presentación para la sección de Prueba Social.
- * @description_es Muestra una marquesina con desplazamiento infinito de logotipos
- *               para reforzar la credibilidad y confianza en el producto
- *               (ej. "Como visto en...", "Certificado por...").
- * @version 3.0.0
- * @dependencies react, react-fast-marquee, next/image, @/components/ui/Container
- *
- * @prop {string} title - Título contextual para la sección.
- * @prop {Array<{src: string, alt: string}>} logos - Array de objetos que definen cada logo.
- */
 "use client";
 
 import React from "react";
 import Image from "next/image";
 import Marquee from "react-fast-marquee";
 import { Container } from "@/components/ui/Container";
-
-interface Logo {
-  src: string;
-  alt: string;
-}
-
-interface SocialProofLogosProps {
-  title: string;
-  logos: Logo[];
-}
+import type { Dictionary } from "@/lib/schemas/i18n.schema";
 
 /**
- * @component SocialProofLogos
- * @description Renderiza una tira de logos en bucle para reforzar la credibilidad.
- *              Debe ser un componente cliente debido a la animación de la marquesina.
- * @param {SocialProofLogosProps} props Las propiedades del componente.
- * @returns {React.ReactElement | null} El elemento JSX o null si no hay logos.
+ * @file SocialProofLogos.tsx
+ * @description Componente de prueba social. Actualizado para aceptar `content`.
+ * @version 4.0.0
+ * @author RaZ podesta - MetaShark Tech
  */
+
+// <<-- CORRECCIÓN: La prop ahora es un objeto `content`
+interface SocialProofLogosProps {
+  content: NonNullable<Dictionary["socialProof"]>;
+}
+
 export function SocialProofLogos({
-  title,
-  logos,
+  content,
 }: SocialProofLogosProps): React.ReactElement | null {
   console.log("[Observabilidad] Renderizando SocialProofLogos");
 
-  if (!logos || logos.length === 0) {
+  if (!content || !content.logos || content.logos.length === 0) {
     return null;
   }
+  const { title, logos } = content;
 
   return (
     <section

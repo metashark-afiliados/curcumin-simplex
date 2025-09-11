@@ -1,38 +1,34 @@
-// .docs-espejo/middleware.ts.md
+# /.docs-espejo/middleware.ts.md
 /**
- * @file middleware.ts.md
- * @description Documento Espejo para el Orquestador de Middleware.
- * @version 2.0.0
+ * @file .docs-espejo/middleware.ts.md
+ * @description Documento espejo para el aparato de middleware.
+ * @version 1.0.0
  * @author RaZ podesta - MetaShark Tech
  */
 
-# Manifiesto Conceptual: Orquestador de Pipeline de Middleware
+# Manifiesto Conceptual: El Controlador de Tráfico del Borde
 
 ## 1. Rol Estratégico
 
-El aparato `src/middleware.ts` es el **controlador de tráfico aéreo** de la aplicación. Se ejecuta en el "borde" (Edge) para cada petición entrante que coincide con el `matcher` y su propósito es orquestar una secuencia de manejadores atómicos (`handlers`) de una manera predecible, resiliente y observable.
+El aparato `middleware.ts` actúa como el **controlador de tráfico aéreo** de la aplicación. Se ejecuta en el "borde" (Edge), antes que cualquier otra lógica de renderizado de Next.js. Su propósito es inspeccionar cada petición entrante y tomar decisiones de enrutamiento o modificación basadas en un conjunto de reglas, sin la sobrecarga de un renderizado completo en el servidor.
 
-Su arquitectura se basa en un **Patrón Pipeline con Cortocircuito**, donde cada manejador tiene la oportunidad de inspeccionar la solicitud y, si es necesario, finalizar el ciclo de vida de la misma devolviendo una respuesta (ej. una redirección), impidiendo que la solicitud llegue a los manejadores posteriores o a la aplicación Next.js.
+Su rol principal es garantizar la **consistencia y la canonicidad de las URLs**, principalmente a través de la gestión de la internacionalización (i18n).
 
 ## 2. Arquitectura y Flujo de Ejecución
 
-1.  **Guarda de Seguridad de Entorno:** La primera acción es verificar la bandera `isMiddlewareEnabled` desde la SSoT de despliegue. Si es `false`, el middleware se detiene inmediatamente, permitiendo el funcionamiento en entornos de exportación estática.
-2.  **Inicio y Observabilidad:** Si está habilitado, registra el inicio del pipeline con la ruta de la solicitud, proporcionando un punto de entrada claro para la depuración.
-3.  **Manejo de Errores Global:** Todo el pipeline está envuelto en un bloque `try...catch` para garantizar que cualquier excepción no controlada dentro de un manejador sea capturada, registrada y manejada de forma segura, evitando que el servidor se bloquee.
-4.  **Iteración del Pipeline:**
-    *   El orquestador itera secuencialmente sobre un array predefinido de manejadores (`handlers`).
-    *   Invoca a cada manejador con el objeto `NextRequest`.
-    *   **Lógica de Cortocircuito:** Si un manejador devuelve un objeto `NextResponse` (como una redirección del `i18nHandler`), el bucle se interrumpe y esa respuesta se devuelve inmediatamente al cliente.
-5.  **Flujo por Defecto (Passthrough):** Si el bucle se completa sin que ningún manejador devuelva una respuesta, significa que la solicitud es válida para continuar. El orquestador devuelve `NextResponse.next()`, pasando el control a la capa de enrutamiento y renderizado de Next.js.
+1.  **Activación Condicional:** El middleware es consciente del entorno. Lee la variable de entorno `NEXT_PUBLIC_DEPLOY_TARGET` para determinar si debe activarse. Solo se ejecuta en despliegues de Vercel (`vercel`), permaneciendo inactivo en builds estáticos (`hostinger`).
+2.  **Filtrado por `matcher`:** La configuración `config.matcher` es su filtro más importante. Utiliza una expresión regular (negative lookahead) para excluir proactivamente todas las rutas que apuntan a activos estáticos (CSS, JS, imágenes, fuentes, etc.). Esto es crucial para el rendimiento y para evitar errores de 404.
+3.  **Patrón Pipeline:** Si una petición pasa el filtro del `matcher`, el middleware invoca una serie de "manejadores" (`handlers`). Actualmente, solo existe el `i18nHandler`.
+4.  **Ejecución del Handler:** El `i18nHandler` verifica si la ruta tiene un prefijo de `locale`. Si no lo tiene, construye una nueva URL con el `locale` por defecto y devuelve una respuesta de redirección `308`, terminando el pipeline.
+5.  **Paso al Siguiente Nivel:** Si todos los handlers se ejecutan sin devolver una respuesta, la petición original se pasa al siguiente nivel de la arquitectura de Next.js (el renderizador de páginas).
 
 ## 3. Contrato de API
 
-*   **`middleware(request: NextRequest): Promise<NextResponse>`**: La función principal del middleware de Next.js.
-*   **`config: { matcher: string[] }`**: Exportación que le dice a Next.js a qué rutas aplicar este middleware. Este `matcher` es dinámico y se vacía si el middleware está deshabilitado.
+*   **Entrada:** `NextRequest` - Objeto que representa la petición HTTP entrante.
+*   **Salida:** `NextResponse` - Puede ser una respuesta de redirección, una respuesta modificada, o una instrucción para continuar (`NextResponse.next()`).
 
 ## 4. Zona de Melhorias Futuras
 
-1.  **Manejadores Desactivados:** Actualmente, `authHandler` y `geoIpHandler` están presentes pero desactivados por una bandera interna. Se eliminarán del array de `handlers` para limpiar el código, ya que su lógica no está implementada. Se registrará su futura implementación en este documento.
-2.  **Sistema de Prioridad de Handlers:** Implementar un sistema donde cada manejador tenga una propiedad de `priority`, y el orquestador los ordene antes de ejecutarlos, haciendo el orden de ejecución más explícito.
-3.  **Inyección de Dependencias:** Para manejadores más complejos, se podría explorar un patrón de inyección de dependencias para proporcionarles servicios (ej. un cliente de base de datos para el `authHandler`).
-// .docs-espejo/middleware.ts.md
+1.  **Integración de `authHandler`:** Activar y desarrollar el manejador de autenticación para proteger rutas basado en la sesión del usuario.
+2.  **Integración de `geoIpHandler`:** Implementar la lógica para detectar el país del usuario y enriquecer la petición con esa información para personalización de contenido o redirecciones geográficas.
+3.  **Manejo de A/B Testing:** Se podría añadir un handler que lea una cookie y reescriba la URL para servir diferentes variantes de una página sin cambiar la URL visible para el usuario.
