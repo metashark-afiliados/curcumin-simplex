@@ -27,6 +27,7 @@
   "bugs": {
     "url": "https://github.com/usuario/curcumin-simplex/issues"
   },
+
   "scripts": {
     "dev": "next dev",
     "build": "next build",
@@ -38,7 +39,10 @@
     "test:ui": "vitest --ui",
     "test:e2e": "playwright test",
     "test:e2e:ui": "playwright test --ui",
-    "gen:icons": "tsx --tsconfig tsconfig.json scripts/generation/generate-lucide-icon-enum.ts"
+    
+    "gen:icons": "tsx --tsconfig tsconfig.json scripts/generation/generate-lucide-icon-enum.ts",
+    "gen:routes": "tsx --tsconfig tsconfig.json scripts/generation/generate-navigation-manifest.ts",
+    "generate": "pnpm gen:icons && pnpm gen:routes" 
   },
   "dependencies": {
     "@hookform/resolvers": "^5.2.1",

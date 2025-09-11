@@ -2,9 +2,9 @@
 /**
  * @file DevRouteMenu.tsx
  * @description Menú desplegable con rutas de desarrollo y herramientas.
- *              - v18.0.0: Resuelve la advertencia de deprecación de `legacyBehavior`
- *                en `next/link`, adoptando el patrón de renderizado moderno.
- * @version 18.0.0
+ *              - v19.0.0: Refactorizado para importar desde la fachada pública
+ *                atomizada de DropdownMenu, mejorando la mantenibilidad.
+ * @version 19.0.0
  * @author RaZ podesta - MetaShark Tech
  */
 "use client";
@@ -12,6 +12,7 @@
 import { Wrench } from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/components/ui/Button";
+// <<-- SOLUCIÓN: Se importa desde la API unificada del componente.
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -42,11 +43,6 @@ export const DevRouteMenu = ({ routeGroups }: DevRouteMenuProps) => {
           <DropdownMenuGroup key={group.groupName}>
             <DropdownMenuLabel>{group.groupName}</DropdownMenuLabel>
             {group.items.map((item) => (
-              // <<-- SOLUCIÓN DE INGENIERÍA APLICADA -->>
-              // Se eliminan las props `legacyBehavior` y `passHref`.
-              // El componente <Link> ahora renderiza la etiqueta <a> por sí mismo,
-              // y <DropdownMenuItem> es su hijo directo. Esto alinea el código
-              // con las mejores prácticas de Next.js App Router.
               <Link href={item.path} key={item.path}>
                 <DropdownMenuItem>
                   <DynamicIcon name={item.iconName} className="mr-3 h-4 w-4" />
