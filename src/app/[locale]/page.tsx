@@ -1,49 +1,51 @@
 // src/app/[locale]/page.tsx
 /**
- * @file page.tsx
+ * @file page.tsx (Homepage)
  * @description Página de inicio del portal de contenidos "Global Fitwell".
- *              Corregido para pasar correctamente el locale al diccionario.
- * @version 3.1.0
+ *              ACTUALIZACIÓN: Se ha corregido el paso de props al componente
+ *              `DevHomepageHeader` para alinearlo con su nuevo contrato de API,
+ *              pasando `devRouteMenuDictionary` en lugar del obsoleto `routeTester`.
+ * @version 4.1.0
  * @author RaZ podesta - MetaShark Tech
+ * @see .docs-espejo/app/[locale]/page.md
  */
 import React from "react";
 import { getDictionary } from "@/lib/i18n";
 import { NewsGrid } from "@/components/sections/NewsGrid";
-import { HeroNews } from "@/components/sections/HeroNews"; // <<-- 1. Importado HeroNews
+import { HeroNews } from "@/components/sections/HeroNews";
+import { clientLogger } from "@/lib/logging";
+import { DevHomepageHeader } from "@/components/layout/DevHomepageHeader";
+import { type Locale } from "@/lib/i18n.config";
 
-/**
- * @interface HomePageProps
- * @description Define las props para la página de inicio, incluyendo los parámetros de ruta.
- */
 interface HomePageProps {
   params: {
-    locale: string;
+    locale: Locale;
   };
 }
 
-/**
- * @component HomePage
- * @description El componente principal para la ruta '/[locale]'. Ensambla las
- *              secciones que componen la página de inicio del portal.
- * @param {HomePageProps} props - Las propiedades que contienen el locale.
- * @returns {Promise<React.ReactElement>} El elemento JSX de la página.
- */
 export default async function HomePage({
   params,
 }: HomePageProps): Promise<React.ReactElement> {
-  console.log(
-    `[Observabilidad] Renderizando Homepage del Portal para el locale: ${params.locale}`
+  const awaitedParams = await params;
+
+  clientLogger.info(
+    `[HomePage] Renderizando Homepage del Portal para el locale: ${awaitedParams.locale}`
   );
 
-  // <<-- 2. CORRECCIÓN: Se pasa params.locale a getDictionary
-  const t = await getDictionary(params.locale);
+  const t = await getDictionary(awaitedParams.locale);
 
   return (
     <>
-      {/* 
-        Renderizado condicional basado en la disponibilidad de datos en el diccionario.
-        Esto permite controlar el layout de la página desde los archivos i18n.
-      */}
+      {process.env.NODE_ENV === "development" &&
+        t.devHomepageHeader &&
+        t.devRouteMenu && ( // <<-- CORRECCIÓN: Se verifica la existencia de la clave correcta
+          <DevHomepageHeader
+            dictionary={t.devHomepageHeader}
+            // <<-- CORRECCIÓN: Se pasa el diccionario correcto a la prop correcta
+            devRouteMenuDictionary={t.devRouteMenu}
+          />
+        )}
+
       {t.heroNews && <HeroNews {...t.heroNews} />}
       {t.newsGrid && <NewsGrid {...t.newsGrid} />}
     </>

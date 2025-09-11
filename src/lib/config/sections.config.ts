@@ -1,15 +1,38 @@
 // src/lib/config/sections.config.ts
-import { z } from "zod";
-
 /**
  * @file sections.config.ts
- * @description SSoT para la configuración de renderizado de secciones de la página.
- * @version 4.0.0
+ * @description SSoT para la configuración de secciones. Mapea nombres de sección
+ *              a sus componentes React y claves de diccionario correspondientes.
+ * @version 5.0.0
+ * @author RaZ podesta - MetaShark Tech
  */
+import { Hero } from "@/components/sections/Hero";
+import { SocialProofLogos } from "@/components/sections/SocialProofLogos";
+import { BenefitsSection } from "@/components/sections/BenefitsSection";
+import { IngredientAnalysis } from "@/components/sections/IngredientAnalysis";
+import { ThumbnailCarousel } from "@/components/sections/ThumbnailCarousel";
+import { TestimonialGrid } from "@/components/sections/TestimonialGrid";
+import { DoubleScrollingBanner } from "@/components/sections/DoubleScrollingBanner";
+import { FaqAccordion } from "@/components/sections/FaqAccordion";
+import { GuaranteeSection } from "@/components/sections/GuaranteeSection";
+import { OrderSection } from "@/components/sections/OrderSection";
+import { NewsGrid } from "@/components/sections/NewsGrid";
+import { HeroNews } from "@/components/sections/HeroNews";
+import { ProductShowcase } from "@/components/sections/ProductShowcase";
+import { type Dictionary } from "@/lib/schemas/i18n.schema";
 
-// Define los nombres válidos de TODAS las secciones para una validación estricta.
+// Define un tipo para las props que aceptarán los componentes de sección.
+// La mayoría recibe un subconjunto del diccionario. Algunos necesitan props adicionales.
+export type SectionProps = { [key: string]: any; locale?: string };
+
+// Define el contrato para una entrada en el registro de secciones.
+interface SectionConfigEntry {
+  component: React.ComponentType<SectionProps>;
+  dictionaryKey: keyof Dictionary;
+}
+
+// El array de solo lectura de los nombres de sección.
 export const sectionNames = [
-  // Secciones de Campaña Original
   "Hero",
   "SocialProofLogos",
   "BenefitsSection",
@@ -20,68 +43,51 @@ export const sectionNames = [
   "FaqAccordion",
   "GuaranteeSection",
   "OrderSection",
-  // Secciones del Portal / Global Fitwell
   "NewsGrid",
   "HeroNews",
   "ProductShowcase",
 ] as const;
 
-const SectionNameSchema = z.enum(sectionNames);
-export type SectionName = z.infer<typeof SectionNameSchema>;
+export type SectionName = (typeof sectionNames)[number];
 
-const SectionConfigSchema = z.object({
-  name: SectionNameSchema,
-  isEnabled: z.boolean(),
-  order: z.number(),
-});
-
-export type SectionConfig = z.infer<typeof SectionConfigSchema>;
-
-/**
- * @function parseSectionsConfig
- * @description Itera sobre los nombres de sección definidos, lee las variables
- *              de entorno correspondientes, las parsea y valida.
- * @deprecated Esta lógica ahora solo es relevante para campañas antiguas. Las nuevas
- *             campañas definen su layout en su `theme.json`.
- * @returns {SectionConfig[]} Un array ordenado de las configuraciones de sección.
- */
-function parseSectionsConfig(): SectionConfig[] {
-  // El log de observabilidad se mantiene por si se usa en contextos legacy.
-  console.log(
-    "[Observabilidad] Parseando configuración de secciones desde .env (Lógica Legacy)"
-  );
-  const configuredSections: SectionConfig[] = [];
-
-  for (const name of sectionNames) {
-    const envVar = process.env[`SECTION_${name}`];
-
-    if (envVar) {
-      try {
-        const [visibility, orderStr] = envVar.split(",");
-        const order = parseInt(orderStr, 10);
-        const isEnabled = visibility === "visible";
-
-        if (isNaN(order)) {
-          throw new Error(`Orden inválido para la sección ${name}`);
-        }
-
-        configuredSections.push({ name, isEnabled, order });
-      } catch (error) {
-        console.error(
-          `[Configuración] Error al parsear la variable de entorno para la sección ${name}:`,
-          error
-        );
-      }
-    }
-  }
-
-  z.array(SectionConfigSchema).parse(configuredSections);
-
-  return configuredSections.sort((a, b) => a.order - b.order);
-}
-
-/**
- * @deprecated Usar `theme.layout.sections` para nuevas campañas.
- */
-export const activeSections = parseSectionsConfig().filter((s) => s.isEnabled);
+// El mapa que asocia el nombre de la sección con su implementación y clave de datos.
+export const sectionsConfig: Record<SectionName, SectionConfigEntry> = {
+  Hero: { component: Hero, dictionaryKey: "hero" },
+  SocialProofLogos: {
+    component: SocialProofLogos,
+    dictionaryKey: "socialProof",
+  },
+  BenefitsSection: {
+    component: BenefitsSection,
+    dictionaryKey: "benefitsSection",
+  },
+  IngredientAnalysis: {
+    component: IngredientAnalysis,
+    dictionaryKey: "ingredientAnalysis",
+  },
+  ThumbnailCarousel: {
+    component: ThumbnailCarousel,
+    dictionaryKey: "thumbnailCarousel",
+  },
+  TestimonialGrid: {
+    component: TestimonialGrid,
+    dictionaryKey: "testimonialGrid",
+  },
+  DoubleScrollingBanner: {
+    component: DoubleScrollingBanner,
+    dictionaryKey: "doubleScrollingBanner",
+  },
+  FaqAccordion: { component: FaqAccordion, dictionaryKey: "faqAccordion" },
+  GuaranteeSection: {
+    component: GuaranteeSection,
+    dictionaryKey: "guaranteeSection",
+  },
+  OrderSection: { component: OrderSection, dictionaryKey: "orderForm" },
+  NewsGrid: { component: NewsGrid, dictionaryKey: "newsGrid" },
+  HeroNews: { component: HeroNews, dictionaryKey: "heroNews" },
+  ProductShowcase: {
+    component: ProductShowcase,
+    dictionaryKey: "productShowcase",
+  },
+};
 // src/lib/config/sections.config.ts

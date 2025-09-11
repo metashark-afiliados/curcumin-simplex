@@ -1,39 +1,50 @@
 // src/middleware/handlers/i18n/index.ts
-import { NextResponse, type NextRequest } from "next/server";
-
 /**
  * @file /middleware/handlers/i18n/index.ts
  * @description Manejador de middleware para la internacionalización.
- * @version 1.0.0
+ *              Refactorizado para consumir la utilidad `pathnameHasLocale`,
+ *              mejorar la robustez y añadir observabilidad detallada.
+ * @version 3.0.0
+ * @author RaZ podesta - MetaShark Tech
  */
-const supportedLocales = ["es-ES", "pt-BR", "en-US", "it-IT"];
-const defaultLocale = "it-IT";
+import { NextResponse, type NextRequest } from "next/server";
+import { defaultLocale } from "@/lib/i18n.config";
+import { pathnameHasLocale } from "@/lib/i18n.utils";
+import { clientLogger } from "@/lib/logging";
 
-function getLocale(request: NextRequest): string {
-  // Aquí podemos añadir lógica más compleja en el futuro (cookies, accept-language).
-  // Por ahora, usamos el default.
-  return defaultLocale;
-}
+// Lista de rutas públicas que no deben ser redirigidas por el middleware de i18n
+const PUBLIC_FILE_ROUTES = [
+  "/robots.txt",
+  "/sitemap.xml",
+  // Añadir aquí otras rutas de archivos estáticos si es necesario
+];
 
-export async function i18nHandler(
-  req: NextRequest,
-  res: NextResponse
-): Promise<NextResponse | void> {
+export function i18nHandler(req: NextRequest): NextResponse | void {
   const { pathname } = req.nextUrl;
 
-  const pathnameHasLocale = supportedLocales.some(
-    (locale) => pathname.startsWith(`/${locale}/`) || pathname === `/${locale}`
-  );
-
-  if (pathnameHasLocale) {
-    // La ruta ya está localizada, no hacemos nada.
+  // Guarda de seguridad 1: Ignorar rutas de archivos públicos conocidas.
+  if (PUBLIC_FILE_ROUTES.includes(pathname)) {
     return;
   }
 
-  // Redirigir a la ruta con el prefijo de locale.
-  const locale = getLocale(req);
-  req.nextUrl.pathname = `/${locale}${pathname}`;
+  // Guarda de seguridad 2: Usar la SSoT funcional para verificar si la ruta ya está localizada.
+  if (pathnameHasLocale(pathname)) {
+    return; // Pasa al siguiente manejador.
+  }
 
-  return NextResponse.redirect(req.nextUrl);
+  // Si llegamos aquí, la ruta necesita ser redirigida.
+  const newUrl = new URL(`/${defaultLocale}${pathname}`, req.url);
+
+  clientLogger.info(
+    `[Middleware:i18n] Ruta no localizada detectada. Redirigiendo.`,
+    {
+      originalPath: pathname,
+      redirectedTo: newUrl.toString(),
+      defaultLocaleUsed: defaultLocale,
+    }
+  );
+
+  // Redirección permanente (308) para SEO.
+  return NextResponse.redirect(newUrl, 308);
 }
 // src/middleware/handlers/i18n/index.ts

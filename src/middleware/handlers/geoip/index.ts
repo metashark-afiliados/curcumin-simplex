@@ -1,39 +1,39 @@
 // src/middleware/handlers/geoip/index.ts
 /**
  * @file /middleware/handlers/geoip/index.ts
- * @description Manejador de middleware para GeoIP (actualmente desactivado).
- *              Refactorizado para manejar la discrepancia de tipos de `req.geo`.
- * @version 2.1.0
+ * @description Manejador de middleware para GeoIP.
+ *              NOTA DE ARQUITECTURA: Este manejador se mantiene como un
+ *              placeholder para la futura implementación de la lógica de
+ *              GeoIP. No se exporta y no se incluye en el pipeline
+ *              del middleware para evitar la ejecución de código muerto.
+ * @version 3.0.0
  * @author RaZ podesta - MetaShark Tech
  */
 import { NextResponse, type NextRequest } from "next/server";
 
+/*
+// --- PLACEHOLDER DE LÓGICA GEOIP ---
+
 const GEOIP_ENABLED = false;
 
-/**
- * @function geoIpHandler
- * @description Extrae la información geográfica de la solicitud.
- * @param {NextRequest} req - El objeto de la solicitud entrante.
- * @param {NextResponse} res - El objeto de la respuesta que se está construyendo.
- */
-export async function geoIpHandler(
-  req: NextRequest,
-  res: NextResponse
-): Promise<void> {
+export async function geoIpHandler(req: NextRequest): Promise<void> {
   if (!GEOIP_ENABLED) {
     return;
   }
 
   // NOTA TÉCNICA: El entorno de ejecución Edge de Vercel inyecta una propiedad `geo`
-  // en el objeto `NextRequest`, pero las definiciones de tipo de la versión actual
-  // de Next.js no la incluyen, causando un error de TypeScript.
-  // Se accede a la propiedad a través de un casting a `any` para resolver el
-  // error de compilación, reconociendo que la propiedad existirá en producción.
-  // Esto es una solución pragmática para una discrepancia de tipos externa.
+  // en el objeto `NextRequest` que no está en las definiciones de tipo de Next.js.
+  // El casting a `any` es una solución pragmática para esta discrepancia externa.
   const country = (req as any).geo?.country ?? "unknown";
 
   console.log(`[Observabilidad] País detectado (GeoIP): ${country}`);
 
-  res.headers.set("x-country", country);
+  const response = NextResponse.next();
+  response.headers.set("x-country", country);
+  // Devolver 'response' si este manejador se reactiva.
 }
+*/
+
+// No se exporta ninguna función para asegurar que este archivo no tenga efectos secundarios.
+export {};
 // src/middleware/handlers/geoip/index.ts

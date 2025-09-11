@@ -2,45 +2,63 @@
 /**
  * @file page.tsx (Campaña Dinámica)
  * @description Ensamblador "Lego" para todas las landing pages de campañas.
- *              Integra el CampaignThemeProvider para aplicar estilos dinámicos.
- *              Corregido el error de importación del SectionRenderer.
- * @version 2.1.0
+ *              CORRECCIÓN: Se reintroduce el uso de `await params` para cumplir
+ *              con el contrato de PageProps de Next.js y resolver el error TS2344.
+ * @version 4.0.0
  * @author RaZ podesta - MetaShark Tech
+ * @see .docs-espejo/app/[locale]/(campaigns)/[campaignId]/page.tsx.md
  */
 import React from "react";
 import { getCampaignData } from "@/lib/i18n/campaign.i18n";
 import { SectionRenderer } from "@/components/layout/SectionRenderer";
 import { CampaignThemeProvider } from "@/components/layout/CampaignThemeProvider";
+import { clientLogger } from "@/lib/logging";
+import { supportedLocales, type Locale } from "@/lib/i18n.config";
 
-/**
- * @interface CampaignPageProps
- * @description Define las props para la página de campaña, incluyendo
- *              los parámetros de ruta dinámicos `campaignId` y `locale`.
- */
+export const dynamicParams = true;
+
 interface CampaignPageProps {
   params: {
     campaignId: string;
-    locale: string;
+    locale: Locale;
   };
+  searchParams: { [key: string]: string | string[] | undefined };
 }
 
-/**
- * @component CampaignPage
- * @description Componente de servidor que orquesta el renderizado de una
- *              página de campaña completa. Obtiene los datos de contenido
- *              y tema, aplica el tema visual y luego renderiza las secciones
- *              correspondientes en orden.
- * @param {CampaignPageProps} props - Las propiedades que contienen los Ids.
- * @returns {Promise<React.ReactElement>} El elemento JSX de la página de campaña.
- */
-export default async function CampaignPage({ params }: CampaignPageProps) {
-  console.log(
-    `[Observabilidad] Renderizando Campaña Dinámica. ID: ${params.campaignId}, Locale: ${params.locale}`
+export async function generateStaticParams() {
+  const campaigns = [{ id: "12157" }];
+  const params = campaigns.flatMap((campaign) =>
+    supportedLocales.map((locale) => ({
+      campaignId: campaign.id,
+      locale: locale,
+    }))
+  );
+  clientLogger.info(
+    `[CampaignPage] Generando static params para ${params.length} rutas de campaña base.`
+  );
+  return params;
+}
+
+export default async function CampaignPage({
+  params,
+  searchParams,
+}: CampaignPageProps) {
+  // <<-- CORRECCIÓN: Se reintroduce 'await' para cumplir el contrato de PageProps
+  const awaitedParams = await params;
+
+  const variantId =
+    typeof searchParams.v === "string" && searchParams.v
+      ? searchParams.v
+      : "01";
+
+  clientLogger.info(
+    `[CampaignPage] Renderizando Campaña. ID: ${awaitedParams.campaignId}, Locale: ${awaitedParams.locale}, Variante: ${variantId}`
   );
 
   const { dictionary, theme } = await getCampaignData(
-    params.campaignId,
-    params.locale
+    awaitedParams.campaignId,
+    awaitedParams.locale,
+    variantId
   );
 
   const sectionsToRender = theme.layout.sections;
@@ -52,7 +70,7 @@ export default async function CampaignPage({ params }: CampaignPageProps) {
           key={section.name}
           sectionName={section.name}
           dictionary={dictionary}
-          locale={params.locale}
+          locale={awaitedParams.locale}
         />
       ))}
     </CampaignThemeProvider>

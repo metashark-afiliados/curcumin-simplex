@@ -2,11 +2,13 @@
 /**
  * @file i18n.schema.ts
  * @description SSoT Ensamblador para la estructura de datos de i18n global.
- *              Corregido con la sintaxis correcta de Zod para fusión de schemas opcionales.
- * @version 11.1.0
+ *              ACTUALIZACIÓN: Renombrado 'routeTester' a 'devRouteMenu' para consistencia.
+ * @version 21.0.0
  * @author RaZ podesta - MetaShark Tech
  */
 import { z } from "zod";
+
+// --- Schemas de Componentes Core ---
 import { GlobalsLocaleSchema } from "./globals.schema";
 import { HeaderLocaleSchema } from "./components/header.schema";
 import { FooterLocaleSchema } from "./components/footer.schema";
@@ -25,11 +27,29 @@ import { NewsGridLocaleSchema } from "./components/news-grid.schema";
 import { HeroNewsLocaleSchema } from "./components/hero-news.schema";
 import { ProductShowcaseLocaleSchema } from "./components/product-showcase.schema";
 
-// --- Importaciones de Schemas de Páginas ---
+// --- Schemas de Componentes Naturalizados (razBits) ---
+import { CardNavLocaleSchema } from "@/components/razBits/CardNav/card-nav.schema";
+import { LightRaysLocaleSchema } from "@/components/razBits/LightRays/light-rays.schema";
+import { MagicBentoLocaleSchema } from "@/components/razBits/MagicBento/magic-bento.schema";
+import { DockLocaleSchema } from "@/components/razBits/Dock/dock.schema";
+
+// --- Schemas de Componentes de Desarrollo ---
+import { DevRouteMenuLocaleSchema } from "./components/dev/dev-route-menu.schema";
+import { DevHomepageHeaderLocaleSchema } from "./components/dev/dev-homepage-header.schema";
+import { DevHeaderLocaleSchema } from "./components/dev/dev-header.schema";
+
+// --- Schemas de Páginas ---
 import { StorePageLocaleSchema } from "./pages/store-page.schema";
 import { TextPageLocaleSchema } from "./pages/text-page.schema";
+import { DevDashboardLocaleSchema } from "./pages/dev-dashboard.schema";
+import { DevCampaignSimulatorLocaleSchema } from "./pages/dev-campaign-simulator.schema";
 
-export const i18nSchema = GlobalsLocaleSchema.merge(HeaderLocaleSchema)
+// --- Ensamblador de Schemas ---
+export const i18nSchema = z
+  .object({})
+  // Componentes Core
+  .merge(GlobalsLocaleSchema)
+  .merge(HeaderLocaleSchema)
   .merge(FooterLocaleSchema)
   .merge(ScrollingBannerLocaleSchema)
   .merge(NewsGridLocaleSchema)
@@ -45,14 +65,26 @@ export const i18nSchema = GlobalsLocaleSchema.merge(HeaderLocaleSchema)
   .merge(OrderFormLocaleSchema)
   .merge(HeroNewsLocaleSchema)
   .merge(ProductShowcaseLocaleSchema)
-  // --- Integración de Schemas de Páginas CORREGIDA ---
-  // <<-- CORRECCIÓN: Se utiliza .merge() directamente.
-  // La opcionalidad ya está definida dentro de `StorePageLocaleSchema`
-  // con la clave `storePage: z.object(...).optional()`.
+
+  // Componentes Naturalizados (razBits)
+  .merge(CardNavLocaleSchema)
+  .merge(LightRaysLocaleSchema)
+  .merge(MagicBentoLocaleSchema)
+  .merge(DockLocaleSchema)
+
+  // Componentes de Desarrollo
+  .merge(DevRouteMenuLocaleSchema)
+  .merge(DevHomepageHeaderLocaleSchema)
+  .merge(DevHeaderLocaleSchema)
+
+  // Páginas
   .merge(StorePageLocaleSchema)
   .merge(z.object({ aboutPage: TextPageLocaleSchema.optional() }))
   .merge(z.object({ privacyPage: TextPageLocaleSchema.optional() }))
-  .merge(z.object({ termsPage: TextPageLocaleSchema.optional() }));
+  .merge(z.object({ termsPage: TextPageLocaleSchema.optional() }))
+  .merge(DevDashboardLocaleSchema)
+  .merge(DevCampaignSimulatorLocaleSchema);
 
+// --- Tipo de Diccionario Global ---
 export type Dictionary = z.infer<typeof i18nSchema>;
 // src/lib/schemas/i18n.schema.ts

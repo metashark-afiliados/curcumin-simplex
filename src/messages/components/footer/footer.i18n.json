@@ -1,7 +1,7 @@
 {
   "es-ES": {
     "footer": {
-      "copyright": "© 2025 Curcumin Simplex. Todos los derechos reservados.",
+      "copyright": "© 2025 Global Fitwell. Todos los derechos reservados.",
       "links": [
         { "label": "Términos", "href": "/terms" },
         { "label": "Privacidad", "href": "/privacy" }
@@ -9,19 +9,19 @@
       "disclaimer": "Este producto no está destinado a diagnosticar, tratar, curar o prevenir ninguna enfermedad."
     }
   },
-  "pt-BR": {
+  "it-IT": {
     "footer": {
-      "copyright": "© 2025 Curcumin Simplex. Todos os direitos reservados.",
+      "copyright": "© 2025 Global Fitwell. Tutti i diritti riservati.",
       "links": [
-        { "label": "Termos", "href": "/terms" },
-        { "label": "Privacidade", "href": "/privacy" }
+        { "label": "Termini", "href": "/terms" },
+        { "label": "Privacy", "href": "/privacy" }
       ],
-      "disclaimer": "Este produto não se destina a diagnosticar, tratar, curar ou prevenir qualquer doença."
+      "disclaimer": "Questo prodotto non è destinato a diagnosticare, trattare, curare o prevenire alcuna malattia."
     }
   },
   "en-US": {
     "footer": {
-      "copyright": "© 2025 Curcumin Simplex. All rights reserved.",
+      "copyright": "© 2025 Global Fitwell. All rights reserved.",
       "links": [
         { "label": "Terms", "href": "/terms" },
         { "label": "Privacy", "href": "/privacy" }
@@ -29,14 +29,14 @@
       "disclaimer": "This product is not intended to diagnose, treat, cure, or prevent any disease."
     }
   },
-  "it-IT": {
+  "pt-BR": {
     "footer": {
-      "copyright": "© 2025 Curcumin Simplex. Tutti i diritti riservati.",
+      "copyright": "© 2025 Global Fitwell. Todos os direitos reservados.",
       "links": [
-        { "label": "Termini", "href": "/terms" },
-        { "label": "Privacy", "href": "/privacy" }
+        { "label": "Termos", "href": "/terms" },
+        { "label": "Privacidade", "href": "/privacy" }
       ],
-      "disclaimer": "Questo prodotto non è destinato a diagnosticare, trattare, curare o prevenire alcuna malattia."
+      "disclaimer": "Este produto não se destina a diagnosticar, tratar, curar ou prevenir qualquer doença."
     }
   }
 }

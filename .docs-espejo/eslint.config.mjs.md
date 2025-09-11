@@ -1,22 +1,42 @@
-# Manifiesto Conceptual: eslint.config.mjs
+# .docs-espejo/eslint.config.mjs.md
+/**
+ * @file .docs-espejo/eslint.config.mjs.md
+ * @description Documento Espejo para el aparato de configuración eslint.config.mjs.
+ * @version 1.0.0
+ * @author Raz Podestá - MetaShark Tech
+ */
 
-## 1. Rol Estratégico y Propósito
+# Manifiesto Conceptual: `eslint.config.mjs`
 
-El `eslint.config.mjs` es el **Guardián de la Calidad y Consistencia del Código**. Su propósito estratégico es definir y aplicar de forma automática un conjunto de reglas que aseguran que todo el código base de `curcumin-simplex` se adhiera a un estándar de estilo unificado y a las mejores prácticas de desarrollo.
+## 1. Rol Estratégico
 
-Actúa como una red de seguridad automatizada que previene la introducción de "code smells", errores comunes y código de difícil lectura, ejecutándose a través del script `pnpm run lint`.
+El aparato `eslint.config.mjs` es el **Guardián de la Calidad Estática del Código**. Su rol estratégico es actuar como la Única Fuente de Verdad (SSoT) que define un conjunto de reglas no negociables sobre el estilo, la sintaxis y las buenas prácticas del código TypeScript y React del proyecto.
+
+Es una herramienta de prevención proactiva que:
+1.  **Asegura la Consistencia:** Garantiza que todo el código escrito por cualquier desarrollador se adhiera a un estándar uniforme, mejorando drásticamente la legibilidad y la mantenibilidad.
+2.  **Previene Errores Comunes:** Detecta patrones de código problemáticos, como violaciones a las Reglas de Hooks de React, antes de que lleguen a la fase de pruebas o producción.
+3.  **Automatiza la Calidad:** Se integra en el pipeline de CI/CD para actuar como una puerta de calidad automática, bloqueando la fusión de código que no cumpla con los estándares.
 
 ## 2. Arquitectura y Flujo de Ejecución
 
-Este aparato utiliza el moderno formato de configuración "Flat Config" de ESLint.
+Este aparato es un **manifiesto de configuración** para el motor de ESLint, utilizando el moderno formato "Flat Config".
 
-1.  **`FlatCompat`**: Esta es una capa de compatibilidad crucial. Se utiliza porque `eslint-config-next` (la configuración oficial de Next.js) aún no exporta sus reglas en el nuevo formato "Flat Config". `FlatCompat` nos permite "traducir" y extender esa configuración legacy dentro de nuestra nueva estructura.
-2.  **`...compat.extends(...)`**: El corazón de la configuración. Aquí se heredan todas las reglas curadas por el equipo de Vercel, optimizadas para proyectos Next.js. Esto incluye reglas para el uso correcto de Hooks, optimización de imágenes, accesibilidad y rendimiento (`core-web-vitals`).
-3.  **`ignores`**: Define una lista de exclusión. Instruye a ESLint para que no pierda tiempo analizando directorios de dependencias, artefactos de build o archivos de declaración de tipos generados automáticamente, optimizando así la velocidad del proceso de linting.
+1.  **Entrada:** El conjunto de archivos del proyecto (excluyendo los definidos en `ignores`).
+2.  **Proceso:** El comando `pnpm run lint` invoca a ESLint, que carga este archivo. ESLint procesa la configuración como un array, fusionando los objetos de configuración. Importa y aplica las reglas de los plugins especificados (`next`, `prettier`, `react-hooks`).
+3.  **Salida:** Un reporte en la terminal que lista todas las violaciones a las reglas definidas. Si hay errores, el proceso termina con un código de salida distinto de cero, lo que permite su uso en pipelines de CI.
 
-## 3. Zona de Melhorias Futuras
+## 3. Contrato de API (Configuraciones Clave)
 
-1.  **Integración de Prettier**: Añadir `eslint-config-prettier` al final del array `extends` para desactivar cualquier regla de estilo de ESLint que pueda entrar en conflicto con Prettier, haciendo de Prettier la única fuente de verdad para el formato del código.
-2.  **Plugin de Ordenación de Imports**: Incorporar un plugin como `eslint-plugin-simple-import-sort` para forzar un ordenamiento consistente y automático de las declaraciones `import`, mejorando la legibilidad.
-3.  **Eliminación de `FlatCompat`**: En el futuro, cuando `eslint-config-next` ofrezca soporte nativo para "Flat Config", se podrá eliminar el uso de `FlatCompat`, simplificando aún más este archivo.
-4.  **Reglas Específicas del Proyecto**: A medida que el proyecto madure, se pueden añadir reglas personalizadas para hacer cumplir convenciones específicas del equipo o del dominio del negocio.
+El "contrato" de este aparato es el conjunto de reglas que impone al resto de la base de código.
+
+*   **`extends: ['...','prettier']`**: Este contrato es fundamental. Garantiza que las reglas de formato de ESLint no entrarán en conflicto con las de Prettier, delegando la responsabilidad del formato a la herramienta especializada y evitando "guerras" entre linters.
+*   **`plugins: { 'react-hooks': ... }`**: Este contrato impone las Reglas de Hooks de React, una de las defensas más importantes contra bugs de estado y ciclo de vida en componentes funcionales.
+*   **`ignores: [...]`**: Define explícitamente las fronteras del análisis, mejorando el rendimiento y evitando falsos positivos en código de terceros o de build.
+
+## 4. Zona de Melhorias Futuras
+
+*   **Integración de `eslint-plugin-jsx-a11y`:** Añadir reglas para forzar las mejores prácticas de accesibilidad directamente en el JSX.
+*   **Reglas de Orden de Importación:** Implementar `eslint-plugin-import` para estandarizar el orden de las declaraciones `import`, mejorando la legibilidad.
+*   **Reglas Específicas del Proyecto:** Desarrollar reglas de ESLint personalizadas para forzar convenciones propias del proyecto (ej. nomenclatura de componentes, estructura de props).
+*   **Análisis de Complejidad Ciclomática:** Añadir reglas que marquen funciones que excedan un umbral de complejidad, promoviendo la refactorización hacia código más simple.
+*   **Configuración por Entorno:** Crear configuraciones diferenciadas que apliquen reglas más estrictas (como `no-console`) solo para los builds de producción.

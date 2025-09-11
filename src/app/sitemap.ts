@@ -1,58 +1,104 @@
 // src/app/sitemap.ts
 /**
  * @file sitemap.ts
- * @description Generador dinámico del sitemap para Global Fitwell.
- *              Refactorizado para generar rutas estáticas dinámicamente
- *              desde la SSoT en `navigation.ts`, mejorando la mantenibilidad.
- * @version 2.0.0
+ * @description Generador dinámico y robusto del sitemap para Global Fitwell.
+ *              Refactorizado para eliminar datos harcodeados, cargar dinámicamente
+ *              desde las fuentes de verdad (campaign.map.json) y mejorar la
+ *              observabilidad con logging detallado.
+ * @version 4.0.0
  * @author RaZ podesta - MetaShark Tech
  */
 import { MetadataRoute } from "next";
-import { routes, RouteType } from "@/lib/navigation";
+import { routes } from "@/lib/navigation";
+import { supportedLocales, type Locale } from "@/lib/i18n.config";
+import { clientLogger } from "@/lib/logging";
+
+// --- Importación de Fuentes de Datos Reales ---
+import campaignMap from "@/content/campaigns/12157/campaign.map.json";
+
+const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000";
+
+// --- Funciones Generadoras Atómicas ---
+
+/**
+ * Genera URLs para rutas estáticas y localizadas.
+ */
+function generateStaticPages(): MetadataRoute.Sitemap {
+  const staticRoutes = [routes.home, routes.about, routes.store, routes.news];
+  const pages = staticRoutes.flatMap((route) =>
+    supportedLocales.map((locale) => ({
+      url: `${BASE_URL}${route.path({ locale })}`,
+      lastModified: new Date(),
+      changeFrequency: "weekly" as const,
+      priority: route.path({ locale }) === `/${locale}` ? 1.0 : 0.8,
+    }))
+  );
+  clientLogger.trace(`[Sitemap] Generadas ${pages.length} URLs estáticas.`);
+  return pages;
+}
+
+/**
+ * Genera URLs para todas las variantes de campaña.
+ */
+function generateCampaignPages(): MetadataRoute.Sitemap {
+  const campaignPages = Object.keys(campaignMap.variants).flatMap((variantId) =>
+    supportedLocales.map((locale) => ({
+      url: `${BASE_URL}${routes.campaign.path({ locale, campaignId: campaignMap.productId })}?v=${variantId}`,
+      lastModified: new Date(), // En un caso real, esto vendría de metadatos del archivo.
+      changeFrequency: "monthly" as const,
+      priority: 0.9,
+    }))
+  );
+  clientLogger.trace(
+    `[Sitemap] Generadas ${campaignPages.length} URLs de campañas.`
+  );
+  return campaignPages;
+}
+
+/**
+ * Genera URLs para artículos de noticias (simulado).
+ */
+function generateArticlePages(): MetadataRoute.Sitemap {
+  // SIMULACIÓN: En un proyecto real, estos datos vendrían de un CMS o base de datos.
+  const articles = [{ slug: "5-superalimentos", updatedAt: new Date() }];
+  const articlePages = articles.flatMap((article) =>
+    supportedLocales.map((locale) => ({
+      url: `${BASE_URL}${routes.newsArticle.path({ locale, slug: article.slug })}`,
+      lastModified: article.updatedAt,
+      changeFrequency: "monthly" as const,
+      priority: 0.6,
+    }))
+  );
+  clientLogger.trace(
+    `[Sitemap] Generadas ${articlePages.length} URLs de artículos (simulado).`
+  );
+  return articlePages;
+}
+
+// --- Orquestador Principal del Sitemap ---
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000";
+  clientLogger.startGroup("[Sitemap] Iniciando generación del sitemap...");
 
-  // <<-- 1. GENERACIÓN DINÁMICA DE PÁGINAS ESTÁTICAS -->>
-  // Filtramos el manifiesto de rutas para obtener solo las que son públicas
-  // y no tienen parámetros dinámicos en su path (path no requiere argumentos).
-  const staticPortalPages: MetadataRoute.Sitemap = Object.values(routes)
-    .filter(
-      (route) =>
-        route.type === RouteType.Public &&
-        // Una función que no toma argumentos tiene una longitud de 0.
-        // Esto excluye rutas como /campaigns/[id] o /news/[slug].
-        route.path.length === 0
-    )
-    .map((route) => ({
-      url: `${baseUrl}${route.path()}`,
-      lastModified: new Date(),
-      // Se puede añadir lógica para prioridades diferentes si es necesario.
-      changeFrequency: "weekly",
-      priority: route.path() === "/" ? 1.0 : 0.7,
-    }));
+  try {
+    const staticPages = generateStaticPages();
+    const campaignPages = generateCampaignPages();
+    const articlePages = generateArticlePages();
 
-  // --- Lógica para rutas dinámicas (campañas y artículos) se mantiene ---
-  // En un proyecto real, estos datos vendrían de una base de datos o CMS.
+    const allUrls = [...staticPages, ...campaignPages, ...articlePages];
 
-  // Ejemplo para campañas
-  const campaigns = [{ id: "12157", updatedAt: new Date() }];
-  const campaignPages: MetadataRoute.Sitemap = campaigns.map((campaign) => ({
-    url: `${baseUrl}${routes.campaign.path({ campaignId: campaign.id })}`,
-    lastModified: campaign.updatedAt,
-    changeFrequency: "monthly",
-    priority: 0.9,
-  }));
+    clientLogger.info(
+      `[Sitemap] Generación completada. Total de URLs: ${allUrls.length}.`
+    );
+    clientLogger.endGroup();
 
-  // Ejemplo para artículos de noticias
-  const articles = [{ slug: "5-superalimentos", updatedAt: new Date() }];
-  const articlePages: MetadataRoute.Sitemap = articles.map((article) => ({
-    url: `${baseUrl}${routes.newsArticle.path({ slug: article.slug })}`,
-    lastModified: article.updatedAt,
-    changeFrequency: "monthly",
-    priority: 0.6,
-  }));
-
-  return [...staticPortalPages, ...campaignPages, ...articlePages];
+    return allUrls;
+  } catch (error) {
+    clientLogger.error("[Sitemap] Falló la generación del sitemap.", {
+      error: error instanceof Error ? error.message : String(error),
+    });
+    clientLogger.endGroup();
+    return []; // Devuelve un sitemap vacío en caso de error para no romper el build.
+  }
 }
 // src/app/sitemap.ts

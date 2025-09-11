@@ -2,15 +2,16 @@
 /**
  * @file useUtmTracker.ts
  * @description Hook Atómico de Efecto. Captura parámetros UTM y los persiste en cookies.
- *              Ahora se activa condicionalmente.
- * @version 2.0.0
+ *              Diseñado para ser activado una sola vez por un hook orquestador.
+ * @version 3.0.0
  * @author RaZ podesta - MetaShark Tech
  */
 "use client";
 
-import { useEffect, useCallback } from "react";
+import { useEffect, useRef } from "react";
 import { clientLogger } from "@/lib/logging";
 
+// --- Constantes y Tipos ---
 const UTM_PARAMS = [
   "utm_source",
   "utm_medium",
@@ -20,35 +21,41 @@ const UTM_PARAMS = [
 ] as const;
 type UtmParam = (typeof UTM_PARAMS)[number];
 
+// --- Helpers Puros (Optimizados fuera del hook) ---
+const getParamFromUrl = (name: string): string | null => {
+  if (typeof window === "undefined") return null;
+  const params = new URLSearchParams(window.location.search);
+  return params.get(name);
+};
+
+const setCookie = (name: string, value: string, days: number = 30): void => {
+  let expires = "";
+  if (days) {
+    const date = new Date();
+    date.setTime(date.getTime() + days * 24 * 60 * 60 * 1000);
+    expires = `; expires=${date.toUTCString()}`;
+  }
+  document.cookie = `${name}=${value || ""}${expires}; path=/`;
+};
+
 /**
  * @function useUtmTracker
  * @description Lee los parámetros UTM de la URL y los guarda en cookies.
- * @param {boolean} enabled - Controla si el hook debe ejecutar su lógica.
+ *              Se ejecuta una sola vez cuando el parámetro 'enabled' pasa a ser true.
+ * @param {boolean} enabled - El interruptor de activación proporcionado por el orquestador.
  */
 export function useUtmTracker(enabled: boolean): void {
-  const getParamFromUrl = useCallback((name: string): string | null => {
-    if (typeof window === "undefined") return null;
-    const params = new URLSearchParams(window.location.search);
-    return params.get(name);
-  }, []);
-
-  const setCookie = useCallback(
-    (name: string, value: string, days: number = 30) => {
-      let expires = "";
-      if (days) {
-        const date = new Date();
-        date.setTime(date.getTime() + days * 24 * 60 * 60 * 1000);
-        expires = "; expires=" + date.toUTCString();
-      }
-      document.cookie = `${name}=${value || ""}${expires}; path=/`;
-    },
-    []
-  );
+  const hasExecuted = useRef(false);
 
   useEffect(() => {
-    if (!enabled) return;
+    // El hook solo se ejecuta si está habilitado Y no se ha ejecutado antes.
+    if (!enabled || hasExecuted.current) {
+      return;
+    }
 
-    clientLogger.trace("[useUtmTracker] Verificando parámetros UTM na URL...");
+    clientLogger.startGroup("Hook: useUtmTracker");
+    clientLogger.trace("Activado. Rastreando parâmetros UTM na URL...");
+
     const collectedParams: Partial<Record<UtmParam, string>> = {};
 
     UTM_PARAMS.forEach((paramName) => {
@@ -61,10 +68,16 @@ export function useUtmTracker(enabled: boolean): void {
 
     if (Object.keys(collectedParams).length > 0) {
       clientLogger.info(
-        "[useUtmTracker] Parámetros UTM capturados y persistidos.",
+        "Parámetros UTM capturados y persistidos en cookies.",
         collectedParams
       );
+    } else {
+      clientLogger.trace("No se encontraron parámetros UTM en la URL.");
     }
-  }, [enabled, getParamFromUrl, setCookie]);
+
+    // Marcamos como ejecutado para prevenir futuras ejecuciones.
+    hasExecuted.current = true;
+    clientLogger.endGroup();
+  }, [enabled]); // La única dependencia es el interruptor de activación.
 }
 // src/hooks/tracking/useUtmTracker.ts

@@ -4,12 +4,19 @@
       "logoUrl": "/img/logos/globalfitwell-logo-v2.svg",
       "logoAlt": "Logo de Global Fitwell",
       "campaignPills": [
-        {
-          "label": "Campaña: Curcumina Complex",
-          "href": "/campaigns/curcumina-complex"
-        }
+        { "label": "Campaña: Curcumina", "href": "/campaigns/12157" }
       ],
       "ctaButton": "Únete Ahora"
+    }
+  },
+  "it-IT": {
+    "header": {
+      "logoUrl": "/img/logos/globalfitwell-logo-v2.svg",
+      "logoAlt": "Logo di Global Fitwell",
+      "campaignPills": [
+        { "label": "Campagna: Curcumina", "href": "/campaigns/12157" }
+      ],
+      "ctaButton": "Unisciti Ora"
     }
   },
   "en-US": {
@@ -17,10 +24,7 @@
       "logoUrl": "/img/logos/globalfitwell-logo-v2.svg",
       "logoAlt": "Global Fitwell Logo",
       "campaignPills": [
-        {
-          "label": "Campaign: Curcumina Complex",
-          "href": "/campaigns/curcumina-complex"
-        }
+        { "label": "Campaign: Curcumin", "href": "/campaigns/12157" }
       ],
       "ctaButton": "Join Now"
     }
@@ -30,25 +34,9 @@
       "logoUrl": "/img/logos/globalfitwell-logo-v2.svg",
       "logoAlt": "Logo da Global Fitwell",
       "campaignPills": [
-        {
-          "label": "Campanha: Curcumina Complex",
-          "href": "/campaigns/curcumina-complex"
-        }
+        { "label": "Campanha: Curcumina", "href": "/campaigns/12157" }
       ],
       "ctaButton": "Junte-se Agora"
-    }
-  },
-  "it-IT": {
-    "header": {
-      "logoUrl": "/img/logos/globalfitwell-logo-v2.svg",
-      "logoAlt": "Logo di Global Fitwell",
-      "campaignPills": [
-        {
-          "label": "Campagna: Curcumina Complex",
-          "href": "/campaigns/curcumina-complex"
-        }
-      ],
-      "ctaButton": "Unisciti Ora"
     }
   }
 }

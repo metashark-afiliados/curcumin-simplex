@@ -1,13 +1,27 @@
 // postcss.config.mjs
 /**
  * @file postcss.config.mjs
- * @description Archivo de configuración para PostCSS.
- * @description_es Este archivo es el punto de entrada para el procesamiento de CSS.
- *               Su única responsabilidad es registrar el plugin de Tailwind CSS,
- *               que escanea el código fuente, procesa las directivas de Tailwind
- *               (@theme, @apply, etc.) y genera el archivo CSS final.
- * @version 2.0.0
- * @see https://tailwindcss.com/docs/installation
+ * @description Manifiesto de Configuración y SSoT para el pipeline de PostCSS.
+ *              Este aparato es el punto de entrada para todo el procesamiento de CSS
+ *              del proyecto.
+ * @version 3.0.0
+ * @author RaZ podesta - MetaShark Tech
+ * @see .docs-espejo/postcss.config.md
+ * @see https://tailwindcss.com/docs/installation/using-postcss
+ */
+
+/**
+ * @type {import('postcss-load-config').Config}
+ * @description Configuración de PostCSS.
+ * @property {object} plugins - Define los plugins que se ejecutarán y su orden.
+ * @property {object} plugins.['@tailwindcss/postcss'] - El único plugin necesario
+ *           para un proyecto con Tailwind CSS v4. Este plugin se encarga de:
+ *           1. Leer `tailwind.config.ts` para saber qué archivos escanear.
+ *           2. Escanear los archivos de contenido en busca de clases de Tailwind.
+ *           3. Procesar el CSS de entrada (ej. `globals.css`) para resolver las
+ *              directivas `@theme`, `@layer`, `@apply`, etc.
+ *           4. Generar el CSS final optimizado.
+ *           5. Aplicar prefijos de proveedor (autoprefixer está incluido).
  */
 const config = {
   plugins: {

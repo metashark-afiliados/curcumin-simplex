@@ -1,14 +1,25 @@
-
+/* src/app/globals.css */
 /**
  * @file globals.css
  * @description Archivo CSS global y SSoT para el sistema de diseño de Global Fitwell.
- * @version 3.0.0
+ *              Refactorizado para ser un consumidor puro de tokens de diseño inyectados
+ *              dinámicamente, eliminando la definición de valores hardcodeados.
+ * @version 6.0.0
+ * @author RaZ podesta - MetaShark Tech
  */
 
 @import "tailwindcss";
 
+/*
+ * =============================================================================
+ * SECCIÓN DE THEME SEMÁNTICO
+ * =============================================================================
+ * Define los tokens de diseño que Tailwind utilizará para generar las clases
+ * de utilidad (ej. bg-primary, text-foreground). Estos tokens mapean nombres
+ * semánticos a las variables CSS que serán inyectadas por los layouts.
+ */
 @theme {
-  /* Paleta de Colores Semántica Principal - Global Fitwell */
+  /* Paleta de Colores Semántica Principal */
   --color-primary: hsl(var(--primary));
   --color-primary-foreground: hsl(var(--primary-foreground));
   --color-background: hsl(var(--background));
@@ -16,16 +27,17 @@
   --color-accent: hsl(var(--accent));
   --color-accent-foreground: hsl(var(--accent-foreground));
 
-  /* Colores Semánticos para Variantes */
+  /* Colores Semánticos para Variantes y Elementos de UI */
   --color-secondary: hsl(var(--secondary));
+  --color-secondary-foreground: hsl(var(--secondary-foreground));
   --color-muted: hsl(var(--muted));
   --color-muted-foreground: hsl(var(--muted-foreground));
 
-  /* Tokens de Familia de Fuentes */
-  --font-sans: "Satoshi", sans-serif;
-  --font-serif: "Monument Extended", serif;
+  /* Tokens de Familia de Fuentes (consumen variables inyectadas por layout.tsx) */
+  --font-sans: var(--font-sans);
+  --font-serif: var(--font-serif);
 
-  /* Tokens para Estilos Complejos */
+  /* Tokens para Estilos Complejos (Ej. Gradientes) */
   --image-banner-alert: linear-gradient(
     to right,
     hsl(var(--accent) / 0.8),
@@ -33,30 +45,26 @@
   );
 }
 
+/*
+ * =============================================================================
+ * CAPA BASE (DEFAULTS GLOBALES)
+ * =============================================================================
+ * Define los estilos base aplicados a elementos HTML.
+ * NOTA: La sección :root ya no define valores HSL por defecto. Esa responsabilidad
+ *       ha sido delegada a los layouts que inyectan los estilos dinámicamente.
+ */
 @layer base {
-  /* Valores HSL base para los colores - Paleta Global Fitwell */
-  :root {
-    --primary: 220 60% 26%; /* Azul Cobalto Metalizado */
-    --primary-foreground: 220 15% 95%;
-    --background: 222 25% 8%; /* Negro azulado profundo */
-    --foreground: 220 15% 95%; /* Blanco suave */
-    --accent: 84 100% 59%; /* Verde Lima Neón Fosforescente */
-    --accent-foreground: 84 100% 10%;
-    
-    --secondary: 220 15% 25%;
-    --muted: 220 15% 15%;
-    --muted-foreground: 220 10% 60%;
-  }
-
   body {
-    background-color: theme(colors.background);
-    color: theme(colors.foreground);
-    font-family: theme(fontFamily.sans);
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
+    @apply bg-background text-foreground font-sans antialiased;
   }
 
-  h1, h2, h3 {
-    font-family: theme(fontFamily.serif);
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    @apply font-serif;
   }
 }
+/* src/app/globals.css */

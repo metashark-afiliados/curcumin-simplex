@@ -2,13 +2,13 @@
 /**
  * @file useTrufflePixel.ts
  * @description Hook Atómico de Efecto para el píxel de Truffle.bid.
- *              Ahora se activa condicionalmente.
- * @version 2.0.0
+ *              Diseñado para ser activado una sola vez por un hook orquestador.
+ * @version 3.0.0
  * @author RaZ podesta - MetaShark Tech
  */
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { producerConfig } from "@/config/producer.config";
 import { clientLogger } from "@/lib/logging";
 
@@ -17,18 +17,33 @@ const TRUFFLE_SCRIPT_ID = "truffle-pixel-init";
 /**
  * @function useTrufflePixel
  * @description Gestiona la inyección del script de Truffle.bid.
- * @param {boolean} enabled - Controla si el hook debe ejecutar su lógica.
+ *              Se ejecuta una sola vez cuando el parámetro 'enabled' pasa a ser true.
+ * @param {boolean} enabled - El interruptor de activación proporcionado por el orquestador.
  */
 export function useTrufflePixel(enabled: boolean): void {
+  const hasExecuted = useRef(false);
+
   useEffect(() => {
-    if (!enabled) return;
+    // Guarda de seguridad: Solo se ejecuta si está habilitado y no se ha ejecutado antes.
+    if (!enabled || hasExecuted.current) {
+      return;
+    }
 
     const truffleId = producerConfig.TRACKING.TRUFFLE_PIXEL_ID;
-    if (!truffleId) return;
-    if (document.getElementById(TRUFFLE_SCRIPT_ID)) return;
 
+    // Guarda de seguridad: No hace nada si el ID no está configurado.
+    if (!truffleId) {
+      return;
+    }
+
+    // Guarda de seguridad: Evita la reinyección si el script ya existe en el DOM.
+    if (document.getElementById(TRUFFLE_SCRIPT_ID)) {
+      return;
+    }
+
+    clientLogger.startGroup("Hook: useTrufflePixel");
     clientLogger.trace(
-      `[useTrufflePixel] Inyectando script de Truffle.bid con ID: ${truffleId}`
+      `Activado. Inyectando script de Truffle.bid con ID: ${truffleId}`
     );
 
     const truffleScriptContent = `
@@ -41,10 +56,13 @@ export function useTrufflePixel(enabled: boolean): void {
     script.innerHTML = truffleScriptContent;
     document.head.appendChild(script);
 
-    clientLogger.info(
-      "[useTrufflePixel] Pixel de Truffle.bid inyectado y activado.",
-      { id: truffleId }
-    );
-  }, [enabled]);
+    clientLogger.info("Pixel de Truffle.bid inyectado y activado.", {
+      id: truffleId,
+    });
+
+    // Marcamos como ejecutado para prevenir futuras ejecuciones.
+    hasExecuted.current = true;
+    clientLogger.endGroup();
+  }, [enabled]); // La única dependencia es el interruptor de activación.
 }
 // src/hooks/tracking/useTrufflePixel.ts

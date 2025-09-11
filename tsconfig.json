@@ -1,55 +1,54 @@
-// tsconfig.json
+
 /**
  * @file tsconfig.json
- * @description Configuración de TypeScript Definitiva para Curcumin Simplex.
- * @description_es Resuelve incompatibilidades críticas con el ecosistema moderno
- *               de Next.js y React 19, habilitando `esModuleInterop`.
- * @version 5.0.0
- * @author RaZ podesta - MetaShark Tech
+ * @description Manifiesto de Configuración y SSoT para el compilador de TypeScript.
+ *              Configurado con moduleResolution: "bundler".
+ *              ACTUALIZACIÓN: Añadido el alias "@lib/*" para mejorar la DX.
+ * @version 2.4.0
+ * @author Raz Podestá - MetaShark Tech
  */
 {
   "compilerOptions": {
-    // --- Configuración Base Moderna ---
-    "target": "es2020",
-    "lib": ["dom", "dom.iterable", "esnext"],
-    "allowJs": true,
-    "skipLibCheck": true,
     "strict": true,
-    "forceConsistentCasingInFileNames": true,
+    "noImplicitAny": true,
+    "strictNullChecks": true,
     "noEmit": true,
-
-    // --- SOLUCIÓN A CAUSA RAÍZ: Interoperabilidad de Módulos ---
-    "esModuleInterop": true,
-
+    "isolatedModules": true,
+    "target": "ES2017",
     "module": "esnext",
     "moduleResolution": "bundler",
-    "resolveJsonModule": true,
-    "isolatedModules": true,
+    "lib": ["dom", "dom.iterable", "esnext"],
     "jsx": "preserve",
-    "incremental": true,
-
-    // --- Configuración Específica de Next.js ---
+    "allowJs": true,
+    "esModuleInterop": true,
+    "resolveJsonModule": true,
+    "skipLibCheck": true,
+    "allowImportingTsExtensions": true,
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["./src/*"],
+      "@lib/*": ["./src/lib/*"],
+      "@tests/*": ["./tests/*"],
+      "@config/*": ["./src/config/*"]
+    },
     "plugins": [
       {
         "name": "next"
       }
     ],
-    "paths": {
-      "@/*": ["./src/*"]
-    },
-
-    // --- Tipos para Entorno de Pruebas ---
-    "types": ["vitest/globals"]
+    "incremental": true,
+    "types": ["vitest/globals", "@testing-library/jest-dom"]
   },
   "include": [
     "next-env.d.ts",
-    "**/*.ts",
-    "**/*.tsx",
-    ".next/types/**/*.ts",
-    "vitest.config.ts",
+    "src/**/*.ts",
+    "src/**/*.tsx",
     "tests/**/*.ts",
-    "tests/**/*.tsx"
+    "tests/**/*.tsx",
+    "*.config.js",
+    "*.config.mjs",
+    ".next/types/**/*.ts"
   ],
   "exclude": ["node_modules"]
 }
-// tsconfig.json
+

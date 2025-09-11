@@ -12,6 +12,7 @@
 # El directorio node_modules contiene todas las dependencias instaladas.
 # Nunca debe ser versionado. El archivo pnpm-lock.yaml SÍ debe ser versionado.
 node_modules/
+vendor
 
 # 2. Artefactos de Build y Caching (Next.js / Vercel)
 # ------------------------------------------------------------------------------

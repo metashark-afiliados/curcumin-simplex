@@ -1,32 +1,30 @@
 // tailwind.config.ts
+/**
+ * @file tailwind.config.ts
+ * @description Manifiesto de Configuración para Tailwind CSS v4.
+ *              El rol de este archivo se centra en definir las rutas de contenido que serán escaneadas.
+ *              ACTUALIZACIÓN: Depurada la ruta 'content' para eliminar 'pages'.
+ * @version 4.1.0
+ * @author RaZ podesta - MetaShark Tech
+ * @see src/app/globals.css
+ * @see https://tailwindcss.com/docs/configuration
+ */
 import type { Config } from "tailwindcss";
 
 /**
- * @file tailwind.config.ts
- * @description Configuración de Tailwind CSS v4 para Curcumin Simplex.
- * @version 2.0.0
- * @see https://tailwindcss.com/docs/configuration
- * @description_es Este archivo sigue las mejores prácticas de Tailwind CSS v4.
- *               La configuración del tema (colores, fuentes, etc.) ha sido
- *               movida a `src/app/globals.css` y se gestiona a través de la
- *               directiva `@theme` para un enfoque "CSS-first". Este archivo
- *               solo define las rutas de contenido.
+ * @constant config
+ * @description Configuración de Tailwind CSS.
+ * @property {string[]} content - Un array de patrones glob que le indican a Tailwind
+ *                                qué archivos escanear en busca de clases de utilidad.
+ * @property {any[]} plugins - Array para registrar plugins de Tailwind. Actualmente vacío.
  */
 const config: Config = {
-  // En Tailwind CSS v4, la detección de contenido es en gran parte automática.
-  // La clave `content` se mantiene por claridad y para asegurar la inclusión
-  // explícita de todos los archivos relevantes.
   content: [
-    "./src/pages/**/*.{js,ts,jsx,tsx,mdx}",
     "./src/components/**/*.{js,ts,jsx,tsx,mdx}",
     "./src/app/**/*.{js,ts,jsx,tsx,mdx}",
   ],
-  // La sección `theme` se ha eliminado intencionadamente.
-  // La SSoT para el sistema de diseño ahora reside en `src/app/globals.css`
-  // bajo la directiva `@theme`.
-  plugins: [
-    // Aquí se registrarían plugins si fueran necesarios.
-  ],
+  plugins: [],
 };
+
 export default config;
 // tailwind.config.ts

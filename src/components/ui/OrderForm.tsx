@@ -1,9 +1,10 @@
 // src/components/ui/OrderForm.tsx
 /**
  * @file OrderForm.tsx
- * @description Formulário de pedido final. Refatorizado para atomizar a
- *              exibição de preços, focando exclusivamente na lógica do formulário.
- * @version 4.0.0
+ * @description Formulário de pedido final. Refactorizado para una responsabilidad
+ *              única: gestionar la entrada y envío de datos del usuario, eliminando
+ *              toda la lógica de visualización de precios.
+ * @version 5.0.0
  * @author RaZ podesta - MetaShark Tech
  */
 "use client";
@@ -19,7 +20,6 @@ import { useProducerLogic } from "@/hooks/useProducerLogic";
 import { HiddenFormFields } from "@/components/forms/HiddenFormFields";
 import { FormInput } from "@/components/ui/FormInput";
 import { Button } from "@/components/ui/Button";
-import { PriceDisplay } from "@/components/ui/PriceDisplay"; // <<-- IMPORTADO
 
 // --- Schema y Tipos ---
 const OrderFormSchema = z.object({
@@ -31,13 +31,8 @@ const OrderFormSchema = z.object({
 });
 type OrderFormData = z.infer<typeof OrderFormSchema>;
 
-// --- Props de Contenido i18n ---
+// --- Props de Contenido i18n (Simplificadas) ---
 interface OrderFormProps {
-  locale: string;
-  originalPrice: number;
-  discountedPrice: number;
-  originalPriceLabel: string;
-  discountedPriceLabel: string;
   nameInputLabel: string;
   nameInputPlaceholder: string;
   phoneInputLabel: string;
@@ -47,11 +42,6 @@ interface OrderFormProps {
 }
 
 export function OrderForm({
-  locale,
-  originalPrice,
-  discountedPrice,
-  originalPriceLabel,
-  discountedPriceLabel,
   nameInputLabel,
   nameInputPlaceholder,
   phoneInputLabel,
@@ -59,7 +49,7 @@ export function OrderForm({
   submitButtonText,
   submitButtonLoadingText,
 }: OrderFormProps): React.ReactElement {
-  console.log("[Observabilidad] Renderizando OrderForm");
+  console.log("[Observabilidad] Renderizando OrderForm (Atomizado)");
   const formRef = useRef<HTMLFormElement>(null);
 
   // Activa la lógica de tracking diferido
@@ -83,59 +73,48 @@ export function OrderForm({
   };
 
   return (
-    <div className="rounded-lg border border-white/20 bg-black/30 p-6 shadow-2xl backdrop-blur-md">
-      {/* <<-- LÓGICA DE PRECIOS ATOMIZADA -->> */}
-      <PriceDisplay
-        originalPrice={originalPrice}
-        discountedPrice={discountedPrice}
-        locale={locale}
-        originalPriceLabel={originalPriceLabel}
-        discountedPriceLabel={discountedPriceLabel}
+    <form
+      ref={formRef}
+      onSubmit={handleSubmit(onSubmit)}
+      action={producerConfig.ACTION_URL}
+      method="POST"
+      className="space-y-4 wv_order-form"
+      noValidate
+    >
+      <FormInput
+        id="name"
+        label={nameInputLabel}
+        icon={User}
+        placeholder={nameInputPlaceholder}
+        {...register("name")}
+        error={errors.name?.message}
+        aria-invalid={!!errors.name}
+        autoComplete="name"
+      />
+      <FormInput
+        id="phone"
+        label={phoneInputLabel}
+        icon={Phone}
+        type="tel"
+        placeholder={phoneInputPlaceholder}
+        {...register("phone")}
+        error={errors.phone?.message}
+        aria-invalid={!!errors.phone}
+        autoComplete="tel"
       />
 
-      <form
-        ref={formRef}
-        onSubmit={handleSubmit(onSubmit)}
-        action={producerConfig.ACTION_URL}
-        method="POST"
-        className="space-y-4 wv_order-form"
-        noValidate // Deshabilita la validación del navegador, dejamos que RHF+Zod se encarguen
+      <HiddenFormFields />
+
+      <Button
+        type="submit"
+        size="lg"
+        variant="accent"
+        className="w-full !mt-6"
+        disabled={isSubmitting}
       >
-        <FormInput
-          id="name"
-          label={nameInputLabel}
-          icon={User}
-          placeholder={nameInputPlaceholder}
-          {...register("name")}
-          error={errors.name?.message}
-          aria-invalid={!!errors.name}
-          autoComplete="name"
-        />
-        <FormInput
-          id="phone"
-          label={phoneInputLabel}
-          icon={Phone}
-          type="tel"
-          placeholder={phoneInputPlaceholder}
-          {...register("phone")}
-          error={errors.phone?.message}
-          aria-invalid={!!errors.phone}
-          autoComplete="tel"
-        />
-
-        <HiddenFormFields />
-
-        <Button
-          type="submit"
-          size="lg"
-          variant="accent"
-          className="w-full !mt-6"
-          disabled={isSubmitting}
-        >
-          {isSubmitting ? submitButtonLoadingText : submitButtonText}
-        </Button>
-      </form>
-    </div>
+        {isSubmitting ? submitButtonLoadingText : submitButtonText}
+      </Button>
+    </form>
   );
 }
 // src/components/ui/OrderForm.tsx

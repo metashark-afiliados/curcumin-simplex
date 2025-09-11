@@ -1,39 +1,35 @@
 // .docs/directives/005_ERROR_ANALYSIS_PROTOCOL.md
 /**
- * @file .docs/directives/005_ERROR_ANALYSIS_PROTOCOL.md
+ * @file 005_ERROR_ANALYSIS_PROTOCOL.md
  * @description Directiva de Desarrollo No Negociable 005. Establece el protocolo
- *              para el análisis y resolución de errores.
- * @author IA Ingeniera de Software Senior v2.0
+ *              para el análisis y resolución sistemática de errores.
  * @version 1.0.0
- * @priority 5/5
+ * @author RaZ podesta - MetaShark Tech
  */
+
 # Directiva 005: Protocolo de Análisis de Errores
 
 ## 1. Principio Fundamental
 
-La corrección de errores debe ser un proceso de ingeniería sistemático que aborde la causa raíz fundamental, no solo los síntomas. Cada error es una oportunidad para fortalecer la resiliencia y simplicidad del sistema.
+La corrección de errores es un proceso de ingeniería, no de conjeturas. Cada error debe ser tratado como una oportunidad para fortalecer el sistema. El objetivo no es solo silenciar el error, sino comprender y erradicar su causa raíz fundamental, aplicando una visión holística para prevenir regresiones.
 
 ## 2. Regla Mandatoria (Workflow de Análisis de Error)
 
-Ante la presentación de una traza de error, se debe seguir el siguiente protocolo secuencial de análisis antes de proponer cualquier modificación de código:
+Ante la presentación de una o más trazas de error, se debe seguir rigurosamente el siguiente protocolo secuencial:
 
-1.  **Identificación y Recopilación de Evidencia:**
-    *   Identificar el código de error (ej. `TS2322`) y el mensaje.
-    *   Identificar el aparato o aparatos donde se origina y manifiesta el error.
-    *   Consultar la última versión de los aparatos implicados (snapshot o refactorización previa) para establecer una línea base.
+1.  **Agrupación y Priorización:** Listar todos los errores y agruparlos por su causa raíz común. Identificar los errores sistémicos (aquellos que afectan a múltiples aparatos) como de máxima prioridad.
 
-2.  **Análisis de Causa Raíz (RCA):**
-    *   Formular un diagnóstico preciso del problema.
-    *   Desarrollar hipótesis probables sobre la causa raíz, considerando la interacción entre aparatos (visión holística 360°).
-    *   Contrastar las hipótesis contra el proyecto completo para entender el impacto sistémico.
+2.  **Aislamiento de la Causa Raíz (RCA) por Grupo:** Para cada grupo de errores:
+    *   **Identificar Aparatos Implicados:** Listar el aparato donde el error se manifiesta y cualquier aparato relacionado (dependencias, consumidores).
+    *   **Consultar SSoT:** Revisar el último snapshot de todos los aparatos implicados.
+    *   **Formular Hipótesis:** Basado en la evidencia (mensaje de error, código, arquitectura del proyecto), formular una o más hipótesis sobre la causa fundamental del problema.
+    *   **Validación y Descarte:** Contrastar cada hipótesis contra la lógica del sistema para validarla o descartarla, hasta aislar la causa definitiva.
 
-3.  **Propuesta de Solución Holística:**
-    *   Diseñar la solución más simple y directa que resuelva la causa raíz.
-    *   La solución propuesta **no debe introducir ninguna regresión**, ni funcional ni de lógica.
-    *   La solución debe priorizar la simplificación del código existente siempre que sea posible.
+3.  **Diseño de la Solución Holística:**
+    *   Proponer una solución que resuelva la causa raíz para **todos** los aparatos del grupo afectado. La solución debe priorizar la simplicidad, la consistencia arquitectónica y el cumplimiento de los principios SOLID y DRY.
+    *   Verificar que la solución no introduce regresiones funcionales o de tipo.
 
-## 3. Adenda (Directiva de Solución de Élite)
+4.  **Documentación del Aprendizaje (Opcional pero Recomendado):** Si el error revela una interacción compleja o un patrón no obvio del framework o de nuestra arquitectura, el aprendizaje debe ser documentado en la base de conocimiento (`/.docs/knowledge-base/`) para futura referencia.
 
-Al proponer una solución, se debe auditar activamente si existe una alternativa arquitectónica superior que, aunque potencialmente más compleja de implementar, resulte en un sistema más robusto, mantenible o seguro a largo plazo. Si dicha alternativa existe, debe ser presentada y justificada como la "solución de élite" recomendada.
-
+5.  **Ejecución y Entrega:** Implementar la solución refactorizando todos los aparatos afectados, siguiendo el protocolo de entrega de código.
 // .docs/directives/005_ERROR_ANALYSIS_PROTOCOL.md
