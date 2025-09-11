@@ -2,9 +2,9 @@
 /**
  * @file layout.tsx (Grupo de Desarrollo)
  * @description Layout para el entorno de desarrollo.
- *              Valida la corrección del error de tipo de Next.js
- *              (TS1360) al esperar explícitamente los parámetros (`await params`).
- * @version 4.1.0
+ *              Versión definitiva que resuelve el error de tipo RSC TS1360
+ *              al esperar explícitamente (`await`) la prop `params`.
+ * @version 5.0.0
  * @author RaZ podesta - MetaShark Tech
  * @see .docs-espejo/app/[locale]/(dev)/dev/layout.tsx.md
  */
@@ -21,8 +21,11 @@ interface DevLayoutProps {
 }
 
 export default async function DevLayout({ children, params }: DevLayoutProps) {
-  // <<-- CORRECCIÓN VALIDADA: 'params' es esperado correctamente.
+  // <<-- SOLUCIÓN DEFINITIVA (TS1360): Se espera la resolución de la Promise de `params`.
+  //      Esto asegura que `awaitedParams` es un objeto y no una Promise,
+  //      satisfaciendo el contrato de tipos esperado por los componentes hijos.
   const awaitedParams = await params;
+
   clientLogger.info(
     `[DevLayout] Aplicando layout para locale: ${awaitedParams.locale}`
   );

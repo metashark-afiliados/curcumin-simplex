@@ -1,47 +1,27 @@
-// src/components/dev/utils/route-menu.generator.tsx
+// src/components/dev/utils/route-menu.generator.ts
 /**
- * @file route-menu.generator.tsx
- * @description Aparato helper para generar la estructura de datos del menú de desarrollo.
- *              Refactorizado para utilizar un sistema de mapeo de iconos dinámico,
- *              desacoplando la lógica de datos de la presentación de la UI.
- *              Se ha renombrado a .tsx para corregir el error de sintaxis JSX.
- * @version 3.0.0
+ * @file route-menu.generator.ts
+ * @description Aparato de lógica pura para generar la estructura de datos del menú de desarrollo.
+ * @version 4.0.0
  * @author RaZ podesta - MetaShark Tech
  */
-import React from "react";
 import { type LucideIconName } from "@/config/lucide-icon-names";
 import { producerConfig } from "@/config/producer.config";
 import { routes } from "@/lib/navigation";
 import { type Locale } from "@/lib/i18n.config";
 import { type Dictionary } from "@/lib/schemas/i18n.schema";
 
-/**
- * @interface RouteItem
- * @description Define el nuevo contrato de datos para un ítem del menú.
- *              Ahora utiliza `iconName` en lugar de un elemento React.
- */
 export interface RouteItem {
   name: string;
   path: string;
-  iconName: LucideIconName; // <<-- MEJORA ARQUITECTÓNICA
+  iconName: LucideIconName;
 }
 
-/**
- * @interface RouteGroup
- * @description Define la estructura de un grupo de enlaces en el menú.
- */
 export interface RouteGroup {
   groupName: string;
   items: RouteItem[];
 }
 
-/**
- * @function generateDevRoutes
- * @description Construye la estructura de datos completa para el DevRouteMenu.
- * @param {NonNullable<Dictionary["devRouteMenu"]>} dictionary - El diccionario de i18n.
- * @param {Locale} locale - El locale actual para construir las URLs.
- * @returns {RouteGroup[]} El array de grupos de rutas para renderizar.
- */
 export function generateDevRoutes(
   dictionary: NonNullable<Dictionary["devRouteMenu"]>,
   locale: Locale
@@ -126,4 +106,4 @@ export function generateDevRoutes(
     },
   ];
 }
-// src/components/dev/utils/route-menu.generator.tsx
+// src/components/dev/utils/route-menu.generator.ts

@@ -2,9 +2,7 @@
 /**
  * @file DevHomepageHeader.tsx
  * @description Header de desarrollo para la página de inicio.
- *              Refactorizado para consumir la SSoT de utilidades de i18n.
- * @devonly
- * @version 3.0.0
+ * @version 5.0.0
  * @author RaZ podesta - MetaShark Tech
  */
 "use client";
@@ -12,12 +10,12 @@
 import React from "react";
 import Link from "next/link";
 import { Container } from "@/components/ui/Container";
-import { DevRouteMenu } from "@/components/dev/DevRouteMenu";
 import { clientLogger } from "@/lib/logging";
 import type { Dictionary } from "@/lib/schemas/i18n.schema";
 import { usePathname } from "next/navigation";
-import { getCurrentLocaleFromPathname } from "@/lib/i18n.utils"; // <<-- MEJORA
+import { getCurrentLocaleFromPathname } from "@/lib/i18n.utils";
 import { routes } from "@/lib/navigation";
+import DevToolsDropdown from "../dev/DevToolsDropdown";
 
 interface DevHomepageHeaderProps {
   dictionary: NonNullable<Dictionary["devHomepageHeader"]>;
@@ -32,7 +30,7 @@ export function DevHomepageHeader({
     "[DevHomepageHeader] Renderizando DevHomepageHeader (DEV-ONLY)"
   );
   const pathname = usePathname();
-  const currentLocale = getCurrentLocaleFromPathname(pathname); // <<-- MEJORA
+  const currentLocale = getCurrentLocaleFromPathname(pathname);
 
   return (
     <header className="py-3 sticky top-0 z-50 bg-red-900/90 backdrop-blur-lg border-b border-red-700">
@@ -66,7 +64,7 @@ export function DevHomepageHeader({
           </nav>
 
           <div className="ml-auto">
-            <DevRouteMenu dictionary={devRouteMenuDictionary} />
+            <DevToolsDropdown devDictionary={devRouteMenuDictionary} />
           </div>
         </div>
       </Container>

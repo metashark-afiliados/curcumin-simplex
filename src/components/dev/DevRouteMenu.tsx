@@ -1,123 +1,64 @@
 // src/components/dev/DevRouteMenu.tsx
 /**
  * @file DevRouteMenu.tsx
- * @description Menú de Navegación de Rutas de Desarrollo.
- *              Refactorizado para consumir la SSoT de utilidades de i18n,
- *              y para renderizar iconos dinámicamente usando el componente DynamicIcon.
- * @devonly
- * @version 5.0.0
+ * @description Menú desplegable con rutas de desarrollo y herramientas.
+ *              - v18.0.0: Resuelve la advertencia de deprecación de `legacyBehavior`
+ *                en `next/link`, adoptando el patrón de renderizado moderno.
+ * @version 18.0.0
  * @author RaZ podesta - MetaShark Tech
  */
 "use client";
 
-import React, { Fragment, useState, useRef, useEffect } from "react";
-import { useRouter, usePathname } from "next/navigation";
-import { Globe, ChevronDown, ExternalLink } from "lucide-react";
-import { twMerge } from "tailwind-merge";
-import { clientLogger } from "@/lib/logging";
-import { getCurrentLocaleFromPathname } from "@/lib/i18n.utils";
-import type { Dictionary } from "@/lib/schemas/i18n.schema";
+import { Wrench } from "lucide-react";
+import Link from "next/link";
+import { Button } from "@/components/ui/Button";
 import {
-  generateDevRoutes,
-  type RouteGroup,
-  type RouteItem,
-} from "./utils/route-menu.generator";
-import { DynamicIcon } from "@/components/ui/DynamicIcon"; // <<-- IMPORTACIÓN DEL NUEVO APARATO
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuGroup,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/DropdownMenu";
+import DynamicIcon from "@/components/ui/DynamicIcon";
+import { type RouteGroup } from "./utils/route-menu.generator";
 
 interface DevRouteMenuProps {
-  dictionary: NonNullable<Dictionary["devRouteMenu"]>;
-  className?: string;
+  routeGroups: RouteGroup[];
 }
 
-export function DevRouteMenu({
-  dictionary,
-  className,
-}: DevRouteMenuProps): React.ReactElement {
-  clientLogger.info("[DevRouteMenu] Renderizando componente de presentación");
-  const router = useRouter();
-  const pathname = usePathname();
-  const menuRef = useRef<HTMLDivElement>(null);
-  const [isOpen, setIsOpen] = useState(false);
-
-  const currentLocale = getCurrentLocaleFromPathname(pathname);
-  const devRoutes = generateDevRoutes(dictionary, currentLocale);
-
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
-        setIsOpen(false);
-      }
-    };
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, []);
-
-  const handleNavigation = (path: string) => {
-    clientLogger.info(`[DevRouteMenu] Navegando a: ${path}`);
-    router.push(path);
-    setIsOpen(false);
-  };
-
-  const MenuSection = ({ group }: { group: RouteGroup }) => (
-    <>
-      <div className="px-4 pt-3 pb-1 text-xs font-semibold uppercase text-muted-foreground">
-        {group.groupName}
-      </div>
-      {group.items.map((routeItem: RouteItem) => (
-        <button
-          key={routeItem.path}
-          onClick={() => handleNavigation(routeItem.path)}
-          className={twMerge(
-            "flex w-full items-center justify-between px-4 py-2.5 text-left text-sm transition-colors",
-            pathname === routeItem.path
-              ? "bg-primary/10 font-semibold text-primary"
-              : "text-foreground hover:bg-muted"
-          )}
-          role="menuitem"
-        >
-          <span className="flex items-center gap-2">
-            {/* <<-- REFACTORIZACIÓN: Uso de DynamicIcon --> */}
-            <DynamicIcon name={routeItem.iconName} className="h-4 w-4 text-current" />
-            {routeItem.name}
-          </span>
-          <ExternalLink className="h-4 w-4 text-muted-foreground opacity-50" />
-        </button>
-      ))}
-    </>
-  );
-
+export const DevRouteMenu = ({ routeGroups }: DevRouteMenuProps) => {
   return (
-    <div ref={menuRef} className={twMerge("relative", className)}>
-      <button
-        onClick={() => setIsOpen(!isOpen)}
-        className="flex items-center gap-2 px-3 py-2 rounded-md bg-accent text-accent-foreground hover:bg-accent/90 transition-colors"
-        aria-haspopup="true"
-        aria-expanded={isOpen}
-      >
-        <Globe size={18} />
-        <span className="text-sm font-medium">
-          {currentLocale.toUpperCase()}
-        </span>
-        <ChevronDown
-          size={16}
-          className={`transition-transform duration-200 ${isOpen ? "rotate-180" : ""}`}
-        />
-      </button>
-
-      {isOpen && (
-        <div
-          className="absolute right-0 mt-2 w-80 origin-top-right rounded-md bg-background py-2 shadow-2xl ring-1 ring-white/10 focus:outline-none"
-          role="menu"
-          aria-orientation="vertical"
-        >
-          <div className="max-h-[70vh] overflow-y-auto">
-            {devRoutes.map((group) => (
-              <MenuSection key={group.groupName} group={group} />
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <Button variant="accent" size="sm">
+          <Wrench className="mr-2 h-4 w-4" />
+          Dev Menu
+        </Button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent className="w-64" align="end">
+        {routeGroups.map((group) => (
+          <DropdownMenuGroup key={group.groupName}>
+            <DropdownMenuLabel>{group.groupName}</DropdownMenuLabel>
+            {group.items.map((item) => (
+              // <<-- SOLUCIÓN DE INGENIERÍA APLICADA -->>
+              // Se eliminan las props `legacyBehavior` y `passHref`.
+              // El componente <Link> ahora renderiza la etiqueta <a> por sí mismo,
+              // y <DropdownMenuItem> es su hijo directo. Esto alinea el código
+              // con las mejores prácticas de Next.js App Router.
+              <Link href={item.path} key={item.path}>
+                <DropdownMenuItem>
+                  <DynamicIcon name={item.iconName} className="mr-3 h-4 w-4" />
+                  <span>{item.name}</span>
+                </DropdownMenuItem>
+              </Link>
             ))}
-          </div>
-        </div>
-      )}
-    </div>
+            <DropdownMenuSeparator />
+          </DropdownMenuGroup>
+        ))}
+      </DropdownMenuContent>
+    </DropdownMenu>
   );
-}
+};
 // src/components/dev/DevRouteMenu.tsx

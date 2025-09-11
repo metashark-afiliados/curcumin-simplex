@@ -1,71 +1,83 @@
 // src/components/ui/DynamicIcon.tsx
 /**
  * @file DynamicIcon.tsx
- * @description Componente de UI atómico y de alto rendimiento para renderizado
- *              isomorfo de iconos. Refactorizado para importar correctamente la
- *              utilidad 'cn' desde el manifiesto de módulo de utilidades.
- * @version 1.3.0
+ * @description Componente para renderizar dinámicamente iconos de lucide-react.
+ *              - v15.0.0: Resuelve un bug crítico en la lógica de conversión
+ *                `pascalToKebab`, asegurando la correcta generación de nombres de
+ *                archivo para la importación dinámica de iconos.
+ * @version 15.0.0
  * @author RaZ podesta - MetaShark Tech
  */
-"use client";
-
+import { FunctionComponent } from "react";
 import dynamic from "next/dynamic";
-import React, { memo } from "react";
-import { icons, Loader2, HelpCircle, type LucideProps } from "lucide-react";
+import { LucideProps } from "lucide-react";
+import dynamicIconImports from "lucide-react/dynamicIconImports";
+import { cn } from "@/lib/utils";
 import { type LucideIconName } from "@/config/lucide-icon-names";
-import { clientLogger } from "@/lib/logging";
-import { cn } from "@/lib/utils"; // <<-- RUTA CORREGIDA Y AHORA VÁLIDA
 
-const pascalToCamelCase = (str: string): keyof typeof icons => {
-  return (str.charAt(0).toLowerCase() + str.slice(1)) as keyof typeof icons;
+const DYNAMIC_ICON_CONFIG = {
+  DEFAULT_SIZE: 24,
+  DEFAULT_PROPS: {
+    strokeWidth: 2,
+    "aria-hidden": true,
+    focusable: false,
+  },
+};
+
+// <<-- SOLUCIÓN DE INGENIERÍA: Función de conversión robusta y corregida -->>
+/**
+ * @function pascalToKebab
+ * @description Convierte una cadena en PascalCase a kebab-case.
+ * @param {string} str - La cadena de entrada (ej. "FlaskConical").
+ * @returns {string} La cadena convertida (ej. "flask-conical").
+ */
+const pascalToKebab = (str: string) => {
+  return str.replace(/([a-z0-9]|(?=[A-Z]))([A-Z])/g, "$1-$2").toLowerCase();
 };
 
 interface DynamicIconProps extends LucideProps {
   name: LucideIconName;
 }
 
-const fallbackIcon = (className?: string): React.ReactElement => (
-  <HelpCircle
-    className={cn("h-4 w-4 text-destructive", className)}
-    aria-label="Icono no disponible"
-  />
-);
+const DynamicIcon: FunctionComponent<DynamicIconProps> = ({
+  name,
+  className,
+  ...props
+}) => {
+  const kebabCaseName = pascalToKebab(name) as keyof typeof dynamicIconImports;
 
-export const DynamicIcon = memo(
-  ({ name, className, ...props }: DynamicIconProps): React.ReactElement => {
-    const iconNameInCamelCase = pascalToCamelCase(name);
-
-    const LucideIcon = dynamic(
-      async () => {
-        try {
-          const iconComponent = icons[iconNameInCamelCase];
-          if (!iconComponent) {
-            throw new Error(
-              `Icono '${name}' (camelCase: '${iconNameInCamelCase}') no encontrado en 'lucide-react'.`
-            );
-          }
-          return iconComponent;
-        } catch (error) {
-          clientLogger.error(
-            `[DynamicIcon] Error al cargar el icono '${name}'.`,
-            { error }
-          );
-          const FallbackComponent = () => fallbackIcon(className);
-          FallbackComponent.displayName = "IconFallback";
-          return FallbackComponent;
-        }
-      },
-      {
-        loading: () => (
-          <Loader2 className={cn("h-4 w-4 animate-spin", className)} />
-        ),
-        ssr: true,
-      }
-    ) as React.ComponentType<LucideProps>;
-
-    return <LucideIcon className={className} {...props} />;
+  // Valida que el icono convertido exista en el manifiesto
+  if (!dynamicIconImports[kebabCaseName]) {
+    console.error(
+      `[DynamicIcon] Icono no encontrado: ${name} (convertido a ${kebabCaseName})`
+    );
+    // Renderiza un icono de fallback visible para facilitar la depuración
+    const FallbackIcon = dynamic(dynamicIconImports["help-circle"]);
+    return <FallbackIcon color="red" {...props} />;
   }
-);
 
-DynamicIcon.displayName = "DynamicIcon";
+  const LucideIcon = dynamic(dynamicIconImports[kebabCaseName], {
+    loading: () => (
+      <div
+        style={{
+          width: props.size ?? DYNAMIC_ICON_CONFIG.DEFAULT_SIZE,
+          height: props.size ?? DYNAMIC_ICON_CONFIG.DEFAULT_SIZE,
+        }}
+        className="animate-pulse bg-muted/50 rounded-md"
+      />
+    ),
+  });
+
+  const combinedClassName = cn("lucide-icon", className);
+
+  return (
+    <LucideIcon
+      {...DYNAMIC_ICON_CONFIG.DEFAULT_PROPS}
+      {...props}
+      className={combinedClassName}
+    />
+  );
+};
+
+export default DynamicIcon;
 // src/components/ui/DynamicIcon.tsx

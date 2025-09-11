@@ -2,24 +2,22 @@
 /**
  * @file tsconfig.json
  * @description Manifiesto de Configuración y SSoT para el compilador de TypeScript.
- *              Refactorizado para adoptar la resolución de módulos "bundler",
- *              habilitar la interoperabilidad de módulos ESM/CJS, y limpiar las
- *              rutas y patrones de inclusión para una configuración robusta y moderna.
- * @version 4.0.0
+ *              Versión definitiva con "moduleResolution": "bundler" para resolver
+ *              errores de importación de módulos (TS2307) de forma nativa.
+ * @version 5.0.0
  * @author RaZ podesta - MetaShark Tech
  */
 {
   "compilerOptions": {
-    // --- Rigor y Calidad de Código ---
     "strict": true,
     "noEmit": true,
     "isolatedModules": true,
-
-    // --- Compatibilidad y Entorno de Ejecución ---
-    "target": "ES2020", // Actualizado para características modernas de JS
+    "target": "ES2020",
     "module": "esnext",
-    "moduleResolution": "bundler", // <<-- MEJORA CRÍTICA: Soluciona errores TS2307
-    "esModuleInterop": true, // <<-- MEJORA CRÍTICA: Permite importaciones default de módulos CJS
+    // <<-- SOLUCIÓN CRÍTICA: "bundler" permite la resolución de módulos sin extensión,
+    //      igual que como lo hace Next.js, resolviendo los errores TS2307.
+    "moduleResolution": "bundler",
+    "esModuleInterop": true,
     "lib": ["dom", "dom.iterable", "esnext"],
     "jsx": "preserve",
     "allowJs": true,
@@ -27,8 +25,6 @@
     "skipLibCheck": true,
     "allowImportingTsExtensions": true,
     "incremental": true,
-
-    // --- Rutas y Alias (SSoT de Navegación del Código) ---
     "baseUrl": ".",
     "paths": {
       "@/*": ["./src/*"],
@@ -39,8 +35,6 @@
       "@scripts/*": ["./scripts/*"],
       "@tests/*": ["./tests/*"]
     },
-
-    // --- Integración con Framework y Herramientas ---
     "plugins": [
       {
         "name": "next"

@@ -1,37 +1,33 @@
-// RUTA: src/components/layout/LanguageSwitcher.tsx
+// src/components/layout/LanguageSwitcher.tsx
 /**
- * @file Language Switcher Component
- * @description Renders a dropdown menu for selecting the campaign language.
- *
- * @author Your Name
- * @version 1.0.0
+ * @file LanguageSwitcher.tsx
+ * @description Componente de UI puro y atómico para cambiar el idioma.
+ *              Refactorizado para ser data-driven y completamente reutilizable.
+ * @version 2.0.0
+ * @author RaZ podesta - MetaShark Tech
  */
 "use client";
 
-import { useState, useRef, useEffect } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { useRouter, usePathname } from "next/navigation";
 import { Globe, ChevronDown } from "lucide-react";
+import { type Locale } from "@/lib/i18n.config";
+import { clientLogger } from "@/lib/logging";
 
-interface Language {
-  code: string;
-  name: string;
+interface LanguageSwitcherProps {
+  currentLocale: Locale;
+  supportedLocales: readonly string[];
 }
 
-const availableLanguages: Language[] = [
-  { code: "en-US", name: "English (USA)" },
-  { code: "en-CA", name: "English (CAN)" },
-  { code: "fr-CA", name: "Français (CAN)" },
-  { code: "pt-BR", name: "Português (BRA)" },
-];
-
-export function LanguageSwitcher() {
+export function LanguageSwitcher({
+  currentLocale,
+  supportedLocales,
+}: LanguageSwitcherProps): React.ReactElement {
+  clientLogger.info("[LanguageSwitcher] Renderizando componente puro.");
   const [isOpen, setIsOpen] = useState(false);
   const router = useRouter();
   const pathname = usePathname();
   const menuRef = useRef<HTMLDivElement>(null);
-
-  const currentLangCode = pathname.split('/')[3] || 'en-US';
-  const currentLanguage = availableLanguages.find(lang => lang.code === currentLangCode) || availableLanguages[0];
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -43,10 +39,10 @@ export function LanguageSwitcher() {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  const handleLanguageChange = (langCode: string) => {
-    const segments = pathname.split('/');
-    segments[3] = langCode; // Reemplaza el locale en la URL
-    const newPath = segments.join('/');
+  const handleLanguageChange = (newLocale: string) => {
+    const segments = pathname.split("/");
+    segments[1] = newLocale; // El locale es siempre el primer segmento
+    const newPath = segments.join("/");
     router.push(newPath);
     setIsOpen(false);
   };
@@ -55,35 +51,38 @@ export function LanguageSwitcher() {
     <div ref={menuRef} className="relative">
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="flex items-center gap-2 text-white px-3 py-2 rounded-md hover:bg-white/10 transition-colors"
+        className="flex items-center gap-2 px-3 py-2 rounded-md bg-secondary text-secondary-foreground hover:bg-secondary/80 transition-colors"
         aria-haspopup="true"
         aria-expanded={isOpen}
-        aria-label={`Change language, current language is ${currentLanguage.name}`}
       >
         <Globe size={18} />
-        <span className="text-sm font-medium">{currentLanguage.code.toUpperCase()}</span>
-        <ChevronDown size={16} className={`transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`} />
+        <span className="text-sm font-medium">
+          {currentLocale.toUpperCase()}
+        </span>
+        <ChevronDown
+          size={16}
+          className={`transition-transform duration-200 ${isOpen ? "rotate-180" : ""}`}
+        />
       </button>
 
       {isOpen && (
-        <div className="absolute right-0 mt-2 w-48 origin-top-right rounded-md bg-white shadow-2xl ring-1 ring-black ring-opacity-5 focus:outline-none">
-          <div className="py-1">
-            {availableLanguages.map((lang) => (
-              <button
-                key={lang.code}
-                onClick={() => handleLanguageChange(lang.code)}
-                className={`flex items-center w-full px-4 py-2 text-sm text-left transition-colors ${
-                  currentLangCode === lang.code
-                    ? "bg-gray-100 text-gray-900"
-                    : "text-gray-700 hover:bg-gray-100"
-                }`}
-              >
-                {lang.name}
-              </button>
-            ))}
-          </div>
+        <div className="absolute right-0 mt-2 w-48 origin-top-right rounded-md bg-background py-1 shadow-2xl ring-1 ring-white/10 focus:outline-none">
+          {supportedLocales.map((locale) => (
+            <button
+              key={locale}
+              onClick={() => handleLanguageChange(locale)}
+              className={`flex items-center w-full px-4 py-2 text-sm text-left transition-colors ${
+                currentLocale === locale
+                  ? "bg-primary/10 font-semibold text-primary"
+                  : "text-foreground hover:bg-muted"
+              }`}
+            >
+              {locale.toUpperCase()}
+            </button>
+          ))}
         </div>
       )}
     </div>
   );
 }
+// src/components/layout/LanguageSwitcher.tsx

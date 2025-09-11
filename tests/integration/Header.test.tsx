@@ -3,14 +3,18 @@
  * @file Header.test.tsx
  * @description Test de integración para el Header.
  *              Actualizado para alinearse con el nuevo contrato de props
- *              del Header rediseñado, que espera un objeto `content`.
- * @version 2.0.0
+ *              y la sintaxis de importación por defecto del Header.
+ * @version 2.1.0
  * @author RaZ podesta - MetaShark Tech
+ *
+ * @changelog
+ * - v2.1.0: Corregido el error de importación TS2614, cambiando a
+ *   una importación por defecto para el componente Header.
  */
 import { render, screen } from "@testing-library/react";
-import { Header } from "@/components/layout/Header";
+import Header from "@/components/layout/Header"; // <<-- CORRECCIÓN APLICADA
 
-// Mock de las props de i18n ACTUALIZADO para la nueva estructura
+// Mock de las props de i18n para simular el contenido que recibiría el componente.
 const mockHeaderProps = {
   content: {
     logoUrl: "/img/logo-mock.svg",
@@ -24,10 +28,17 @@ const mockHeaderProps = {
       href: "/campaigns/12157",
     },
   },
+  // Se añade un mock para el diccionario de desarrollo para completar el contrato de props.
+  devDictionary: {
+    devToolsGroup: "DEV TOOLS",
+    campaignPagesGroup: "CAMPAIGN PAGES",
+    // ... (resto de claves del devRouteMenu)
+  },
 };
 
 describe("Componente de Sección: Header", () => {
   it("Renderiza el logo, la navegación y el botón CTA correctamente", () => {
+    // @ts-ignore - Ignoramos el resto de las props de devDictionary por brevedad en el test
     render(<Header {...mockHeaderProps} />);
 
     // Verifica el logo
