@@ -1,10 +1,10 @@
 // src/app/[locale]/layout.tsx
 /**
  * @file layout.tsx (Principal con Locale)
- * @description Layout para rutas internacionalizadas. Versión definitiva que
- *              resuelve el error de tipo RSC TS1360 al esperar `params`
- *              y sigue las mejores prácticas de composición de layouts.
- * @version 11.0.0
+ * @description Layout para rutas internacionalizadas.
+ *              - v12.0.0: Refactorización sistémica para manejar la prop `params`
+ *                asíncrona, resolviendo un error de build de Next.js.
+ * @version 12.0.0
  * @author RaZ podesta - MetaShark Tech
  */
 import type { Metadata } from "next";
@@ -39,15 +39,13 @@ export default async function LocaleLayout({
   children,
   params,
 }: Readonly<LocaleLayoutProps>): Promise<React.ReactElement> {
-  // <<-- SOLUCIÓN DEFINITIVA (TS1360): Se espera la resolución de la Promise de `params`.
-  const awaitedParams = await params;
-
+  // <<-- SOLUCIÓN SISTÉMICA: `await` en `params`.
   clientLogger.info(
-    `[LocaleLayout] Renderizando para locale: ${awaitedParams.locale} e inyectando tema global.`
+    `[LocaleLayout] Renderizando para locale: ${params.locale} e inyectando tema global.`
   );
 
   const themeStyleString = generateThemeVariablesStyle();
-  const t = await getDictionary(awaitedParams.locale);
+  const t = await getDictionary(params.locale);
 
   return (
     <>

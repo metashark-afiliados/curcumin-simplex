@@ -1,12 +1,12 @@
 // src/app/layout.tsx
 /**
  * @file layout.tsx (Raíz)
- * @description Layout raíz definitivo. Resuelve el error de tipo RSC TS1360
- *              al esperar correctamente la prop `params`.
- * @version 4.0.0
+ * @description Layout raíz definitivo.
+ *              - v5.0.0: Refactorización sistémica para manejar la prop `params`
+ *                asíncrona, resolviendo un error de build de Next.js.
+ * @version 5.0.0
  * @author RaZ podesta - MetaShark Tech
  */
-import type { Metadata } from "next";
 import { Inter, Poppins } from "next/font/google";
 import { type Locale } from "@/lib/i18n.config";
 import "@/app/globals.css";
@@ -27,11 +27,10 @@ export default async function RootLayout({
   children,
   params,
 }: RootLayoutProps) {
-  // <<-- SOLUCIÓN TS1360: Se espera la resolución de la Promise de `params`.
-  const awaitedParams = await params;
+  // <<-- SOLUCIÓN SISTÉMICA: La función es `async`, `params` se resuelve implícitamente.
   return (
     <html
-      lang={awaitedParams.locale}
+      lang={params.locale}
       className={`${inter.variable} ${poppins.variable}`}
     >
       <body>{children}</body>

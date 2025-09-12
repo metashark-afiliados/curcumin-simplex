@@ -1,17 +1,19 @@
 // src/components/ui/Button.tsx
 /**
  * @file Button.tsx
- * @description Un componente de botón atómico y polimórfico con un sistema
- *              completo de variantes estilísticas y de tamaño.
- * @version 3.5.0
- * @dependencies react, next/link, clsx, tailwind-merge
+ * @description Un componente de botón atómico y polimórfico.
+ *              - v4.0.0: Refactorización arquitectónica para corregir la fuga de
+ *                propiedades ("prop leakage") al DOM, aislando las props del
+ *                componente de los atributos nativos del elemento.
+ * @version 4.0.0
+ * @author RaZ podesta - MetaShark Tech
+ * @see .docs-espejo/components/ui/Button.tsx.md
  */
 import React from "react";
 import Link from "next/link";
 import { clsx } from "clsx";
 import { twMerge } from "tailwind-merge";
 
-// --- Definición de Variantes y Tamaños ---
 const variants = {
   default: "bg-primary text-primary-foreground hover:bg-primary/90",
   success: "bg-success text-success-foreground hover:bg-success/90",
@@ -33,38 +35,34 @@ const sizes = {
 type ButtonVariant = keyof typeof variants;
 type ButtonSize = keyof typeof sizes;
 
-// --- Definiciones de Tipos (Props) ---
 type BaseButtonProps = {
-  children: React.ReactNode;
-  className?: string;
   variant?: ButtonVariant;
   size?: ButtonSize;
+  className?: string;
+  children: React.ReactNode;
 };
 
-// Hereda todos los atributos de un <button> estándar.
+// Se utiliza un tipo base y se extiende con los atributos nativos del botón
 type ButtonAsButton = BaseButtonProps &
-  React.ButtonHTMLAttributes<HTMLButtonElement> & {
+  Omit<React.ButtonHTMLAttributes<HTMLButtonElement>, keyof BaseButtonProps> & {
     href?: never;
   };
 
-// Hereda todos los atributos de un <a> estándar.
+// Se utiliza un tipo base y se extiende con los atributos nativos del ancla
 type ButtonAsLink = BaseButtonProps &
-  React.AnchorHTMLAttributes<HTMLAnchorElement> & {
+  Omit<React.AnchorHTMLAttributes<HTMLAnchorElement>, keyof BaseButtonProps> & {
     href: string;
   };
 
 type ButtonProps = ButtonAsButton | ButtonAsLink;
 
-/**
- * @component Button
- * @description Renderiza un botón o un enlace con un conjunto completo de variantes
- *              estilísticas y de tamaño para máxima reutilización y consistencia.
- * @param {ButtonProps} props Las propiedades del componente.
- * @returns {React.ReactElement} El elemento JSX que representa el botón o enlace.
- */
-export function Button(props: ButtonProps): React.ReactElement {
-  // <<-- 1. DESESTRUCTURACIÓN ÚNICA Y PRINCIPAL
-  const { variant = "default", size = "default", className, children } = props;
+export function Button({
+  variant = "default",
+  size = "default",
+  className,
+  children,
+  ...props
+}: ButtonProps): React.ReactElement {
   console.log(
     `[Observabilidad] Renderizando Button (Variant: ${variant}, Size: ${size})`
   );
@@ -76,24 +74,24 @@ export function Button(props: ButtonProps): React.ReactElement {
     clsx(baseStyles, variants[variant], sizes[size], className)
   );
 
-  if ("href" in props && props.href) {
-    // Es un enlace
-    // <<-- 2. Se eliminan las props ya gestionadas, pasando solo el resto.
-    const { ...rest } = props;
+  // <<-- SOLUCIÓN ARQUITECTÓNICA -->>
+  // La desestructuración ahora aísla las props del componente. `...props` solo
+  // contiene los atributos nativos válidos para el elemento DOM.
+  if ("href" in props && props.href !== undefined) {
     return (
-      <Link className={finalClassName} {...rest}>
+      <Link {...(props as { href: string })} className={finalClassName}>
         {children}
       </Link>
     );
-  } else {
-    // Es un botón
-    // <<-- 3. Se eliminan las props ya gestionadas, pasando solo el resto.
-    const { ...rest } = props as ButtonAsButton;
-    return (
-      <button className={finalClassName} {...rest}>
-        {children}
-      </button>
-    );
   }
+
+  return (
+    <button
+      className={finalClassName}
+      {...(props as React.ButtonHTMLAttributes<HTMLButtonElement>)}
+    >
+      {children}
+    </button>
+  );
 }
 // src/components/ui/Button.tsx

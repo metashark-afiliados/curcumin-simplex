@@ -2,11 +2,10 @@
 /**
  * @file page.tsx (Store)
  * @description Página orquestadora de la tienda.
- *              Refactorizada para esperar correctamente las props de RSC y
- *              mejorar el manejo de contenido no disponible.
- * @version 4.0.0
+ *              - v5.0.0: Refactorización sistémica para manejar la prop `params`
+ *                asíncrona, resolviendo un error de build de Next.js.
+ * @version 5.0.0
  * @author RaZ podesta - MetaShark Tech
- * @see .docs-espejo/app/[locale]/store/page.tsx.md
  */
 import React from "react";
 import { getDictionary } from "@/lib/i18n";
@@ -26,26 +25,20 @@ interface StorePageProps {
 export default async function StorePage({
   params,
 }: StorePageProps): Promise<React.ReactElement> {
-  // <<-- CORRECCIÓN APLICADA: Se espera la resolución de los parámetros.
-  const awaitedParams = await params;
-
+  // <<-- SOLUCIÓN SISTÉMICA: La función es `async`, `params` se resuelve implícitamente.
   clientLogger.info(
-    `[StorePage] Renderizando para el locale: ${awaitedParams.locale}`
+    `[StorePage] Renderizando para el locale: ${params.locale}`
   );
 
-  const t: Dictionary = await getDictionary(awaitedParams.locale);
+  const t: Dictionary = await getDictionary(params.locale);
   const content = t.storePage;
   const lightRaysConfig = t.lightRays;
 
-  // <<-- MEJORA DE ROBUSTEZ: Manejo explícito de contenido no encontrado.
   if (!content) {
-    clientLogger.warn(
-      `[StorePage] Contenido 'storePage' no encontrado para locale '${awaitedParams.locale}'. Renderizando fallback.`
-    );
     return (
       <PageHeader
         title="Contenido no disponible"
-        subtitle={`La tienda no está disponible en el idioma '${awaitedParams.locale}'.`}
+        subtitle={`La tienda no está disponible en el idioma '${params.locale}'.`}
       />
     );
   }
@@ -63,10 +56,7 @@ export default async function StorePage({
       <Container className="mt-16 relative z-10">
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
           <ProductFilters filters={content.filters} />
-          <ProductGrid
-            products={content.products}
-            locale={awaitedParams.locale}
-          />
+          <ProductGrid products={content.products} locale={params.locale} />
         </div>
       </Container>
     </div>

@@ -2,9 +2,9 @@
 /**
  * @file Trigger.tsx
  * @description Componente activador para el DropdownMenu.
- *              - v14.0.0: Re-arquitectura Final. Se adopta el patrón `Slot` de forma
- *                canónica y segura, resolviendo definitivamente todos los errores de tipo.
- *                Esta es la implementación final a prueba de fallos.
+ *              - v14.0.0: Re-arquitectura Final. Se adopta el patrón `Slot` de
+ *                @radix-ui/react-slot de forma canónica y segura, resolviendo
+ *                definitivamente todos los errores de tipo.
  * @version 14.0.0
  * @author RaZ podesta - MetaShark Tech
  * @see .docs-espejo/components/ui/DropdownMenu/DropdownMenu.md
@@ -24,6 +24,8 @@ export const Trigger = React.forwardRef<HTMLButtonElement, TriggerProps>(
     console.log("[Observabilidad] Renderizando DropdownMenu.Trigger (v14.0.0)");
     const { isOpen, setIsOpen } = useDropdownMenuContext();
 
+    // Si `asChild` es true, Slot se encargará de fusionar las props con el hijo.
+    // Si es false, se renderizará un <button> por defecto.
     const Comp = asChild ? Slot : "button";
 
     return (

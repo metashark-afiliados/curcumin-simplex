@@ -1,12 +1,11 @@
 // src/app/[locale]/about/page.tsx
 /**
  * @file page.tsx (About)
- * @description Página "Acerca de Nosotros" del portal. Refactorizada para cumplir
- *              con el contrato de RSC, mejorar la robustez del manejo de contenido
- *              y aplicar tipado estricto derivado de Zod.
- * @version 4.0.0
+ * @description Página "Acerca de Nosotros" del portal.
+ *              - v5.0.0: Refactorización sistémica para manejar la prop `params`
+ *                asíncrona, resolviendo un error de build de Next.js.
+ * @version 5.0.0
  * @author RaZ podesta - MetaShark Tech
- * @see .docs-espejo/app/[locale]/about/page.tsx.md
  */
 import React from "react";
 import { getDictionary } from "@/lib/i18n";
@@ -21,31 +20,25 @@ interface AboutPageProps {
   params: { locale: Locale };
 }
 
-// --- Tipos derivados del schema para mayor seguridad y claridad ---
 type AboutPageContent = z.infer<typeof TextPageLocaleSchema>;
 type ContentBlock = AboutPageContent["content"][number];
 
 export default async function AboutPage({
   params,
 }: AboutPageProps): Promise<React.ReactElement> {
-  // <<-- CORRECCIÓN VALIDADA
-  const awaitedParams = await params;
+  // <<-- SOLUCIÓN SISTÉMICA: La función es `async`, `params` se resuelve implícitamente.
   clientLogger.info(
-    `[AboutPage] Renderizando para el locale: ${awaitedParams.locale}`
+    `[AboutPage] Renderizando para el locale: ${params.locale}`
   );
 
-  const t = await getDictionary(awaitedParams.locale);
+  const t = await getDictionary(params.locale);
   const content: AboutPageContent | undefined = t.aboutPage;
 
-  // <<-- MEJORA DE ROBUSTEZ
   if (!content) {
-    clientLogger.warn(
-      `[AboutPage] Contenido para 'aboutPage' no encontrado para locale: ${awaitedParams.locale}.`
-    );
     return (
       <PageHeader
         title="Contenido no disponible"
-        subtitle={`La página 'Acerca de' no está disponible en este idioma (${awaitedParams.locale}).`}
+        subtitle={`La página 'Acerca de' no está disponible en este idioma (${params.locale}).`}
       />
     );
   }
