@@ -36,12 +36,9 @@ export async function generateStaticParams() {
   return params;
 }
 
-// <<-- SOLUCIÓN SISTÉMICA: La función del componente DEBE ser `async`
 export default async function CampaignPage(
   props: CampaignPageProps
 ): Promise<React.ReactElement> {
-  // Las props `params` y `searchParams` se resuelven implícitamente por el `await`
-  // de la ejecución del componente por parte de Next.js.
   const { params, searchParams } = props;
 
   const variantId =
