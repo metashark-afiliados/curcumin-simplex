@@ -36,6 +36,7 @@ export async function generateStaticParams() {
   return params;
 }
 
+// <<-- SOLUCIÓN CANÓNICA: La función del componente DEBE ser `async`
 export default async function CampaignPage(
   props: CampaignPageProps
 ): Promise<React.ReactElement> {
