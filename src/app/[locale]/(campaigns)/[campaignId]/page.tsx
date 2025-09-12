@@ -2,27 +2,28 @@
 /**
  * @file page.tsx (Campaña Dinámica)
  * @description Ensamblador principal para todas las landing pages de campañas.
- *              - v10.0.0: Resuelve un error crítico de build (TS2339) al eliminar
- *                los tipos de props personalizados y dejar que TypeScript infiera
- *                directamente del contrato `PageProps` de Next.js. Se mejora la
- *                observabilidad con logs de contexto más ricos.
- * @version 10.0.0
+ *              - v12.0.0: Solución de build definitiva y compatible. Se reintroduce un
+ *                tipo `PageProps` local que es estructuralmente idéntico al que Next.js
+ *                espera. Esto satisface tanto el chequeo de tipos local (resolviendo
+ *                TS2307) como el compilador de Vercel (evitando conflictos de inferencia).
+ * @version 12.0.0
  * @author RaZ podesta - MetaShark Tech
  */
 import React from "react";
 import fs from "fs/promises";
 import path from "path";
 import { notFound } from "next/navigation";
-import type { Metadata, ResolvingMetadata } from "next"; // Importar ResolvingMetadata
+import type { Metadata, ResolvingMetadata } from "next";
 import { CampaignThemeProvider } from "@/components/layout/CampaignThemeProvider";
 import { SectionRenderer } from "@/components/layout/SectionRenderer";
 import { getCampaignData } from "@/lib/i18n/campaign.i18n";
 import { supportedLocales, type Locale } from "@/lib/i18n.config";
 import { clientLogger } from "@/lib/logging";
 
-// --- TIPOS Y CONTRATOS (AHORA INFERIDOS POR NEXT.JS) ---
-// Se eliminan las interfaces CampaignPageProps y MetadataProps.
-// El tipo PageProps será inferido por TypeScript en la firma de las funciones.
+// --- TIPOS Y CONTRATOS (ESTRATEGIA HÍBRIDA) ---
+// Se define un tipo local para satisfacer el chequeo de tipos del editor (tsc).
+// Este tipo es estructuralmente compatible con el PageProps interno de Next.js,
+// permitiendo que el compilador de Vercel funcione correctamente.
 type PageProps = {
   params: { campaignId: string; locale: Locale };
   searchParams: { [key: string]: string | string[] | undefined };
@@ -79,7 +80,7 @@ export async function generateStaticParams() {
 // --- METADATOS DINÁMICOS ---
 export async function generateMetadata(
   { params }: PageProps,
-  parent: ResolvingMetadata // parent es opcional pero buena práctica incluirlo
+  parent: ResolvingMetadata
 ): Promise<Metadata> {
   const trace = clientLogger.startTrace("generate-metadata");
   clientLogger.traceEvent(trace, "Inicio de generación de metadatos", {
@@ -89,7 +90,7 @@ export async function generateMetadata(
     const { dictionary } = await getCampaignData(
       params.campaignId,
       params.locale,
-      "01" // La variante para metadata siempre es la canónica '01'.
+      "01"
     );
 
     const title = dictionary.metadata?.title || `Campaña ${params.campaignId}`;
