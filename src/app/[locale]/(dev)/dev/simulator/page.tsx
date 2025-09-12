@@ -2,11 +2,11 @@
 /**
  * @file page.tsx (Campaign Simulator)
  * @description Página principal del Simulador de Campañas.
- *              Refactorizada para utilizar la clave de ruta correcta ('campaign')
- *              desde el manifiesto de navegación, resolviendo un error de tipo TS2339,
- *              y nivelada a los estándares de calidad del proyecto.
+ *              - v5.0.0: Refactorización sistémica. Convertido a un Server Component `async`
+ *                para manejar `params` asíncronas de Next.js. Se corrige también el uso
+ *                incorrecto de `await` en el objeto `params` para una implementación robusta.
  * @devonly
- * @version 4.0.0
+ * @version 5.0.0
  * @author RaZ podesta - MetaShark Tech
  * @see .docs-espejo/app/[locale]/(dev)/dev/simulator/page.tsx.md
  */
@@ -41,13 +41,6 @@ interface Campaign {
   variants: { id: string; name: string; description: string; url: string }[];
 }
 
-/**
- * @function getAvailableCampaigns
- * @description Lógica de obtención de datos para el simulador. Lee el manifiesto de
- *              mapeo y lo transforma en una estructura de datos lista para renderizar.
- * @param {Locale} locale - El locale actual para construir las URLs correctamente.
- * @returns {Promise<Campaign[]>} Un array de campañas con sus variantes.
- */
 async function getAvailableCampaigns(locale: Locale): Promise<Campaign[]> {
   clientLogger.trace("[Dev/Simulator] Procesando campaign.map.json...");
   const campaignMap: CampaignMap = campaignMapData;
@@ -60,7 +53,6 @@ async function getAvailableCampaigns(locale: Locale): Promise<Campaign[]> {
           id: variantId,
           name: variantData.name,
           description: variantData.description,
-          // <<-- SOLUCIÓN: Se utiliza la clave de ruta correcta 'campaign' del snapshot SSoT.
           url: `${routes.campaign.path({ locale, campaignId: campaignMap.productId })}?v=${variantId}`,
         })
       ),
@@ -74,17 +66,18 @@ interface CampaignSimulatorPageProps {
   params: { locale: Locale };
 }
 
+// <<-- SOLUCIÓN: La función del componente DEBE ser `async`
 export default async function CampaignSimulatorPage({
   params,
 }: CampaignSimulatorPageProps): Promise<React.ReactElement> {
-  const awaitedParams = await params;
+  // <<-- CORRECCIÓN: Se elimina `await` y se usa `params` directamente.
   clientLogger.info(
-    `[CampaignSimulatorPage] Renderizando página del simulador para locale: ${awaitedParams.locale}.`
+    `[CampaignSimulatorPage] Renderizando página del simulador para locale: ${params.locale}.`
   );
 
   const [t, campaigns] = await Promise.all([
-    getDictionary(awaitedParams.locale),
-    getAvailableCampaigns(awaitedParams.locale),
+    getDictionary(params.locale),
+    getAvailableCampaigns(params.locale),
   ]);
   const content = t.devCampaignSimulatorPage;
 

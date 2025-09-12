@@ -19,11 +19,11 @@ interface DevLayoutProps {
   };
 }
 
+// <<-- SOLUCIÓN SISTÉMICA: La función del componente DEBE ser `async`.
 export default async function DevLayout({
   children,
   params,
 }: DevLayoutProps): Promise<React.ReactElement> {
-  // <<-- SOLUCIÓN SISTÉMICA: La función es `async`, `params` se resuelve implícitamente.
   clientLogger.info(
     `[DevLayout] Aplicando layout para el entorno de desarrollo. Locale: ${params.locale}`
   );

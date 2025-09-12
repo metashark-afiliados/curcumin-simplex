@@ -23,11 +23,11 @@ interface RootLayoutProps {
   params: { locale: Locale };
 }
 
+// <<-- SOLUCIÓN SISTÉMICA: La función del componente DEBE ser `async`.
 export default async function RootLayout({
   children,
   params,
 }: RootLayoutProps) {
-  // <<-- SOLUCIÓN SISTÉMICA: La función es `async`, `params` se resuelve implícitamente.
   return (
     <html
       lang={params.locale}

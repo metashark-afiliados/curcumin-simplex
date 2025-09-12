@@ -22,10 +22,10 @@ interface StorePageProps {
   params: { locale: Locale };
 }
 
+// <<-- SOLUCIÓN SISTÉMICA: La función del componente DEBE ser `async`.
 export default async function StorePage({
   params,
 }: StorePageProps): Promise<React.ReactElement> {
-  // <<-- SOLUCIÓN SISTÉMICA: La función es `async`, `params` se resuelve implícitamente.
   clientLogger.info(
     `[StorePage] Renderizando para el locale: ${params.locale}`
   );

@@ -3,7 +3,8 @@
  * @file layout.tsx (Principal con Locale)
  * @description Layout para rutas internacionalizadas.
  *              - v12.0.0: Refactorización sistémica para manejar la prop `params`
- *                asíncrona, resolviendo un error de build de Next.js.
+ *                asíncrona y corregir el uso innecesario de `await` en `params`,
+ *                resolviendo un error de build de Next.js.
  * @version 12.0.0
  * @author RaZ podesta - MetaShark Tech
  */
@@ -35,11 +36,12 @@ export async function generateMetadata({
   };
 }
 
+// <<-- SOLUCIÓN SISTÉMICA: El layout es `async` para cumplir el contrato.
 export default async function LocaleLayout({
   children,
   params,
 }: Readonly<LocaleLayoutProps>): Promise<React.ReactElement> {
-  // <<-- SOLUCIÓN SISTÉMICA: `await` en `params`.
+  // <<-- CORRECCIÓN: Se elimina `await` y se usa `params` directamente.
   clientLogger.info(
     `[LocaleLayout] Renderizando para locale: ${params.locale} e inyectando tema global.`
   );

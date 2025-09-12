@@ -2,10 +2,11 @@
 /**
  * @file page.tsx (Homepage)
  * @description Página de inicio del portal de contenidos "Global Fitwell".
- *              - v6.0.0: Solución arquitectónica. Se elimina la renderización
- *                del DevHomepageHeader para erradicar el problema del "doble header"
- *                y simplificar la estructura de la UI.
- * @version 6.0.0
+ *              - v7.0.0: Refactorización sistémica. Se elimina el `await`
+ *                incorrecto sobre `params` para alinear con el comportamiento
+ *                real de Next.js, manteniendo la firma `async` para la
+ *                compatibilidad de tipos.
+ * @version 7.0.0
  * @author RaZ podesta - MetaShark Tech
  * @see .docs-espejo/app/[locale]/page.tsx.md
  */
@@ -30,21 +31,19 @@ interface HomePageProps {
  * @param {HomePageProps} props Las props de la página.
  * @returns {Promise<React.ReactElement>} El elemento JSX de la página de inicio.
  */
+// <<-- SOLUCIÓN: La función del componente DEBE ser `async`.
 export default async function HomePage({
   params,
 }: HomePageProps): Promise<React.ReactElement> {
-  const awaitedParams = await params;
+  // <<-- CORRECCIÓN: Se elimina `await` y se usa `params` directamente.
   clientLogger.info(
-    `[HomePage] Renderizando Homepage del Portal para el locale: ${awaitedParams.locale}`
+    `[HomePage] Renderizando Homepage del Portal para el locale: ${params.locale}`
   );
 
-  const t = await getDictionary(awaitedParams.locale);
+  const t = await getDictionary(params.locale);
 
   return (
     <>
-      {/* <<-- SOLUCIÓN ARQUITECTÓNICA: DevHomepageHeader ELIMINADO -->> */}
-      {/* El Header principal en `LocaleLayout` es ahora la única fuente de navegación y herramientas de desarrollo. */}
-
       {t.heroNews && <HeroNews content={t.heroNews} />}
       {t.socialProof && <SocialProofLogos content={t.socialProof} />}
       {t.productShowcase && <ProductShowcase content={t.productShowcase} />}

@@ -23,10 +23,10 @@ interface AboutPageProps {
 type AboutPageContent = z.infer<typeof TextPageLocaleSchema>;
 type ContentBlock = AboutPageContent["content"][number];
 
+// <<-- SOLUCIÓN SISTÉMICA: La función del componente DEBE ser `async`.
 export default async function AboutPage({
   params,
 }: AboutPageProps): Promise<React.ReactElement> {
-  // <<-- SOLUCIÓN SISTÉMICA: La función es `async`, `params` se resuelve implícitamente.
   clientLogger.info(
     `[AboutPage] Renderizando para el locale: ${params.locale}`
   );
@@ -35,6 +35,7 @@ export default async function AboutPage({
   const content: AboutPageContent | undefined = t.aboutPage;
 
   if (!content) {
+    // Renderizado de fallback si el contenido no se encuentra.
     return (
       <PageHeader
         title="Contenido no disponible"
