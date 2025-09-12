@@ -1,4 +1,4 @@
-// src/app/[locale]/(campaigns)/[campaignId]/page.tsx
+// frontend/src/app/[locale]/(campaigns)/[campaignId]/page.tsx
 /**
  * @file page.tsx (Campaña Dinámica)
  * @description Ensamblador "Lego" para todas las landing pages de campañas.
@@ -72,4 +72,4 @@ export default async function CampaignPage(
     </CampaignThemeProvider>
   );
 }
-// src/app/[locale]/(campaigns)/[campaignId]/page.tsx
+// frontend/src/app/[locale]/(campaigns)/[campaignId]/page.tsx

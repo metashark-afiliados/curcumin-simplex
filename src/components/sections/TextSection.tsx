@@ -1,38 +1,75 @@
-// RUTA: src/components/sections/TextSection.tsx
+// frontend/src/components/sections/TextSection.tsx
 /**
- * @file Sección de Texto Genérica
- * @description Un componente contenedor genérico para secciones cuyo contenido principal
- * es texto (ej. párrafos, títulos). Su principal función es estandarizar el
- * espaciado vertical (padding) y el ancho máximo del contenido a través del
- * componente `Container`.
- *
- * @TODOS: Mantener estos comentarios de documentación en futuros snapshots.
+ * @file TextSection.tsx
+ * @description Componente de layout genérico y reutilizable para secciones de contenido textual.
+ *              Ha sido refactorizado para ser data-driven, soportando variantes de espaciado
+ *              y la aplicación automática de estilos de tipografía "prose".
+ * @version 2.0.0
+ * @author RaZ podesta - MetaShark Tech
+ * @see .docs-espejo/components/sections/TextSection.tsx.md
  */
 import React from "react";
 import { Container } from "@/components/ui/Container";
+import { cn } from "@/lib/utils";
 
+/**
+ * @interface TextSectionProps
+ * @description Define el contrato de propiedades para el componente TextSection.
+ */
 interface TextSectionProps {
+  /**
+   * @param {React.ReactNode} children - Los elementos hijos a renderizar dentro de la sección.
+   */
   children: React.ReactNode;
+  /**
+   * @param {string} [className] - Clases de CSS adicionales para el elemento <section>.
+   */
   className?: string;
+  /**
+   * @param {'default' | 'compact' | 'loose'} [spacing='default'] - Controla el espaciado vertical (padding) de la sección.
+   */
+  spacing?: "default" | "compact" | "loose";
+  /**
+   * @param {boolean} [prose=false] - Si es true, aplica estilos de tipografía optimizados para la lectura.
+   */
+  prose?: boolean;
 }
 
-export function TextSection({ children, className = "" }: TextSectionProps) {
-  // Combina las clases base con quaisquer clases personalizadas fornecidas.
-  const sectionClasses = ["py-16", className].filter(Boolean).join(" ");
+/**
+ * @component TextSection
+ * @description Renderiza un contenedor semántico <section> con espaciado estandarizado
+ *              y la opción de aplicar estilos de prosa para una legibilidad mejorada.
+ * @param {TextSectionProps} props - Las propiedades para configurar la sección.
+ * @returns {React.ReactElement} El elemento JSX de la sección de texto.
+ */
+export function TextSection({
+  children,
+  className,
+  spacing = "default",
+  prose = false,
+}: TextSectionProps): React.ReactElement {
+  console.log("[Observabilidad] Renderizando TextSection");
+
+  const spacingClasses = {
+    default: "py-16 sm:py-24",
+    compact: "py-8 sm:py-12",
+    loose: "py-24 sm:py-32",
+  };
+
+  const sectionClasses = cn(
+    "w-full", // Asegura que la sección ocupe todo el ancho
+    spacingClasses[spacing],
+    className
+  );
+
+  const containerClasses = cn({
+    "prose prose-invert lg:prose-xl mx-auto": prose,
+  });
 
   return (
     <section className={sectionClasses}>
-      <Container>{children}</Container>
+      <Container className={containerClasses}>{children}</Container>
     </section>
   );
 }
-
-// --- MEJORAS FUTURAS ---
-// 1. **Variantes de espaciado**: Se podría añadir una prop `spacing: 'default' | 'compact' | 'loose'`
-//    para controlar fácilmente el `padding` vertical (py-16, py-8, py-24) sin tener que
-//    pasar clases personalizadas, haciendo el componente más semántico.
-// 2. **Estilos de "Prose" automáticos**: Añadir una prop booleana `prose` que, si es `true`,
-//    aplique automáticamente las clases de `@tailwindcss/typography` (`prose lg:prose-xl`)
-//    al `Container`, ideal para renderizar contenido Markdown o de un CMS.
-
-// RUTA: src/components/sections/TextSection.tsx
+// frontend/src/components/sections/TextSection.tsx
