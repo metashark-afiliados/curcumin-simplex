@@ -1,4 +1,4 @@
-// tsconfig.json
+
 /**
  * @file tsconfig.json
  * @description Manifiesto de Configuración y SSoT para el compilador de TypeScript.
@@ -40,7 +40,7 @@
         "name": "next"
       }
     ],
-    "types": ["vitest/globals", "@testing-library/jest-dom"]
+    "types": ["vitest/globals"]
   },
   "include": [
     ".next/types/**/*.ts",
@@ -54,4 +54,4 @@
   ],
   "exclude": ["node_modules"]
 }
-// tsconfig.json
+
