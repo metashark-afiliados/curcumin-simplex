@@ -37,4 +37,5 @@ export default async function RootLayout({
     </html>
   );
 }
+
 // frontend/src/app/layout.tsx

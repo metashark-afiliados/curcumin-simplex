@@ -1,42 +1,112 @@
-# /.docs-espejo/app/[locale]/(campaigns)/[campaignId]/page.tsx.md
+// frontend/src/app/[locale]/(campaigns)/[campaignId]/page.tsx
 /**
- * @file .docs-espejo/app/[locale]/(campaigns)/[campaignId]/page.tsx.md
- * @description Documento espejo para el componente de página de campaña dinámica.
- * @version 1.0.0
+ * @file page.tsx (Campaña Dinámica)
+ * @description Ensamblador principal para todas las landing pages de campañas.
+ *              Este es un Componente de Servidor (RSC) y su función es `async` por
+ *              diseño para cumplir con el contrato de API del App Router de Next.js,
+ *              que puede pasar props como `params` de forma asíncrona.
+ * @version 8.0.0
  * @author RaZ podesta - MetaShark Tech
  */
+import React from "react";
+import { notFound } from "next/navigation";
+import type { Metadata } from "next";
+import { CampaignThemeProvider } from "@/components/layout/CampaignThemeProvider";
+import { SectionRenderer } from "@/components/layout/SectionRenderer";
+import { getCampaignData } from "@/lib/i18n/campaign.i18n";
+import { supportedLocales, type Locale } from "@/lib/i18n.config";
+import { clientLogger } from "@/lib/logging";
 
-# Manifiesto Conceptual: El Motor de Renderizado de Campañas
+// --- TIPOS Y CONTRATOS ---
+interface CampaignPageProps {
+  params: { campaignId: string; locale: Locale };
+  searchParams: { [key: string]: string | string[] | undefined };
+}
 
-## 1. Rol Estratégico
+type MetadataProps = Omit<CampaignPageProps, "searchParams">;
 
-El aparato `CampaignPage` es el **corazón dinámico del dominio de campañas**. Su única responsabilidad es actuar como un **ensamblador de alto nivel**. No contiene lógica de presentación, sino que orquesta el flujo de datos y renderizado para construir cualquier landing page de campaña definida por la arquitectura de datos soberanos (MACS). Es el punto final donde la configuración (`campaign.map.json`, `theme.json`) se traduce en una interfaz de usuario visible.
+// --- GENERACIÓN DE RUTAS ESTÁTICAS ---
+export const dynamicParams = true;
 
-## 2. Arquitectura y Flujo de Ejecución
+export async function generateStaticParams() {
+  // En el futuro, esto podría leer el directorio de campañas dinámicamente.
+  const campaigns = [{ id: "12157" }];
+  const params = campaigns.flatMap((campaign) =>
+    supportedLocales.map((locale) => ({
+      campaignId: campaign.id,
+      locale: locale,
+    }))
+  );
+  return params;
+}
 
-Este aparato es un **React Server Component (RSC)** asíncrono. Su flujo de ejecución es el siguiente:
+// --- METADATOS DINÁMICOS ---
+export async function generateMetadata({
+  params,
+}: MetadataProps): Promise<Metadata> {
+  try {
+    // La variante para metadata siempre será la '01' por defecto o la que se defina como canónica.
+    const { dictionary } = await getCampaignData(
+      params.campaignId,
+      params.locale,
+      "01"
+    );
+    return {
+      title: dictionary.metadata.title, // Asumiendo que el diccionario de campaña lo incluirá
+      description: dictionary.metadata.description,
+    };
+  } catch (error) {
+    clientLogger.warn(
+      `[Metadata] No se pudieron generar metadatos para la campaña ${params.campaignId}. Se usarán los globales.`,
+      { error }
+    );
+    return {};
+  }
+}
 
-1.  **Recepción de Contexto de Ruta:** Recibe `params` (conteniendo `campaignId` y `locale`) y `searchParams` (conteniendo el `variantId` opcional en la clave `v`) como promesas desde el enrutador de Next.js.
-2.  **Resolución de Parámetros:** Utiliza `await` para resolver las promesas de `params` y `searchParams`, obteniendo acceso seguro a los identificadores de la campaña, el idioma y la variante.
-3.  **Obtención de Datos de Campaña:** Invoca al orquestador `getCampaignData`, pasándole los identificadores resueltos. Esta es su principal dependencia y el punto de entrada a toda la lógica de carga de datos de campaña.
-4.  **Preparación para el Renderizado:** Una vez que `getCampaignData` devuelve el `dictionary` y el `theme`, la página extrae la lista de secciones a renderizar desde `theme.layout.sections`.
-5.  **Inyección de Tema:** Envuelve todo el contenido en el `CampaignThemeProvider`, pasándole el objeto `theme` completo. Esto asegura que las variables CSS específicas de la campaña se inyecten en el servidor, evitando FOUC.
-6.  **Renderizado Iterativo:** Itera sobre la lista de secciones y, para cada una, invoca al `SectionRenderer`. Le delega la responsabilidad de encontrar y renderizar el componente React correcto, pasándole el `dictionary` completo y el `locale`.
+// --- COMPONENTE DE PÁGINA ---
+export default async function CampaignPage({
+  params,
+  searchParams,
+}: CampaignPageProps): Promise<React.ReactElement> {
+  // Determina la variante a renderizar desde los parámetros de búsqueda, con un fallback a '01'.
+  const variantId =
+    typeof searchParams.v === "string" && searchParams.v
+      ? searchParams.v
+      : "01";
 
-## 3. Contrato de API
+  clientLogger.info(
+    `[CampaignPage] Renderizando. Campaña: ${params.campaignId}, Locale: ${params.locale}, Variante: ${variantId}`
+  );
 
-### Props de Entrada
+  try {
+    const { dictionary, theme } = await getCampaignData(
+      params.campaignId,
+      params.locale,
+      variantId
+    );
 
-*   `params: { campaignId: string, locale: Locale }`: Parámetros de la ruta dinámica.
-*   `searchParams: { v?: string }`: Parámetros de consulta para seleccionar la variante.
+    const sectionsToRender = theme.layout.sections;
 
-### Lógica de Generación Estática (`generateStaticParams`)
-
-*   Exporta una función que genera las rutas base para todas las combinaciones de `campaignId` y `locale` conocidas. Esto permite a Next.js pre-renderizar las versiones por defecto de las campañas durante el build (SSG). Las variantes con `?v=` se renderizarán dinámicamente bajo demanda.
-
-## 4. Zona de Melhorias Futuras
-
-1.  **Gestión de Errores Sofisticada:** En lugar de dejar que un error en `getCampaignData` rompa la página, se podría implementar un `try...catch` para mostrar una página de error de campaña personalizada o redirigir a una página de fallback.
-2.  **Soporte para Múltiples Campañas:** La función `generateStaticParams` podría leer un índice de nivel superior para descubrir dinámicamente todos los `campaignId` disponibles en `src/content/campaigns`, en lugar de tener `12157` harcodeado.
-3.  **Metadata Dinámica:** Implementar una función `generateMetadata` que cargue el `dictionary` para obtener un título y descripción específicos para cada variante de campaña, mejorando el SEO.
-4.  **Streaming con Suspense:** Para campañas muy largas, las secciones "below the fold" podrían envolverse en `<Suspense>`, permitiendo que la parte superior de la página se envíe al cliente más rápido mientras las secciones inferiores aún se están renderizando en el servidor.
+    return (
+      <CampaignThemeProvider theme={theme}>
+        {sectionsToRender.map((section) => (
+          <SectionRenderer
+            key={section.name}
+            sectionName={section.name}
+            dictionary={dictionary}
+            locale={params.locale}
+          />
+        ))}
+      </CampaignThemeProvider>
+    );
+  } catch (error) {
+    clientLogger.error(
+      `[CampaignPage] Error al obtener datos para la campaña ${params.campaignId} (variante ${variantId}). Redirigiendo a not-found.`,
+      { error }
+    );
+    // Si getCampaignData falla (ej. variante o campaña no existe), muestra la página 404.
+    notFound();
+  }
+}
+// frontend/src/app/[locale]/(campaigns)/[campaignId]/page.tsx

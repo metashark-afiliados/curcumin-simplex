@@ -1,51 +1,41 @@
-// next.config.ts
+// frontend/next.config.ts
 /**
  * @file next.config.ts
- * @description Manifiesto de Configuración de Next.js.
- *              Versión corregida que integra el "Heartbeat" de compilación de forma segura
- *              y garantiza la correcta definición y asignación de la función `headers`.
- * @version 12.0.0
+ * @description Manifiesto de Configuración y SSoT para Next.js. Este archivo es el
+ *              "Cerebro de Compilación" del proyecto. Implementa nuestra arquitectura
+ *              de despliegue dual, generando una salida diferente según el valor de
+ *              la variable de entorno `NEXT_PUBLIC_DEPLOY_TARGET`.
+ * @version 13.0.0
  * @author RaZ podesta - MetaShark Tech
  */
 import type { NextConfig } from "next";
 
-// --- Lógica de "Heartbeat" de Compilación (Solo en Desarrollo) ---
-let heartbeat: NodeJS.Timeout | null = null;
-if (
-  process.env.NODE_ENV === "development" &&
-  typeof process.stdout.write === "function"
-) {
-  console.log(
-    "\x1b[36m%s\x1b[0m",
-    "🔄 [NextConfig] Iniciando configuración..."
-  );
-  heartbeat = setInterval(() => {
-    process.stdout.write(" ."); // Escribe un punto sin nueva línea para indicar progreso
-  }, 2000);
+// --- Log de Observabilidad de Compilación ---
+console.log(
+  "\x1b[36m%s\x1b[0m",
+  "🔄 [NextConfig] Iniciando configuración del manifiesto de compilación de Next.js..."
+);
 
-  // Detener el heartbeat después de un tiempo para no saturar la consola
-  setTimeout(() => {
-    if (heartbeat) {
-      clearInterval(heartbeat);
-      process.stdout.write("\n");
-    }
-  }, 30000);
-}
-
-// --- Lógica de Despliegue ---
+// --- Lógica de Arquitectura de Despliegue Dual ---
 const deployTarget = process.env.NEXT_PUBLIC_DEPLOY_TARGET || "vercel";
 const isStaticExport = deployTarget === "hostinger";
 
 console.info(
-  `\x1b[34m[NextConfig] 🎯 Modo de despliegue configurado para: '${deployTarget}'. (isStaticExport: ${isStaticExport})\x1b[0m`
+  `\x1b[34m[NextConfig] 🎯 Objetivo de despliegue detectado: '${deployTarget}'.\x1b[0m`
+);
+console.info(
+  `\x1b[34m[NextConfig]    - Exportación Estática (output: 'export'): ${isStaticExport ? "ACTIVADA" : "DESACTIVADA"}\x1b[0m`
+);
+console.info(
+  `\x1b[34m[NextConfig]    - Cabeceras de Seguridad Dinámicas (headers): ${!isStaticExport ? "ACTIVADAS" : "DESACTIVADAS"}\x1b[0m`
 );
 
 /**
- * @function headers
- * @description Define las cabeceras de seguridad. Solo se aplicarán en modo dinámico.
- * @returns {Promise<Array<object>>} Configuración de cabeceras.
+ * @function getDynamicHeaders
+ * @description Genera las cabeceras de seguridad HTTP. Solo se utiliza en despliegues dinámicos.
+ * @returns {Promise<Array<object>>} Configuración de cabeceras para Next.js.
  */
-async function getHeaders() {
+async function getDynamicHeaders() {
   const cspHeader = `
     default-src 'self';
     script-src 'self' 'unsafe-inline' 'unsafe-eval' https://www.googletagmanager.com;
@@ -72,14 +62,8 @@ async function getHeaders() {
           key: "Strict-Transport-Security",
           value: "max-age=63072000; includeSubDomains; preload",
         },
-        {
-          key: "Referrer-Policy",
-          value: "origin-when-cross-origin",
-        },
-        {
-          key: "Content-Security-Policy",
-          value: cspHeader,
-        },
+        { key: "Referrer-Policy", value: "origin-when-cross-origin" },
+        { key: "Content-Security-Policy", value: cspHeader },
       ],
     },
   ];
@@ -87,22 +71,22 @@ async function getHeaders() {
 
 /**
  * @type {NextConfig}
+ * @description El objeto de configuración final para Next.js.
  */
 const nextConfig: NextConfig = {
-  // Configuración condicional basada en el objetivo de despliegue
   output: isStaticExport ? "export" : undefined,
-  // Asigna la función getHeaders solo si NO es una exportación estática.
-  // De lo contrario, asigna undefined, lo cual es válido.
-  headers: isStaticExport ? undefined : getHeaders,
+  headers: isStaticExport ? undefined : getDynamicHeaders,
 
   eslint: {
     ignoreDuringBuilds: false,
   },
 
   images: {
+    // La optimización de imágenes de Next.js no es compatible con 'next export'.
     unoptimized: true,
   },
   trailingSlash: false,
 };
 
 export default nextConfig;
+// frontend/next.config.ts
