@@ -1,16 +1,20 @@
 // frontend/src/app/layout.tsx
 /**
  * @file layout.tsx (Raíz)
- * @description Layout raíz de la aplicación. Es el componente servidor que define
- *              la estructura <html> y <body> principal. Como RSC, es `async`
- *              para cumplir con el contrato del App Router de Next.js.
- * @version 6.0.0
+ * @description Layout raíz de la aplicación. Orquesta la estructura HTML base,
+ *              la inyección de tema global, los metadatos y los proveedores de cliente.
+ * @version 7.0.0
  * @author RaZ podesta - MetaShark Tech
  * @see .docs-espejo/app/layout.tsx.md
  */
 import React from "react";
+import type { Metadata } from "next";
 import { Inter, Poppins } from "next/font/google";
-import { type Locale } from "@/lib/i18n.config";
+import { ThemeInjector } from "@/components/layout/ThemeInjector";
+import AppProviders from "@/components/layout/AppProviders";
+import { getDictionary } from "@/lib/i18n";
+import { type Locale, supportedLocales } from "@/lib/i18n.config";
+import { clientLogger } from "@/lib/logging";
 import "@/app/globals.css";
 
 // --- CONFIGURACIÓN DE FUENTES GLOBALES ---
@@ -27,23 +31,48 @@ interface RootLayoutProps {
   params: { locale: Locale };
 }
 
-// --- LAYOUT RAÍZ ---
+// --- GENERACIÓN DE METADATOS (SEO) ---
+export async function generateMetadata({
+  params,
+}: RootLayoutProps): Promise<Metadata> {
+  const t = await getDictionary(params.locale);
+  return {
+    title: t.metadata.title,
+    description: t.metadata.description,
+  };
+}
+
+// --- GENERACIÓN DE RUTAS ESTÁTICAS ---
+export async function generateStaticParams() {
+  return supportedLocales.map((locale) => ({ locale }));
+}
+
+// --- LAYOUT RAÍZ (RSC) ---
 export default async function RootLayout({
   children,
   params,
 }: RootLayoutProps): Promise<React.ReactElement> {
-  // La observabilidad a este nivel tan alto usualmente no es necesaria,
-  // pero se mantiene por consistencia.
-  console.log(
-    `[Observabilidad] Renderizando RootLayout para locale: ${params.locale}`
+  clientLogger.info(
+    `[RootLayout] Renderizando layout raíz para locale: ${params.locale}`
   );
+  const t = await getDictionary(params.locale);
 
   return (
     <html
       lang={params.locale}
       className={`${inter.variable} ${poppins.variable}`}
     >
-      <body>{children}</body>
+      <head>
+        <ThemeInjector />
+      </head>
+      <body>
+        <AppProviders
+          locale={params.locale}
+          cookieConsentContent={t.cookieConsentBanner}
+        >
+          {children}
+        </AppProviders>
+      </body>
     </html>
   );
 }

@@ -1,4 +1,4 @@
-// frontend/src/middleware.ts
+// frontend/middleware.ts
 /**
  * @file middleware.ts
  * @description Orquestador de pipeline para el middleware de Next.js.
@@ -81,4 +81,4 @@ console.log(
   "\x1b[35m%s\x1b[0m",
   `   - [Middleware] Compilación finalizada. Modo: ${isMiddlewareEnabled ? "ACTIVADO (Vercel)" : "DESACTIVADO (Estático)"}. Matcher configurado.`
 );
-// frontend/src/middleware.ts
+// frontend/middleware.ts

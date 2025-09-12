@@ -1,24 +1,37 @@
-// src/app/[locale]/(campaigns)/layout.tsx
-import { AntiCopyHandler } from "@/components/HOCs/AntiCopyHandler";
+// frontend/src/app/[locale]/(campaigns)/layout.tsx
+/**
+ * @file layout.tsx (Campaigns Group)
+ * @description Layout para el grupo de rutas de campañas. Provee un entorno
+ *              aislado y seguro para las landing pages de alta conversión.
+ * @version 1.0.0
+ * @author RaZ podesta - MetaShark Tech
+ * @see .docs-espejo/app/[locale]/(campaigns)/layout.tsx.md
+ */
 import React from "react";
+import { AntiCopyHandler } from "@/components/HOCs/AntiCopyHandler";
+import { clientLogger } from "@/lib/logging";
+
+interface CampaignLayoutProps {
+  children: React.ReactNode;
+}
 
 /**
- * @file layout.tsx (Grupo de Campañas)
- * @description Layout compartido para todas las landing pages de campañas.
- *              Su única responsabilidad es aplicar lógica transversal como
- *              la protección anti-copia.
- * @version 2.0.0
+ * @component CampaignLayout
+ * @description Aplica un marco de seguridad y aislamiento a las páginas de campaña.
+ * @param {CampaignLayoutProps} props Las props del layout.
+ * @returns {React.ReactElement} El elemento JSX del layout de campañas.
  */
-export default function CampaignsLayout({
+export default function CampaignLayout({
   children,
-}: {
-  children: React.ReactNode;
-}) {
-  console.log(
-    "[Observabilidad] Aplicando layout de grupo para campañas (con AntiCopy)"
+}: CampaignLayoutProps): React.ReactElement {
+  clientLogger.info(
+    "[CampaignLayout] Aplicando layout de aislamiento para campañas."
   );
-  // Este layout envuelve a todas las páginas de campaña,
-  // aplicando la protección de forma centralizada.
-  return <AntiCopyHandler>{children}</AntiCopyHandler>;
+
+  return (
+    <AntiCopyHandler>
+      <div className="campaign-wrapper">{children}</div>
+    </AntiCopyHandler>
+  );
 }
-// src/app/[locale]/(campaigns)/layout.tsx
+// frontend/src/app/[locale]/(campaigns)/layout.tsx

@@ -2,8 +2,7 @@
 /**
  * @file i18n.ts
  * @description Aparato ensamblador de diccionarios para el portal.
- *              Corregida una ruta de importación errónea para `socialProofI18n`.
- * @version 4.1.0
+ * @version 5.0.0
  * @author RaZ podesta - MetaShark Tech
  */
 import "server-only";
@@ -15,7 +14,7 @@ import {
 } from "@/lib/i18n.config";
 import { clientLogger } from "@/lib/logging";
 
-// ... (todas las demás importaciones se mantienen igual)
+// --- Importaciones de Contenido ---
 import globalI18n from "@/messages/global.i18n.json";
 import headerI18n from "@/messages/components/header/header.i18n.json";
 import footerI18n from "@/messages/components/footer/footer.i18n.json";
@@ -24,6 +23,7 @@ import heroNewsI18n from "@/messages/components/hero-news/hero-news.i18n.json";
 import newsGridI18n from "@/messages/components/news-grid/news-grid.i18n.json";
 import productShowcaseI18n from "@/messages/components/product-showcase/product-showcase.i18n.json";
 import socialProofI18n from "@/messages/components/social-proof/social-proof.i18n.json";
+import cookieConsentBannerI18n from "@/messages/components/cookie-consent-banner/cookie-consent-banner.i18n.json";
 import cardNavI18n from "@/components/razBits/CardNav/card-nav.i18n.json";
 import lightRaysI18n from "@/components/razBits/LightRays/light-rays.i18n.json";
 import magicBentoI18n from "@/components/razBits/MagicBento/magic-bento.i18n.json";
@@ -51,6 +51,7 @@ const allI18nModules: I18nModuleContent[] = [
   newsGridI18n,
   productShowcaseI18n,
   socialProofI18n,
+  cookieConsentBannerI18n,
   cardNavI18n,
   lightRaysI18n,
   magicBentoI18n,

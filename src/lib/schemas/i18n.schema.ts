@@ -2,8 +2,7 @@
 /**
  * @file i18n.schema.ts
  * @description SSoT Ensamblador para la estructura de datos de i18n global.
- *              ACTUALIZACIÓN: Renombrado 'routeTester' a 'devRouteMenu' para consistencia.
- * @version 21.0.0
+ * @version 22.0.0
  * @author RaZ podesta - MetaShark Tech
  */
 import { z } from "zod";
@@ -26,6 +25,7 @@ import { OrderFormLocaleSchema } from "./components/order-form.schema";
 import { NewsGridLocaleSchema } from "./components/news-grid.schema";
 import { HeroNewsLocaleSchema } from "./components/hero-news.schema";
 import { ProductShowcaseLocaleSchema } from "./components/product-showcase.schema";
+import { CookieConsentBannerLocaleSchema } from "./components/cookie-consent-banner.schema";
 
 // --- Schemas de Componentes Naturalizados (razBits) ---
 import { CardNavLocaleSchema } from "@/components/razBits/CardNav/card-nav.schema";
@@ -65,6 +65,7 @@ export const i18nSchema = z
   .merge(OrderFormLocaleSchema)
   .merge(HeroNewsLocaleSchema)
   .merge(ProductShowcaseLocaleSchema)
+  .merge(CookieConsentBannerLocaleSchema)
 
   // Componentes Naturalizados (razBits)
   .merge(CardNavLocaleSchema)
