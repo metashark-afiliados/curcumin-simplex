@@ -16,6 +16,8 @@ import { clientLogger } from "@/lib/logging";
 import { getDictionary } from "@/lib/i18n";
 import { getCampaignData } from "@/lib/i18n/campaign.i18n";
 import { getFallbackProps } from "./utils/component-props";
+import type { Dictionary } from "@/lib/schemas/i18n.schema";
+import type { CampaignData } from "@/lib/i18n/campaign.i18n";
 
 /**
  * @interface ComponentLoadResult
@@ -24,7 +26,7 @@ import { getFallbackProps } from "./utils/component-props";
 interface ComponentLoadResult {
   ComponentToRender: React.ComponentType<any>;
   componentProps: Record<string, any>;
-  appliedTheme: any;
+  appliedTheme: CampaignData["theme"] | null;
   entry: ComponentRegistryEntry;
 }
 
@@ -38,8 +40,8 @@ const DEV_MOCK_VARIANT_ID = "02"; // Vitality
 /**
  * @function loadComponentAndProps
  * @description Carga dinámicamente un componente y sus props de i18n para el Dev Canvas.
- * @param componentName El identificador del componente en el registro.
- * @param locale El locale para cargar el contenido.
+ * @param {string} componentName El identificador del componente en el registro.
+ * @param {string} locale El locale para cargar el contenido.
  * @returns {Promise<ComponentLoadResult>} Un objeto con el componente, sus props, el tema y la entrada del registro.
  * @throws {Error} Si el componente o su módulo no se encuentran.
  */
@@ -49,7 +51,7 @@ export async function loadComponentAndProps(
 ): Promise<ComponentLoadResult> {
   clientLogger.startGroup(`[Loader] Cargando "${componentName}"`);
 
-  // 1. Obtener metadatos del componente desde la SSoT.
+  // 1. Obtener metadatos del componente desde la SSoT (`ComponentRegistry`).
   const entry = getComponentByName(componentName);
   if (!entry) {
     clientLogger.error(
@@ -62,11 +64,11 @@ export async function loadComponentAndProps(
   }
 
   let componentProps: Record<string, any> = {};
-  let appliedTheme: any = null;
-  let dictionary: any;
+  let appliedTheme: CampaignData["theme"] | null = null;
+  let dictionary: Dictionary;
 
   try {
-    // 2. Cargar el diccionario de datos apropiado.
+    // 2. Cargar el diccionario de datos apropiado basado en los metadatos.
     if (entry.isCampaignComponent) {
       const campaignData = await getCampaignData(
         "12157", // ID de campaña hardcodeado para desarrollo
@@ -81,7 +83,18 @@ export async function loadComponentAndProps(
 
     // 3. Extraer las props específicas del componente desde el diccionario.
     const key = entry.dictionaryKey as keyof typeof dictionary;
-    componentProps = dictionary[key] || getFallbackProps(componentName);
+    const propsFromDict = dictionary[key];
+
+    // Si las props no se encuentran en el diccionario, usa el fallback.
+    componentProps = propsFromDict
+      ? { content: propsFromDict }
+      : getFallbackProps(componentName);
+
+    // Caso especial para Header que necesita dos props de diccionario
+    if (componentName === "Header") {
+      componentProps.devDictionary = dictionary.devRouteMenu;
+    }
+
     clientLogger.trace("Props de i18n cargadas exitosamente.");
   } catch (error) {
     clientLogger.error(
@@ -93,9 +106,15 @@ export async function loadComponentAndProps(
 
   try {
     // 4. Importar dinámicamente el módulo del componente usando la ruta de la SSoT.
-    const componentModule = await import(entry.componentPath);
+    // La advertencia de "dependencia crítica" es aceptada aquí por la naturaleza de la herramienta.
+    const componentModule = await import(
+      /* @vite-ignore */ `${entry.componentPath}`
+    );
     const ComponentToRender =
-      componentModule.default || componentModule[componentName];
+      componentModule.default ||
+      componentModule[componentName] ||
+      componentModule[entry.dictionaryKey] ||
+      componentModule[Object.keys(componentModule)[0]];
 
     if (!ComponentToRender) {
       throw new Error(

@@ -1,36 +1,55 @@
 // src/components/layout/Header.tsx
 /**
  * @file Header.tsx
- * @description Componente de cabecera principal.
- *              - v15.1.0: Resuelve el error TS2741 pasando la prop
- *                `devDictionary` requerida al componente `DevToolsDropdown`.
- * @version 15.1.0
+ * @description Componente de cabecera principal del portal.
+ *              Refactorizado para pasar la prop 'dictionary' correcta a DevToolsDropdown,
+ *              manejar contenido ausente de forma robusta y cumplir con todos los
+ *              estándares de calidad del proyecto.
+ * @version 16.0.0
  * @author RaZ podesta - MetaShark Tech
+ * @see .docs-espejo/components/layout/Header.tsx.md
  */
 "use client";
 
-import Link from "next/link";
-import { Button } from "@/components/ui/Button";
-import type { Dictionary } from "@/lib/schemas/i18n.schema";
-import DevToolsDropdown from "../dev/DevToolsDropdown";
 import Image from "next/image";
+import Link from "next/link";
+import DevToolsDropdown from "@/components/dev/DevToolsDropdown";
+import { Button } from "@/components/ui/Button";
+import { clientLogger } from "@/lib/logging";
+import type { Dictionary } from "@/lib/schemas/i18n.schema";
 
-interface HeaderProps {
+interface PortalHeaderProps {
   content: Dictionary["header"];
-  devDictionary: Dictionary["devRouteMenu"]; // <<-- Prop necesaria
+  devDictionary: Dictionary["devRouteMenu"];
 }
 
-const Header = ({ content, devDictionary }: HeaderProps) => {
-  console.log("[Observabilidad] Renderizando Header con props de contenido.");
+/**
+ * @component PortalHeader
+ * @description Renderiza la cabecera principal y la navegación para el portal.
+ *              También inyecta las herramientas de desarrollo en modo 'development'.
+ * @param {PortalHeaderProps} props Las propiedades con el contenido necesario.
+ * @returns {React.ReactElement | null} El elemento JSX de la cabecera, o null si no hay contenido.
+ */
+const PortalHeader = ({
+  content,
+  devDictionary,
+}: PortalHeaderProps): React.ReactElement | null => {
+  clientLogger.info(
+    "[PortalHeader] Renderizando cabecera principal del portal."
+  );
 
+  // <<-- MEJORA DE ROBUSTEZ: Guarda de seguridad para contenido ausente.
   if (!content) {
+    clientLogger.warn(
+      "[PortalHeader] No se proporcionó contenido. El header no se renderizará."
+    );
     return null;
   }
 
   const { logoUrl, logoAlt, navLinks, ctaButton } = content;
 
   return (
-    <header className="fixed top-0 left-0 right-0 z-50 flex h-16 items-center justify-between bg-background/80 px-4 backdrop-blur-sm md:px-6 border-b border-white/10">
+    <header className="fixed top-16 left-0 right-0 z-40 flex h-16 items-center justify-between bg-background/80 px-4 backdrop-blur-sm md:px-6 border-b border-white/10">
       <Link href="/" className="mr-6 flex items-center">
         <Image
           src={logoUrl}
@@ -60,14 +79,15 @@ const Header = ({ content, devDictionary }: HeaderProps) => {
           {ctaButton.label}
         </Button>
 
-        {/* <<-- CORRECCIÓN: Se pasa la prop requerida `devDictionary` --> */}
+        {/* El Dropdown de desarrollo solo se renderiza si estamos en ese entorno Y si su diccionario existe. */}
         {process.env.NODE_ENV === "development" && devDictionary && (
-          <DevToolsDropdown devDictionary={devDictionary} />
+          // <<-- SOLUCIÓN: Se pasa la prop correcta 'dictionary' en lugar de 'devDictionary'.
+          <DevToolsDropdown dictionary={devDictionary} />
         )}
       </div>
     </header>
   );
 };
 
-export default Header;
+export default PortalHeader;
 // src/components/layout/Header.tsx

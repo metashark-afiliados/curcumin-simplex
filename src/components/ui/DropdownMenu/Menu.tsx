@@ -2,18 +2,27 @@
 /**
  * @file Menu.tsx
  * @description Componente principal y proveedor de estado para el sistema DropdownMenu.
- * @version 1.0.0
+ * @version 4.0.0
  * @author RaZ podesta - MetaShark Tech
+ * @see .docs-espejo/components/ui/DropdownMenu/DropdownMenu.md
  */
 "use client";
 
 import * as React from "react";
 import { DropdownMenuContext } from "./Context";
 
-export const Menu = ({ children }: { children: React.ReactNode }) => {
+export const Menu = ({
+  children,
+}: {
+  children: React.ReactNode;
+}): React.ReactElement => {
+  console.log("[Observabilidad] Renderizando DropdownMenu.Provider");
   const [isOpen, setIsOpen] = React.useState(false);
+
+  const contextValue = React.useMemo(() => ({ isOpen, setIsOpen }), [isOpen]);
+
   return (
-    <DropdownMenuContext.Provider value={{ isOpen, setIsOpen }}>
+    <DropdownMenuContext.Provider value={contextValue}>
       <div className="relative inline-block text-left">{children}</div>
     </DropdownMenuContext.Provider>
   );

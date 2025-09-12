@@ -2,9 +2,10 @@
 /**
  * @file Context.ts
  * @description Define el Contexto de React y el hook personalizado para el sistema DropdownMenu.
- *              Esta es la SSoT para la gestión del estado del menú.
- * @version 1.0.0
+ *              Esta es la SSoT para la gestión del estado compartido (abierto/cerrado) del menú.
+ * @version 2.0.0
  * @author RaZ podesta - MetaShark Tech
+ * @see .docs-espejo/components/ui/DropdownMenu/DropdownMenu.md
  */
 "use client";
 
@@ -18,7 +19,7 @@ interface DropdownMenuContextType {
 export const DropdownMenuContext =
   React.createContext<DropdownMenuContextType | null>(null);
 
-export const useDropdownMenuContext = () => {
+export const useDropdownMenuContext = (): DropdownMenuContextType => {
   const context = React.useContext(DropdownMenuContext);
   if (!context) {
     throw new Error(

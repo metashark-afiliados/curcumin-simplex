@@ -3,18 +3,19 @@
  * @file DevHeader.tsx
  * @description Encabezado para el entorno de desarrollo. Proporciona una identidad
  *              visual clara para las páginas de herramientas de desarrollo y un enlace
- *              para volver al dashboard principal del DCC.
+ *              para volver al dashboard principal del DCC. Refactorizado para ser
+ *              resiliente ante la falta de contenido i18n.
  * @devonly
- * @version 2.0.0
+ * @version 3.0.0
  * @author RaZ podesta - MetaShark Tech
- * @see .docs-espejo/components/dev/DevHeader.md
+ * @see .docs-espejo/components/dev/DevHeader.tsx.md
  */
 import React from "react";
 import Link from "next/link";
-import { Container } from "@/components/ui/Container";
 import { FlaskConical } from "lucide-react";
-import { clientLogger } from "@/lib/logging";
+import { Container } from "@/components/ui/Container";
 import { getDictionary } from "@/lib/i18n";
+import { clientLogger } from "@/lib/logging";
 import { routes } from "@/lib/navigation";
 import { type Locale } from "@/lib/i18n.config";
 import type { Dictionary } from "@/lib/schemas/i18n.schema";
@@ -26,7 +27,8 @@ interface DevHeaderProps {
 /**
  * @component DevHeader
  * @description Renderiza la barra de navegación superior para todas las páginas del
- *              dominio de desarrollo (`/dev/*`). Es un Server Component.
+ *              dominio de desarrollo (`/dev/*`). Es un Server Component que obtiene
+ *              su propio contenido.
  * @param {DevHeaderProps} props - Las propiedades que contienen el locale.
  * @returns {Promise<React.ReactElement>} El elemento JSX del header.
  */
@@ -35,11 +37,11 @@ export default async function DevHeader({
 }: DevHeaderProps): Promise<React.ReactElement> {
   clientLogger.info(`[DevHeader] Renderizando para locale: ${locale}`);
 
-  const t = await getDictionary(locale);
+  const t: Dictionary = await getDictionary(locale);
   const content: Dictionary["devHeader"] = t.devHeader;
 
-  // Si el contenido no está definido en el diccionario, se usa un título de fallback
-  // para evitar un error y aun así renderizar un header funcional.
+  // <<-- MEJORA DE ROBUSTEZ: Se utiliza un fallback si el contenido no está definido.
+  //      Esto previene un error si la clave `devHeader` falta en el diccionario.
   const headerTitle = content?.title ?? "Dev Canvas - Content Missing";
 
   return (
@@ -56,7 +58,7 @@ export default async function DevHeader({
               {headerTitle}
             </span>
           </Link>
-          {/* Espacio reservado para futuros controles en el header de desarrollo */}
+          {/* Espacio reservado para futuros controles en el header de desarrollo, como un LanguageSwitcher específico para dev. */}
         </div>
       </Container>
     </header>

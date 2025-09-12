@@ -1,8 +1,9 @@
 // src/components/layout/DevHomepageHeader.tsx
 /**
  * @file DevHomepageHeader.tsx
- * @description Header de desarrollo para la página de inicio.
- * @version 5.0.0
+ * @description Header de desarrollo para la página de inicio. Corregido para
+ *              pasar la prop 'dictionary' correcta a DevToolsDropdown.
+ * @version 6.0.0
  * @author RaZ podesta - MetaShark Tech
  */
 "use client";
@@ -64,7 +65,8 @@ export function DevHomepageHeader({
           </nav>
 
           <div className="ml-auto">
-            <DevToolsDropdown devDictionary={devRouteMenuDictionary} />
+            {/* <<-- SOLUCIÓN: Se pasa la prop correcta 'dictionary'. */}
+            <DevToolsDropdown dictionary={devRouteMenuDictionary} />
           </div>
         </div>
       </Container>

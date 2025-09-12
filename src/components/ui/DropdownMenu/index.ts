@@ -2,20 +2,17 @@
 /**
  * @file index.ts (Barrel File)
  * @description Fachada pública para el sistema DropdownMenu.
- *              - v2.0.0: Refactorizado para usar alias de ruta absolutos,
- *                resolviendo los errores de compilación `Module not found`.
- * @version 2.0.0
+ * @version 4.0.0
  * @author RaZ podesta - MetaShark Tech
+ * @see .docs-espejo/components/ui/DropdownMenu/DropdownMenu.md
  */
-import { Menu } from "@/components/ui/DropdownMenu/Menu";
-import { Trigger } from "@/components/ui/DropdownMenu/Trigger";
 import { Content } from "@/components/ui/DropdownMenu/Content";
+import { Group } from "@/components/ui/DropdownMenu/Group";
 import { Item } from "@/components/ui/DropdownMenu/Item";
 import { Label } from "@/components/ui/DropdownMenu/Label";
+import { Menu } from "@/components/ui/DropdownMenu/Menu";
 import { Separator } from "@/components/ui/DropdownMenu/Separator";
-import { Group } from "@/components/ui/DropdownMenu/Group";
-
-// Se re-exportan los componentes con sus nombres públicos y canónicos.
+import { Trigger } from "@/components/ui/DropdownMenu/Trigger";
 export const DropdownMenu = Menu;
 export const DropdownMenuTrigger = Trigger;
 export const DropdownMenuContent = Content;

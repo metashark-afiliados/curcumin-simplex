@@ -1,39 +1,48 @@
-# /.docs-espejo/app/[locale]/(dev)/dev/page.tsx.md
+// .docs-espejo/app/[locale]/(dev)/dev/simulator/page.tsx.md
 /**
- * @file .docs-espejo/app/[locale]/(dev)/dev/page.tsx.md
- * @description Documento espejo para la página principal del Developer Command Center.
+ * @file page.tsx.md (Campaign Simulator)
+ * @description Documento espejo y SSoT conceptual para la página del Simulador de Campañas.
  * @version 1.0.0
  * @author RaZ podesta - MetaShark Tech
  */
 
-# Manifiesto Conceptual: El Portal de Herramientas de Desarrollo
+# Manifiesto Conceptual: Página del Simulador de Campañas
 
 ## 1. Rol Estratégico
 
-La página `DevDashboardPage` es el **punto de entrada y el directorio principal** del Developer Command Center (DCC). Su función es presentar al desarrollador un resumen claro y accesible de todas las herramientas de desarrollo disponibles en el proyecto, actuando como un portal de navegación interno.
+El aparato `src/app/[locale]/(dev)/dev/simulator/page.tsx` es una **herramienta de desarrollo y marketing crucial**. Su propósito principal es proporcionar una interfaz visual que permita a cualquier miembro del equipo **previsualizar todas las variantes de una campaña** de forma rápida y sencilla.
 
-Su diseño se basa en tarjetas interactivas, donde cada tarjeta representa una herramienta (ej. "Component Canvas", "Campaign Simulator") y sirve como un enlace directo a ella.
+Actúa como un "lanzador" que lee la configuración de campañas directamente desde la SSoT (`campaign.map.json`) y genera enlaces para abrir cada variante en una nueva pestaña, simulando el acceso de un usuario final. Esto es fundamental para el A/B testing, la revisión de contenido y la validación de la arquitectura de campañas.
 
 ## 2. Arquitectura y Flujo de Ejecución
 
-Este aparato es un **React Server Component (RSC)** asíncrono.
+La página sigue una arquitectura clara que separa la lógica de datos de la presentación.
 
-1.  **Recepción de Contexto:** Recibe el `locale` de la URL como una promesa en sus `params`.
-2.  **Resolución de Parámetros:** Resuelve la promesa `params` con `await` para obtener el `locale` actual.
-3.  **Obtención de Contenido:** Invoca a `getDictionary(locale)` para cargar el contenido textual de la página (títulos, descripciones de las tarjetas). Incluye manejo de errores robusto para el caso de que el diccionario falle en cargar.
-4.  **Generación de Rutas:** Construye una estructura de datos (`devToolsConfig`) que mapea la información estática de cada herramienta (clave, icono) con la ruta dinámica generada por el manifiesto de navegación `routes`.
-5.  **Renderizado de la UI:**
-    *   Renderiza un encabezado con el título y subtítulo obtenidos del diccionario.
-    *   Itera sobre `devToolsConfig` y, para cada herramienta, renderiza un componente `Link` estilizado como una tarjeta. El contenido de la tarjeta (nombre, descripción) se extrae del diccionario, asegurando la internacionalización completa.
+1.  **Capa de Datos (`getAvailableCampaigns`):**
+    *   Esta función asíncrona se encarga de leer y transformar los datos.
+    *   Importa estáticamente el `campaign.map.json` de la campaña `12157`.
+    *   Itera sobre el objeto `variants` del mapa.
+    *   Para cada variante, construye una URL completa y correctamente localizada, incluyendo el `campaignId` y el `variantId` como parámetro de búsqueda (`?v=...`).
+    *   Devuelve una estructura de datos `Campaign[]` limpia y lista para ser consumida por la UI.
+
+2.  **Capa de Presentación (`CampaignSimulatorPage`):**
+    *   Es un Server Component asíncrono.
+    *   Invoca a `getDictionary` y a `getAvailableCampaigns` en paralelo usando `Promise.all` para optimizar la carga.
+    *   **Lógica de Resiliencia:** Verifica que el contenido específico de la página exista en el diccionario. Si no, renderiza un estado de error controlado.
+    *   Itera sobre la estructura de datos `campaigns` recibida de la capa de datos.
+    *   Renderiza una cuadrícula de componentes `Card`, donde cada tarjeta representa una variante de campaña y enlaza (`Link` de Next.js) a la URL generada.
 
 ## 3. Contrato de API
 
-### Props de Entrada
-
-*   `params: { locale: Locale }`: El objeto de parámetros de la ruta.
+*   **Entradas (Props):**
+    *   `params: { locale: Locale }` (inyectado por Next.js como `Promise`)
+*   **Salidas:**
+    *   Un elemento JSX `<Container>...</Container>` que contiene la interfaz del simulador o un estado de error.
 
 ## 4. Zona de Melhorias Futuras
 
-1.  **Descubrimiento Dinámico de Herramientas:** En lugar de tener `devToolsConfig` harcodeado, se podría crear un "Registro de Herramientas" similar al `ComponentRegistry`, y esta página leería ese registro para renderizar las tarjetas dinámicamente.
-2.  **Indicadores de Estado:** Cada tarjeta podría mostrar un indicador de estado (ej. un punto verde o rojo) basado en el resultado de una prueba de salud rápida para esa herramienta, proporcionando feedback visual inmediato.
-3.  **Accesos Directos:** Podría incluir una sección de "Acciones Rápidas" o "Enlaces Frecuentes" basada en el historial de navegación del desarrollador (usando `localStorage`).
+1.  **Simulador Multi-Campaña:** Actualmente, el simulador está harcodeado para la campaña `12157`. Podría evolucionar para descubrir dinámicamente *todos* los directorios de campaña en `src/content/campaigns` y presentar un selector para elegir qué campaña simular.
+2.  **Selector de Locale en la UI:** Añadir un `LanguageSwitcher` a la página permitiría a los revisores cambiar el idioma de las URLs generadas sin tener que cambiar el `locale` en la barra de direcciones del navegador.
+3.  **Indicadores de Estado de Activos:** Cada tarjeta de variante podría mostrar pequeños indicadores visuales que confirmen que sus archivos de tema y contenido asociados existen y son válidos, proporcionando una capa de diagnóstico rápido.
+
+// .docs-espejo/app/[locale]/(dev)/dev/simulator/page.tsx.md

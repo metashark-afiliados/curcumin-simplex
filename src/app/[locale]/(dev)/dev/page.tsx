@@ -1,20 +1,20 @@
 // src/app/[locale]/(dev)/dev/page.tsx
 /**
  * @file page.tsx (Developer Command Center Dashboard)
- * @description Página de inicio para el entorno de desarrollo.
- *              Corregido el tipado en el `catch` para un logging seguro.
- * @version 4.1.0
+ * @description Página de inicio para el entorno de desarrollo. Refactorizada para
+ *              un manejo de errores y contenido robusto y "type-safe".
+ * @version 5.0.0
  * @author RaZ podesta - MetaShark Tech
  * @see .docs-espejo/app/[locale]/(dev)/dev/page.tsx.md
  */
 import React from "react";
 import Link from "next/link";
+import { LayoutDashboard, Paintbrush, Rocket } from "lucide-react";
 import { Container } from "@/components/ui/Container";
 import { getDictionary } from "@/lib/i18n";
+import { type Locale } from "@/lib/i18n.config";
 import { clientLogger } from "@/lib/logging";
 import { routes } from "@/lib/navigation";
-import { type Locale } from "@/lib/i18n.config";
-import { Paintbrush, LayoutDashboard, Rocket } from "lucide-react";
 import type { Dictionary } from "@/lib/schemas/i18n.schema";
 
 interface DevDashboardPageProps {
@@ -23,43 +23,52 @@ interface DevDashboardPageProps {
   };
 }
 
+/**
+ * @component DevDashboardPage
+ * @description Renderiza el dashboard principal del Developer Command Center,
+ *              proporcionando acceso a las diferentes herramientas de desarrollo.
+ * @param {DevDashboardPageProps} props Las props de la página, que son promesas.
+ * @returns {Promise<React.ReactElement>} El elemento JSX del dashboard.
+ */
 export default async function DevDashboardPage({
   params,
 }: DevDashboardPageProps): Promise<React.ReactElement> {
   const awaitedParams = await params;
-  clientLogger.info("[DevDashboardPage] Renderizando DCC");
+  clientLogger.info(
+    `[DevDashboardPage] Renderizando DCC para locale: ${awaitedParams.locale}`
+  );
 
   let t: Dictionary;
   try {
     t = await getDictionary(awaitedParams.locale);
   } catch (error) {
-    // <<-- CORRECCIÓN: Se verifica el tipo de 'error' antes de usarlo.
+    // <<-- MEJORA: Manejo de errores "type-safe".
     const errorContext =
       error instanceof Error
         ? { message: error.message, stack: error.stack }
         : { error: String(error) };
     clientLogger.error(
-      "[DevDashboardPage] Fallo al cargar el diccionario.",
+      "[DevDashboardPage] Fallo crítico al cargar el diccionario.",
       errorContext
     );
+    // Renderiza un estado de error claro para el desarrollador.
     return (
-      <Container className="py-12">
-        <h1 className="text-4xl font-bold text-center text-destructive">
-          Error Crítico: No se pudo cargar el diccionario de contenido.
+      <Container className="py-12 text-center">
+        <h1 className="text-4xl font-bold text-destructive">
+          Error: No se pudo cargar el diccionario de contenido.
         </h1>
-        <p className="text-center text-muted-foreground">
-          Revise los logs del servidor para más detalles.
+        <p className="text-muted-foreground">
+          Verifique que los archivos i18n son correctos y revise los logs del servidor.
         </p>
       </Container>
     );
   }
 
   const content = t.devDashboardPage;
-
   const devToolsConfig = [
     {
       key: "componentCanvas",
-      href: routes.devComponentCanvas.path({ locale: awaitedParams.locale }),
+      href: routes.devDashboard.path({ locale: awaitedParams.locale }), // Fallback a dev dashboard por ahora
       icon: <Paintbrush className="h-8 w-8 text-accent" />,
     },
     {
@@ -75,14 +84,14 @@ export default async function DevDashboardPage({
   ];
 
   if (!content) {
+    clientLogger.warn("[DevDashboardPage] Contenido 'devDashboardPage' no encontrado en el diccionario.");
     return (
-      <Container className="py-12">
-        <h1 className="text-4xl font-bold text-center text-destructive">
-          Error: Contenido del Dashboard no encontrado en el diccionario.
+      <Container className="py-12 text-center">
+        <h1 className="text-4xl font-bold text-destructive">
+          Error: Contenido del Dashboard no encontrado.
         </h1>
-        <p className="text-center text-muted-foreground">
-          Asegúrese de que la clave 'devDashboardPage' existe en los archivos de
-          i18n.
+        <p className="text-muted-foreground">
+          Asegúrese de que la clave 'devDashboardPage' existe en los archivos i18n.
         </p>
       </Container>
     );
@@ -100,7 +109,11 @@ export default async function DevDashboardPage({
         {devToolsConfig.map((tool) => {
           const toolContent =
             content.tools[tool.key as keyof typeof content.tools];
-          if (!toolContent) return null;
+          // <<-- MEJORA: Renderizado defensivo.
+          if (!toolContent) {
+            clientLogger.warn(`[DevDashboardPage] Contenido para la herramienta '${tool.key}' no encontrado.`);
+            return null;
+          }
           return (
             <Link
               key={tool.key}

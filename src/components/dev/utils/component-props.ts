@@ -2,7 +2,7 @@
 /**
  * @file src/components/dev/utils/component-props.ts
  * @description Utilidad para generar props de fallback robustas y estructuradas para componentes de desarrollo.
- *              Atomizado desde ComponentCanvas.tsx.
+ *              Atomizado desde ComponentCanvas.tsx para respetar el Principio de Responsabilidad Única.
  * @version 1.0.0
  * @author RaZ podesta - MetaShark Tech
  */
@@ -59,10 +59,13 @@ export function getFallbackProps(name: string): Record<string, any> {
       return { config: { raysColor: "primary", raysOrigin: "top-center" } };
     case "Header":
       return {
-        campaignPills: [{ label: "Campaña Mock", href: "/dev" }],
-        ctaButton: "CTA Mock",
-        logoUrl: "/img/logos/globalfitwell-logo-v2.svg",
-        logoAlt: "Logo Global Fitwell Mock",
+        content: {
+          logoUrl: "/img/logos/globalfitwell-logo-v2.svg",
+          logoAlt: "Logo Global Fitwell Mock",
+          navLinks: [{ label: "Mock Link", href: "/dev" }],
+          ctaButton: { label: "CTA Mock", href: "/dev" },
+        },
+        devDictionary: {}, // Proporcionar un mock vacío para devDictionary
       };
     case "Footer":
       return {

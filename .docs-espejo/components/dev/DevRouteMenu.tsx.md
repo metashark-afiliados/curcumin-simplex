@@ -1,38 +1,39 @@
 // .docs-espejo/components/dev/DevRouteMenu.tsx.md
 /**
  * @file DevRouteMenu.tsx.md
- * @description Documento espejo para el menú de navegación de desarrollo.
+ * @description Documento espejo y SSoT conceptual para el componente de presentación del menú de desarrollo.
  * @version 1.0.0
  * @author RaZ podesta - MetaShark Tech
  */
 
-# Manifiesto Conceptual: DevRouteMenu
+# Manifiesto Conceptual: Componente de Presentación DevRouteMenu
 
 ## 1. Rol Estratégico
 
-El `DevRouteMenu` es un componente de **Experiencia de Desarrollador (DX)**. Su propósito es proporcionar una interfaz de navegación rápida y centralizada para que el equipo de desarrollo pueda saltar entre las diferentes páginas, campañas y herramientas del proyecto sin necesidad de manipular la URL manualmente. Es un componente que solo debe ser visible en el entorno de desarrollo.
+El aparato `DevRouteMenu.tsx` es un **componente de presentación puro ("Dumb Component")**. Su única responsabilidad es recibir una estructura de datos (`RouteGroup[]`) y renderizar un menú desplegable interactivo. No contiene ninguna lógica de negocio, de obtención de datos, ni de manipulación de estado que no sea puramente visual (gestionada por el `DropdownMenu` subyacente).
+
+Este componente es la encarnación visual del Principio de Responsabilidad Única. Su existencia permite que la lógica de negocio (en `DevToolsDropdown.tsx` y `route-menu.generator.ts`) pueda cambiar sin afectar la apariencia del menú, y viceversa.
 
 ## 2. Arquitectura y Flujo de Ejecución
 
-Tras la refactorización, el `DevRouteMenu` sigue un patrón de **Presentación Pura**.
+1.  **Entrada:** Recibe una prop `routeGroups` que es un array de objetos que describe completamente los grupos y los items del menú, incluyendo etiquetas, URLs e iconos.
+2.  **Composición de UI:** Utiliza los componentes del sistema `DropdownMenu` (`DropdownMenuTrigger`, `DropdownMenuContent`, etc.) como bloques de construcción.
+3.  **Renderizado:** Itera sobre la estructura de `routeGroups`:
+    *   Para cada `group`, renderiza un `<DropdownMenuGroup>` y un `<DropdownMenuLabel>`.
+    *   Para cada `item` dentro de un grupo, renderiza un `<DropdownMenuItem>` envuelto en un `Link` de Next.js, utilizando `DynamicIcon` para el icono.
+4.  **Salida:** Produce un menú desplegable completamente funcional e interactivo en el DOM.
 
-1.  **Recepción de Props:** El componente recibe un objeto `dictionary` con todo el texto que necesita.
-2.  **Generación de Datos:** Inmediatamente invoca al helper `generateDevRoutes(dictionary, locale)`. Este helper es el responsable de consultar la SSoT de rutas (`navigation.ts`) y el diccionario para construir una estructura de datos (`RouteGroup[]`) que representa el menú.
-3.  **Gestión de Estado Local:** El componente gestiona su propio estado de UI (si el menú está abierto o cerrado) usando `useState`. También utiliza `useEffect` y `useRef` para implementar la lógica de "cerrar al hacer clic fuera".
-4.  **Renderizado:** El componente mapea la estructura de datos generada por el helper y la renderiza como una lista de botones navegables. No contiene ninguna lógica de negocio o de definición de rutas.
-5.  **Navegación:** Al hacer clic en un ítem, utiliza el `useRouter` de Next.js para ejecutar la navegación del lado del cliente.
+## 3. Contrato de API
 
-Esta arquitectura desacopla completamente la data (`qué` rutas mostrar) de la presentación (`cómo` mostrar el menú).
-
-## 3. Contrato de API (`Props`)
-
--   `dictionary: NonNullable<Dictionary["devRouteMenu"]>`: El sub-diccionario que contiene todas las cadenas de texto para el menú. Es no-nulo, indicando que es un requisito para renderizar.
--   `className?: string`: Clases CSS opcionales para permitir la personalización del estilo desde el componente padre.
+*   **Entradas (Props):**
+    *   `routeGroups: RouteGroup[]`
+*   **Salidas:**
+    *   Un elemento JSX: `<DropdownMenu>...</DropdownMenu>`
 
 ## 4. Zona de Melhorias Futuras
 
-1.  **Buscador de Rutas:** Integrar un campo de búsqueda en la parte superior del menú desplegable para filtrar rápidamente las rutas disponibles, especialmente útil a medida que el proyecto crezca.
-2.  **Historial de Navegación Reciente:** Almacenar en `localStorage` las últimas 3-5 rutas visitadas a través del menú y mostrarlas en una sección "Recientes" para un acceso aún más rápido.
-3.  **Indicadores de Estado:** Añadir indicadores visuales para rutas que puedan tener errores de build o que estén marcadas como "en desarrollo".
-4.  **Integración con Permisos:** En un futuro sistema con roles, el `route-menu.generator` podría aceptar un `userRole` y filtrar las rutas que el desarrollador actual tiene permiso para ver.
+1.  **Submenús Anidados:** El sistema `DropdownMenu` podría extenderse para soportar submenús. Si esto se implementara, la estructura `RouteGroup` podría modificarse para incluir un array de `subItems`, y este componente se adaptaría para renderizarlos.
+2.  **Items Deshabilitados:** La estructura `RouteItem` podría incluir una propiedad booleana `disabled`. Este componente podría entonces leer esa propiedad y añadir los atributos/estilos correspondientes al `<DropdownMenuItem>` para mostrarlo como no interactivo.
+3.  **Accesibilidad Mejorada:** Se podrían añadir `aria-label` más descriptivos a los items del menú si fuera necesario, obteniéndolos de una propiedad adicional en la estructura de datos `RouteItem`.
+
 // .docs-espejo/components/dev/DevRouteMenu.tsx.md

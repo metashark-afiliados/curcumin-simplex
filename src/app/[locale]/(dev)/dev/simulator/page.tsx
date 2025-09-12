@@ -1,23 +1,25 @@
 // src/app/[locale]/(dev)/dev/simulator/page.tsx
 /**
  * @file page.tsx (Campaign Simulator)
- * @description Página principal del Simulador de Campañas. Permite al equipo de
- *              desarrollo y marketing previsualizar todas las variantes de una
- *              campaña definidas en `campaign.map.json`.
+ * @description Página principal del Simulador de Campañas.
+ *              Refactorizada para utilizar la clave de ruta correcta ('campaign')
+ *              desde el manifiesto de navegación, resolviendo un error de tipo TS2339,
+ *              y nivelada a los estándares de calidad del proyecto.
  * @devonly
- * @version 3.0.0
+ * @version 4.0.0
  * @author RaZ podesta - MetaShark Tech
  * @see .docs-espejo/app/[locale]/(dev)/dev/simulator/page.tsx.md
  */
 import React from "react";
 import Link from "next/link";
 import { ExternalLink, Rocket } from "lucide-react";
-import { Container } from "@/components/ui/Container";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/Card";
-import { clientLogger } from "@/lib/logging";
+import { Container } from "@/components/ui/Container";
 import { getDictionary } from "@/lib/i18n";
 import { type Locale } from "@/lib/i18n.config";
+import { clientLogger } from "@/lib/logging";
 import campaignMapData from "@/content/campaigns/12157/campaign.map.json";
+import { routes } from "@/lib/navigation";
 
 // --- CAPA DE DATOS Y TIPOS ---
 
@@ -27,29 +29,22 @@ interface VariantData {
   theme: string;
   content: string;
 }
-
 interface CampaignMap {
   productId: string;
   campaignName: string;
   description: string;
   variants: Record<string, VariantData>;
 }
-
 interface Campaign {
   id: string;
   name: string;
-  variants: {
-    id: string;
-    name: string;
-    description: string;
-    url: string;
-  }[];
+  variants: { id: string; name: string; description: string; url: string }[];
 }
 
 /**
  * @function getAvailableCampaigns
- * @description Lógica de obtención y transformación de datos. Lee el manifiesto
- *              de mapeo y lo transforma en una estructura de datos lista para renderizar.
+ * @description Lógica de obtención de datos para el simulador. Lee el manifiesto de
+ *              mapeo y lo transforma en una estructura de datos lista para renderizar.
  * @param {Locale} locale - El locale actual para construir las URLs correctamente.
  * @returns {Promise<Campaign[]>} Un array de campañas con sus variantes.
  */
@@ -65,7 +60,8 @@ async function getAvailableCampaigns(locale: Locale): Promise<Campaign[]> {
           id: variantId,
           name: variantData.name,
           description: variantData.description,
-          url: `/${locale}/campaigns/${campaignMap.productId}?v=${variantId}`,
+          // <<-- SOLUCIÓN: Se utiliza la clave de ruta correcta 'campaign' del snapshot SSoT.
+          url: `${routes.campaign.path({ locale, campaignId: campaignMap.productId })}?v=${variantId}`,
         })
       ),
     },
@@ -80,23 +76,29 @@ interface CampaignSimulatorPageProps {
 
 export default async function CampaignSimulatorPage({
   params,
-}: CampaignSimulatorPageProps) {
+}: CampaignSimulatorPageProps): Promise<React.ReactElement> {
+  const awaitedParams = await params;
   clientLogger.info(
-    "[CampaignSimulatorPage] Renderizando página del simulador."
+    `[CampaignSimulatorPage] Renderizando página del simulador para locale: ${awaitedParams.locale}.`
   );
 
   const [t, campaigns] = await Promise.all([
-    getDictionary(params.locale),
-    getAvailableCampaigns(params.locale),
+    getDictionary(awaitedParams.locale),
+    getAvailableCampaigns(awaitedParams.locale),
   ]);
-
   const content = t.devCampaignSimulatorPage;
 
   if (!content) {
+    clientLogger.error(
+      "[CampaignSimulatorPage] Contenido 'devCampaignSimulatorPage' no encontrado en el diccionario."
+    );
     return (
       <Container className="py-12 text-center text-destructive">
-        <h1>Error: Contenido no encontrado</h1>
-        <p>El diccionario para la página del simulador no pudo ser cargado.</p>
+        <h1>Error: Contenido de la página no encontrado</h1>
+        <p>
+          Asegúrese de que la clave 'devCampaignSimulatorPage' existe en los
+          archivos i18n.
+        </p>
       </Container>
     );
   }
@@ -112,7 +114,6 @@ export default async function CampaignSimulatorPage({
           {content.subtitle}
         </p>
       </div>
-
       <div className="space-y-10">
         {campaigns.map((campaign) => (
           <div key={campaign.id}>
@@ -121,7 +122,7 @@ export default async function CampaignSimulatorPage({
               <span className="text-accent">{campaign.name}</span> (ID:{" "}
               {campaign.id})
             </h2>
-            <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+            <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
               {campaign.variants.map((variant) => (
                 <Link
                   key={variant.id}

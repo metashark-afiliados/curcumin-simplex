@@ -1,18 +1,21 @@
 // src/components/dev/DevRouteMenu.tsx
 /**
  * @file DevRouteMenu.tsx
- * @description Menú desplegable con rutas de desarrollo y herramientas.
- *              - v19.0.0: Refactorizado para importar desde la fachada pública
- *                atomizada de DropdownMenu, mejorando la mantenibilidad.
- * @version 19.0.0
+ * @description Componente de presentación puro para el menú desplegable de herramientas de desarrollo.
+ *              Recibe una estructura de datos pre-procesada y se encarga únicamente de renderizar la UI.
+ *              Refactorizado para importar desde la fachada pública de DropdownMenu y cumplir
+ *              con todos los estándares de calidad del proyecto.
+ * @version 20.0.0
  * @author RaZ podesta - MetaShark Tech
+ * @see .docs-espejo/components/dev/DevRouteMenu.tsx.md
  */
 "use client";
 
 import { Wrench } from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/components/ui/Button";
-// <<-- SOLUCIÓN: Se importa desde la API unificada del componente.
+import DynamicIcon from "@/components/ui/DynamicIcon";
+// <<-- MEJORA: Se importa desde la API unificada del componente para mayor robustez.
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -22,14 +25,24 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/DropdownMenu";
-import DynamicIcon from "@/components/ui/DynamicIcon";
 import { type RouteGroup } from "./utils/route-menu.generator";
 
 interface DevRouteMenuProps {
   routeGroups: RouteGroup[];
 }
 
-export const DevRouteMenu = ({ routeGroups }: DevRouteMenuProps) => {
+/**
+ * @component DevRouteMenu
+ * @description Renderiza la UI del menú desplegable de desarrollo. Es un componente "dumb"
+ *              que no contiene lógica de negocio.
+ * @param {DevRouteMenuProps} props Las propiedades con la estructura de rutas a renderizar.
+ * @returns {React.ReactElement} El elemento JSX del menú desplegable.
+ */
+export const DevRouteMenu = ({
+  routeGroups,
+}: DevRouteMenuProps): React.ReactElement => {
+  console.log("[Observabilidad] Renderizando DevRouteMenu (Presentacional)");
+
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -39,18 +52,19 @@ export const DevRouteMenu = ({ routeGroups }: DevRouteMenuProps) => {
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent className="w-64" align="end">
-        {routeGroups.map((group) => (
+        {routeGroups.map((group, groupIndex) => (
           <DropdownMenuGroup key={group.groupName}>
             <DropdownMenuLabel>{group.groupName}</DropdownMenuLabel>
             {group.items.map((item) => (
-              <Link href={item.path} key={item.path}>
+              <Link href={item.path} key={item.path} passHref>
                 <DropdownMenuItem>
                   <DynamicIcon name={item.iconName} className="mr-3 h-4 w-4" />
                   <span>{item.name}</span>
                 </DropdownMenuItem>
               </Link>
             ))}
-            <DropdownMenuSeparator />
+            {/* No añade un separador después del último grupo */}
+            {groupIndex < routeGroups.length - 1 && <DropdownMenuSeparator />}
           </DropdownMenuGroup>
         ))}
       </DropdownMenuContent>

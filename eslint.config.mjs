@@ -27,6 +27,7 @@ const compat = new FlatCompat({
 
 /** @type {import('eslint').Linter.FlatConfig[]} */
 const eslintConfig = [
+  // 1. Ignorados Globales
   {
     ignores: [
       "node_modules/**",
@@ -39,8 +40,10 @@ const eslintConfig = [
     ],
   },
 
+  // 2. Configuración Base de Next.js
   ...compat.extends("next/core-web-vitals"),
 
+  // 3. Configuración de Ordenamiento de Importaciones y Accesibilidad (A11y)
   {
     plugins: {
       "simple-import-sort": eslintPluginSimpleImportSort,
@@ -53,6 +56,7 @@ const eslintConfig = [
     },
   },
 
+  // 4. Configuración Específica para TypeScript y React Hooks
   {
     files: ["src/**/*.{ts,tsx}"],
     plugins: {
@@ -63,6 +67,10 @@ const eslintConfig = [
       parser: typescriptParser,
       parserOptions: {
         project: "./tsconfig.json",
+      },
+      globals: {
+        ...globals.browser,
+        ...globals.node,
       },
     },
     rules: {
@@ -77,15 +85,7 @@ const eslintConfig = [
     },
   },
 
-  {
-    languageOptions: {
-      globals: {
-        ...globals.browser,
-        ...globals.node,
-      },
-    },
-  },
-
+  // 5. Integración con Prettier (SIEMPRE AL FINAL)
   eslintPluginPrettierRecommended,
 ];
 
