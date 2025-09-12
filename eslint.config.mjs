@@ -1,11 +1,11 @@
-// eslint.config.mjs
+// frontend/eslint.config.mjs
 /**
  * @file eslint.config.mjs
  * @description Manifiesto de Configuración y SSoT para ESLint ("Flat Config").
- *              Refactorizado a un estándar de élite para ser holístico,
- *              integrando ordenamiento de importaciones, reglas de accesibilidad,
- *              configuración granular para TypeScript y una integración perfecta con Prettier.
- * @version 4.0.0
+ *              Esta versión utiliza JSDoc para el tipado, resolviendo todos los
+ *              errores de TypeScript (TS80xx) al eliminar la sintaxis específica
+ *              de TS de un archivo .mjs.
+ * @version 6.0.0
  * @author RaZ podesta - MetaShark Tech
  */
 import { dirname } from "path";
@@ -25,9 +25,11 @@ const compat = new FlatCompat({
   baseDirectory: __dirname,
 });
 
+// <<-- SOLUCIÓN HOLÍSTICA: Se utiliza una única directiva JSDoc para tipar
+//      todo el array de configuración, eliminando la necesidad de sintaxis TS.
 /** @type {import('eslint').Linter.FlatConfig[]} */
 const eslintConfig = [
-  // 1. Ignorados Globales
+  // 1. Bloque de Ignorados Globales
   {
     ignores: [
       "node_modules/**",
@@ -43,7 +45,7 @@ const eslintConfig = [
   // 2. Configuración Base de Next.js
   ...compat.extends("next/core-web-vitals"),
 
-  // 3. Configuración de Ordenamiento de Importaciones y Accesibilidad (A11y)
+  // 3. Plugins Adicionales (Import Sort & A11y)
   {
     plugins: {
       "simple-import-sort": eslintPluginSimpleImportSort,
@@ -56,7 +58,7 @@ const eslintConfig = [
     },
   },
 
-  // 4. Configuración Específica para TypeScript y React Hooks
+  // 4. Configuración Específica para TypeScript
   {
     files: ["src/**/*.{ts,tsx}"],
     plugins: {
@@ -79,7 +81,7 @@ const eslintConfig = [
       ...typescriptPlugin.configs.recommended.rules,
       "@typescript-eslint/no-unused-vars": [
         "warn",
-        { argsIgnorePattern: "^_" },
+        { argsIgnorePattern: "^_", varsIgnorePattern: "^_" },
       ],
       "@typescript-eslint/no-explicit-any": "warn",
     },
@@ -90,4 +92,4 @@ const eslintConfig = [
 ];
 
 export default eslintConfig;
-// eslint.config.mjs
+// frontend/eslint.config.mjs

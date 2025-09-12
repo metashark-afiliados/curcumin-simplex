@@ -2,11 +2,10 @@
 /**
  * @file Button.tsx
  * @description Un componente de botón atómico y polimórfico de nivel de framework.
- *              - v6.0.0: Versión definitiva. Se elimina la dependencia 'cva' para
- *                alinearse con el snapshot del proyecto. Se refactorizan los tipos
- *                a una única interfaz unificada para resolver todos los errores de
- *                TypeScript (TS2307, TS2339, TS2322) de forma holística.
- * @version 6.0.0
+ *              - v7.0.0: Resuelve error de tipo TS2430. Se refactoriza la interfaz
+ *                `ButtonProps` para usar `Omit<...>` de TypeScript, resolviendo
+ *                correctamente el conflicto de tipos de la propiedad `className`.
+ * @version 7.0.0
  * @author RaZ podesta - MetaShark Tech
  * @see .docs-espejo/components/ui/Button.tsx.md
  */
@@ -16,7 +15,7 @@ import { Slot } from "@radix-ui/react-slot";
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
 
-// --- Definición de Variantes (Patrón del Snapshot, sin 'cva') ---
+// --- Definición de Variantes ---
 const variants = {
   default: "bg-primary text-primary-foreground hover:bg-primary/90",
   accent: "bg-accent text-accent-foreground hover:bg-accent/90",
@@ -34,14 +33,17 @@ const sizes = {
   icon: "h-10 w-10",
 };
 
-// --- Tipos y Contratos (Interfaz Unificada) ---
+// --- Tipos y Contratos (Interfaz Corregida) ---
+
+// <<-- SOLUCIÓN: Se omite la propiedad 'className' original para evitar el conflicto
+//      y luego se añade nuestra propia definición con el tipo 'ClassValue'.
 export interface ButtonProps
-  extends React.ButtonHTMLAttributes<HTMLButtonElement> {
+  extends Omit<React.ButtonHTMLAttributes<HTMLButtonElement>, "className"> {
   variant?: keyof typeof variants;
   size?: keyof typeof sizes;
   href?: string;
   asChild?: boolean;
-  className?: ClassValue;
+  className?: ClassValue; // Nuestra definición flexible de className.
 }
 
 // --- Componente Principal ---
@@ -57,7 +59,7 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
     },
     ref
   ) => {
-    console.log("[Observabilidad] Renderizando Button (v6.0.0)");
+    console.log("[Observabilidad] Renderizando Button (v7.0.0)");
 
     const isLink = typeof href !== "undefined";
     const Comp = asChild ? Slot : isLink ? Link : "button";
@@ -75,11 +77,10 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
       className: finalClassName,
       ref,
       ...props,
-      ...(isLink && { href }), // Solo añade href si es un enlace
+      ...(isLink && { href }),
     };
 
-    // @ts-ignore - Este ignore es pragmático para manejar el polimorfismo de Comp y ref.
-    // La lógica de tipos anterior garantiza que las props correctas se pasan.
+    // @ts-ignore - Este ignore es pragmático y aceptado para manejar el polimorfismo.
     return <Comp {...componentProps} />;
   }
 );

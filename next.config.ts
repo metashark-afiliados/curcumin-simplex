@@ -1,36 +1,23 @@
 // frontend/next.config.ts
 /**
  * @file next.config.ts
- * @description Manifiesto de Configuración y SSoT para Next.js. Este archivo es el
- *              "Cerebro de Compilación" del proyecto. Esta versión está optimizada
- *              exclusivamente para despliegues en Vercel, eliminando la lógica de
- *              despliegue dual para estabilizar el build y maximizar el rendimiento.
- * @version 14.0.0
+ * @description Manifiesto de Configuración y SSoT para Next.js. Esta versión está
+ *              consolidada y optimizada para un despliegue exclusivo en Vercel,
+ *              eliminando toda lógica de despliegue dual.
+ * @version 15.0.0
  * @author RaZ podesta - MetaShark Tech
  */
 import type { NextConfig } from "next";
 
-// --- Log de Observabilidad de Compilación ---
-console.log(
-  "\x1b[36m%s\x1b[0m",
-  "🔄 [NextConfig] Iniciando configuración del manifiesto de compilación de Next.js..."
-);
-console.info(
-  `\x1b[34m[NextConfig] 🎯 Objetivo de despliegue: 'vercel' (configuración unificada).\x1b[0m`
-);
-console.info(
-  `\x1b[34m[NextConfig]    - Optimización de Imágenes: ACTIVADA.\x1b[0m`
-);
-console.info(
-  `\x1b[34m[NextConfig]    - Cabeceras de Seguridad: ACTIVADAS.\x1b[0m`
-);
-
 /**
- * @function getDynamicHeaders
- * @description Genera las cabeceras de seguridad HTTP para todos los despliegues.
- * @returns {Promise<Array<object>>} Configuración de cabeceras para Next.js.
+ * @function getSecurityHeaders
+ * @description Genera un conjunto robusto de cabeceras de seguridad HTTP.
+ *              Esta función se centraliza para mantener la consistencia y facilitar
+ *              la auditoría de seguridad.
+ * @returns {Promise<Array<{source: string; headers: Array<{key: string; value: string;}>}>>}
+ *          La configuración de cabeceras para Next.js.
  */
-async function getDynamicHeaders() {
+async function getSecurityHeaders() {
   const cspHeader = `
     default-src 'self';
     script-src 'self' 'unsafe-inline' 'unsafe-eval' https://www.googletagmanager.com;
@@ -39,7 +26,7 @@ async function getDynamicHeaders() {
     font-src 'self';
     object-src 'none';
     base-uri 'self';
-    form-action 'self';
+    form-action 'self' https://it4.curcumacomplex.com;
     frame-ancestors 'none';
     connect-src *;
   `
@@ -66,21 +53,18 @@ async function getDynamicHeaders() {
 
 /**
  * @type {NextConfig}
- * @description El objeto de configuración final para Next.js, optimizado para Vercel.
+ * @description El objeto de configuración final para Next.js.
  */
 const nextConfig: NextConfig = {
-  // `output` se deja sin definir; Vercel gestiona esto automáticamente.
-  // `headers` se aplica incondicionalmente para máxima seguridad.
-  headers: getDynamicHeaders,
-
+  // La propiedad `output` se omite intencionadamente. Vercel detecta y
+  // optimiza automáticamente el tipo de salida.
+  headers: getSecurityHeaders,
   eslint: {
+    // Garantiza que los errores de linting fallen la compilación en producción.
     ignoreDuringBuilds: false,
   },
-
-  // La optimización de imágenes se reactiva al eliminar la clave `images`.
-  // Next.js/Vercel usarán la optimización por defecto.
-  // Si se necesita permitir dominios externos, se añadirá la clave `remotePatterns`.
-
+  // La optimización de imágenes está habilitada por defecto en Vercel.
+  // No es necesario especificar `images: { unoptimized: false }`.
   trailingSlash: false,
 };
 

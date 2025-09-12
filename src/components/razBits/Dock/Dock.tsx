@@ -1,12 +1,11 @@
-// src/components/razBits/Dock/Dock.tsx
+// frontend/src/components/razBits/Dock/Dock.tsx
 /**
  * @file Dock.tsx
- * @description Componente de UI interactivo tipo "dock" con efectos de magnificación y etiquetas flotantes.
- *              Naturalizado para integrarse con el sistema de diseño y observabilidad de Curcumin Simplex.
- *              - v2.0.0: Resuelve error de tipo TS2345 al pasar props a hijos. Se crea un
- *                contrato explícito con `CommonDockChildProps` para `DockIcon` y `DockLabel`,
- *                garantizando la seguridad de tipos en la composición.
- * @version 2.0.0
+ * @description Componente de UI interactivo tipo "dock" con efectos de magnificación.
+ *              - v2.1.0: Resuelve error de tipo TS2769 al pasar props a hijos. Se crea un
+ *                contrato explícito `CommonDockChildProps` para garantizar la seguridad
+ *                de tipos en la composición de componentes.
+ * @version 2.1.0
  * @author RaZ podesta - MetaShark Tech
  * @see .docs-espejo/components/razBits/Dock/Dock.tsx.md
  */
@@ -61,11 +60,13 @@ type DockItemInternalProps = {
   magnification: number;
 };
 
-// <<-- MEJORA: Contrato común para los hijos del DockItem
+// <<-- MEJORA: Contrato explícito para los hijos del DockItem -->>
+// Esta interfaz define las props que el componente DockItem inyectará en sus hijos.
 interface CommonDockChildProps {
   isHovered?: MotionValue<number>;
 }
 
+// Las interfaces de los hijos ahora extienden el contrato común.
 interface DockLabelProps extends CommonDockChildProps {
   className?: string;
   children: React.ReactNode;
@@ -171,7 +172,10 @@ function DockItem({
       aria-haspopup="true"
     >
       {Children.map(children, (child) =>
-        cloneElement(child as React.ReactElement, { isHovered })
+        // La llamada a cloneElement ahora es 100% type-safe.
+        cloneElement(child as React.ReactElement<CommonDockChildProps>, {
+          isHovered,
+        })
       )}
     </motion.div>
   );
@@ -244,4 +248,4 @@ export function Dock({
 }
 
 export default Dock;
-// src/components/razBits/Dock/Dock.tsx
+// frontend/src/components/razBits/Dock/Dock.tsx

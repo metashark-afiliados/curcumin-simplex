@@ -1,31 +1,33 @@
-
+// frontend/tsconfig.json
 /**
  * @file tsconfig.json
  * @description Manifiesto de Configuración y SSoT para el compilador de TypeScript.
- *              Versión definitiva con "moduleResolution": "bundler" para resolver
- *              errores de importación de módulos (TS2307) de forma nativa.
- * @version 5.0.0
+ *              Versión definitiva con "moduleResolution": "bundler" para una
+ *              resolución de módulos moderna y compatible con Next.js.
+ * @version 6.0.0
  * @author RaZ podesta - MetaShark Tech
  */
 {
   "compilerOptions": {
+    // --- Comprobaciones de Tipo Estrictas (Calidad de Código) ---
     "strict": true,
-    "noEmit": true,
-    "isolatedModules": true,
-    "target": "ES2020",
-    "module": "esnext",
-    // <<-- SOLUCIÓN CRÍTICA: "bundler" permite la resolución de módulos sin extensión,
-    //      igual que como lo hace Next.js, resolviendo los errores TS2307.
-    "moduleResolution": "bundler",
-    "esModuleInterop": true,
-    "lib": ["dom", "dom.iterable", "esnext"],
-    "jsx": "preserve",
-    "allowJs": true,
-    "resolveJsonModule": true,
-    "skipLibCheck": true,
-    "allowImportingTsExtensions": true,
-    "incremental": true,
-    "baseUrl": ".",
+    "noEmit": true, // No genera archivos JS, Next.js se encarga de la transpilación.
+    "isolatedModules": true, // Asegura que cada archivo pueda ser transpilado de forma aislada.
+
+    // --- Configuración de Módulos y Entorno ---
+    "target": "ES2020", // Target de ECMAScript moderno.
+    "module": "esnext", // Utiliza el sistema de módulos ES moderno.
+    "moduleResolution": "bundler", // SSoT: Resuelve módulos como lo haría un bundler (Vite/Webpack).
+    "esModuleInterop": true, // Permite la interoperabilidad entre módulos CommonJS y ES.
+    "lib": ["dom", "dom.iterable", "esnext"], // Librerías de tipos a incluir.
+    "jsx": "preserve", // No transpila JSX, lo deja para que Next.js lo maneje.
+    "allowJs": true, // Permite importar archivos .js en el proyecto.
+    "resolveJsonModule": true, // Permite importar archivos .json como módulos.
+    "skipLibCheck": true, // Omite la comprobación de tipos de los archivos .d.ts de las dependencias.
+
+    // --- Configuración Específica del Proyecto ---
+    "incremental": true, // Habilita la compilación incremental para mayor velocidad.
+    "baseUrl": ".", // Directorio base para las rutas absolutas.
     "paths": {
       "@/*": ["./src/*"],
       "@config/*": ["./src/config/*"],
@@ -35,15 +37,17 @@
       "@scripts/*": ["./scripts/*"],
       "@tests/*": ["./tests/*"]
     },
+
+    // --- Integración con Frameworks y Herramientas ---
     "plugins": [
       {
         "name": "next"
       }
     ],
-    "types": ["vitest/globals"]
+    "types": ["vitest/globals"] // Incluye los tipos globales de Vitest para las pruebas.
   },
   "include": [
-    ".next/types/**/*.ts",
+    ".next/types/**/*.ts", // Incluye los tipos generados por Next.js.
     "next-env.d.ts",
     "src/**/*.ts",
     "src/**/*.tsx",
@@ -54,4 +58,4 @@
   ],
   "exclude": ["node_modules"]
 }
-
+// frontend/tsconfig.json
