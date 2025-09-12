@@ -2,10 +2,11 @@
 /**
  * @file page.tsx (Dev Component Canvas Page Host)
  * @description Página anfitriona que renderiza un componente individual de forma aislada.
- *              Refactorizada para ser un Server Component síncrono y puro, delegando
- *              toda la lógica de carga de datos a su hijo `ComponentCanvas`.
+ *              - v4.0.0: Refactorización sistémica. Convertido a un Server Component `async`
+ *                para manejar correctamente las props (`params`) asíncronas de Next.js
+ *                y resolver el error de build de incompatibilidad de tipos.
  * @devonly
- * @version 3.0.0
+ * @version 4.0.0
  * @author RaZ podesta - MetaShark Tech
  * @see .docs-espejo/app/[locale]/(dev)/dev/components/[componentName]/page.tsx.md
  */
@@ -47,11 +48,11 @@ export async function generateStaticParams() {
  * @component DevComponentCanvasPage
  * @description Componente anfitrión que renderiza el `ComponentCanvas`.
  * @param {DevComponentCanvasPageProps} props - Las propiedades de la página.
- * @returns {React.ReactElement} El elemento JSX de la página.
+ * @returns {Promise<React.ReactElement>} El elemento JSX de la página.
  */
-export default function DevComponentCanvasPage({
+export default async function DevComponentCanvasPage({
   params,
-}: DevComponentCanvasPageProps): React.ReactElement {
+}: DevComponentCanvasPageProps): Promise<React.ReactElement> {
   clientLogger.info(
     `[DevComponentCanvasPage] Renderizando página host para componente: ${params.componentName}, locale: ${params.locale}`
   );
