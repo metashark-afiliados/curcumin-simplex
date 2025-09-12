@@ -2,21 +2,23 @@
 /**
  * @file page.tsx (Dev Component Canvas Page Host)
  * @description Página anfitriona que renderiza un componente individual de forma aislada.
- *              - v4.0.0: Refactorización sistémica. Convertido a un Server Component `async`
- *                para manejar correctamente las props (`params`) asíncronas de Next.js
- *                y resolver el error de build de incompatibilidad de tipos.
+ *              Este es un Componente de Servidor (RSC) y su función es `async` por
+ *              diseño para cumplir con el contrato de API del App Router de Next.js,
+ *              que puede pasar props como `params` de forma asíncrona, resolviendo
+ *              así el error de build de incompatibilidad de tipos.
  * @devonly
- * @version 4.0.0
+ * @version 5.0.0
  * @author RaZ podesta - MetaShark Tech
  * @see .docs-espejo/app/[locale]/(dev)/dev/components/[componentName]/page.tsx.md
  */
 import React from "react";
-import { clientLogger } from "@/lib/logging";
 import { ComponentCanvas } from "@/components/dev/ComponentCanvas";
+import { getComponentList } from "@/components/dev/ComponentRegistry";
 import { Container } from "@/components/ui/Container";
 import { type Locale, supportedLocales } from "@/lib/i18n.config";
-import { getComponentList } from "@/components/dev/ComponentRegistry";
+import { clientLogger } from "@/lib/logging";
 
+// --- TIPOS Y CONTRATOS ---
 interface DevComponentCanvasPageProps {
   params: {
     locale: Locale;
@@ -24,10 +26,12 @@ interface DevComponentCanvasPageProps {
   };
 }
 
+// --- GENERACIÓN DE RUTAS ESTÁTICAS ---
+
 /**
  * @function generateStaticParams
  * @description Genera estáticamente todas las rutas posibles para `[componentName]`
- *              y `[locale]`, optimizando el build para SSG.
+ *              y `[locale]` en tiempo de build, optimizando para SSG.
  * @returns {Promise<{ componentName: string; locale: Locale }[]>} Un array de objetos con los parámetros.
  */
 export async function generateStaticParams() {
@@ -44,10 +48,12 @@ export async function generateStaticParams() {
   return params;
 }
 
+// --- COMPONENTE DE PÁGINA ---
+
 /**
  * @component DevComponentCanvasPage
- * @description Componente anfitrión que renderiza el `ComponentCanvas`.
- * @param {DevComponentCanvasPageProps} props - Las propiedades de la página.
+ * @description Componente anfitrión que orquesta el renderizado del `ComponentCanvas`.
+ * @param {DevComponentCanvasPageProps} props - Las propiedades de la página, incluyendo `params`.
  * @returns {Promise<React.ReactElement>} El elemento JSX de la página.
  */
 // <<-- SOLUCIÓN SISTÉMICA: La función del componente DEBE ser `async`.

@@ -1,41 +1,38 @@
 # /.docs-espejo/app/[locale]/store/page.tsx.md
 /**
- * @file .docs-espejo/app/[locale]/store/page.tsx.md
- * @description Documento espejo para la página de la tienda.
+ * @file page.tsx.md
+ * @description Documento Espejo y SSoT conceptual para la página de la Tienda.
  * @version 1.0.0
  * @author RaZ podesta - MetaShark Tech
  */
 
-# Manifiesto Conceptual: El Escaparate de Productos
+# Manifiesto Conceptual: Orquestador de la Tienda
 
 ## 1. Rol Estratégico
 
-La `StorePage` es el **centro de comercio del portal**. Su propósito es presentar el catálogo de productos de Global Fitwell de una manera limpia, organizada y visualmente atractiva. Actúa como un orquestador de componentes de UI más pequeños y especializados (`ProductFilters`, `ProductGrid`, `LightRays`), ensamblándolos para crear una experiencia de compra cohesiva.
+Este aparato (`store/page.tsx`) es el **orquestador del dominio de e-commerce** del portal. Su propósito principal es presentar el catálogo de productos de una manera organizada y funcional. Actúa como un canal de "conversión suave", diseñado para usuarios que llegan desde el contenido orgánico del portal.
 
 ## 2. Arquitectura y Flujo de Ejecución
 
-Este aparato es un **React Server Component (RSC)** asíncrono.
+La arquitectura de este componente es un ejemplo claro del **Principio de Composición y Responsabilidad Única**.
 
-1.  **Recepción de Contexto:** Recibe el `locale` de la URL como una promesa en sus `params`.
-2.  **Resolución de Parámetros:** Resuelve la promesa `params` con `await` para obtener el `locale` actual.
-3.  **Obtención de Contenido:** Invoca a `getDictionary(locale)` para cargar todo el contenido de la página, incluyendo los datos de los filtros, la lista de productos y la configuración para el efecto visual `LightRays`.
-4.  **Manejo de Contenido (Guardia):** Verifica si el contenido para `storePage` existe en el diccionario. Si no existe, renderiza un estado de fallback controlado para evitar una página rota.
-5.  **Ensamblaje de la UI:**
-    *   Renderiza el efecto de fondo `LightRays`, pasándole su configuración específica.
-    *   Renderiza el `PageHeader` con el título y subtítulo de la tienda.
-    *   Implementa un layout de cuadrícula (`grid`) para posicionar la barra lateral de filtros y la cuadrícula de productos.
-    *   Renderiza `ProductFilters`, pasándole únicamente el fragmento del diccionario que necesita (`content.filters`).
-    *   Renderiza `ProductGrid`, pasándole la lista de productos (`content.products`) y el `locale` para el formato de moneda.
+1.  **Obtención de Datos (Servidor):** Como Componente de Servidor `async`, invoca `getDictionary` para obtener todo el contenido textual y de configuración necesario para la página, incluyendo el contenido de los filtros, la lista de productos y la configuración del efecto visual `LightRays`.
+2.  **Manejo de Errores:** Implementa guardas de seguridad robustas para manejar tanto fallos en la carga del diccionario como la ausencia de la clave de contenido `storePage`, mostrando estados de error claros.
+3.  **Composición de Componentes Atómicos (Renderizado):** No renderiza directamente la UI compleja. En su lugar, delega responsabilidades a componentes especializados:
+    *   `LightRays`: Recibe su configuración y se encarga del efecto de fondo WebGL.
+    *   `PageHeader`: Recibe el título y subtítulo y se encarga de renderizar el encabezado de la página.
+    *   `ProductFilters`: Recibe únicamente los datos de los filtros y se encarga de renderizar la barra lateral.
+    *   `ProductGrid`: Recibe únicamente la lista de productos y se encarga de renderizar la cuadrícula.
+    
+Este patrón de delegación hace que el código sea extremadamente limpio, mantenible y fácil de testear.
 
-## 3. Contrato de API
+## 3. Contrato de API (Props)
 
-### Props de Entrada
+*   `params`: `{ locale: Locale; }` - Define el idioma del contenido a renderizar.
 
-*   `params: { locale: Locale }`: El objeto de parámetros de la ruta.
+## 4. Zona de Melhorias Futuras (Registro de Valor)
 
-## 4. Zona de Melhorias Futuras
-
-1.  **Estado de Filtros en URL:** La lógica de filtrado (actualmente no implementada) debería gestionar su estado a través de parámetros de búsqueda en la URL (ej. `?category=nutricion`). Esto permitiría compartir enlaces a vistas filtradas y mejora el SEO.
-2.  **Paginación:** Para catálogos grandes, se debería implementar una lógica de paginación, ya sea por scroll infinito o con botones de paginación clásicos.
-3.  **Fetching de Productos Dinámico:** En lugar de obtener los productos desde un archivo JSON estático, la página debería hacer fetching de los datos desde una API o base de datos, permitiendo un catálogo dinámico.
-4.  **Componentes de Esqueleto (Skeleton Loading):** Mientras los productos se cargan, se podrían mostrar componentes de esqueleto para mejorar la percepción de rendimiento.
+1.  **Filtros Interactivos:** Implementar lógica para que los filtros (actualmente visuales) modifiquen el estado de la `ProductGrid` a través de `searchParams`, permitiendo al usuario filtrar productos en tiempo real.
+2.  **Paginación:** Para catálogos extensos, añadir paginación a la `ProductGrid`.
+3.  **Datos Dinámicos:** Conectar la `ProductGrid` a una fuente de datos real (ej. el backend de Strapi) en lugar de un archivo JSON estático.
+4.  **Vista de Detalle de Producto:** Hacer que cada tarjeta en `ProductGrid` enlace a una nueva ruta dinámica (`/store/[productId]`) que muestre una vista detallada del producto.

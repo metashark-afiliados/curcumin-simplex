@@ -1,13 +1,17 @@
-// src/lib/config/sections.config.ts
+// frontend/src/lib/config/sections.config.ts
 /**
  * @file sections.config.ts
- * @description SSoT para la configuración de secciones. Mapea nombres de sección
- *              a sus componentes React y claves de diccionario correspondientes.
- *              Refactorizado para flexibilizar el contrato de props del componente,
- *              resolviendo una cascada de errores de tipo TS2322.
- * @version 5.1.0
+ * @description SSoT para la configuración de secciones. Implementa el "Patrón de Registro".
+ *              Este aparato es el mapa central que conecta los nombres de sección (strings
+ *              provenientes de los archivos de tema JSON) con los componentes React reales
+ *              y sus correspondientes claves en el diccionario de i18n.
+ *              Esta arquitectura permite que el SectionRenderer sea dinámico y extensible,
+ *              cumpliendo con el Principio Abierto/Cerrado.
+ * @version 6.0.0
  * @author RaZ podesta - MetaShark Tech
+ * @see .docs-espejo/lib/config/sections.config.ts.md
  */
+import React from "react";
 import { Hero } from "@/components/sections/Hero";
 import { SocialProofLogos } from "@/components/sections/SocialProofLogos";
 import { BenefitsSection } from "@/components/sections/BenefitsSection";
@@ -21,20 +25,31 @@ import { OrderSection } from "@/components/sections/OrderSection";
 import { NewsGrid } from "@/components/sections/NewsGrid";
 import { HeroNews } from "@/components/sections/HeroNews";
 import { ProductShowcase } from "@/components/sections/ProductShowcase";
-import { type Dictionary } from "@/lib/schemas/i18n.schema";
+import type { Dictionary } from "@/lib/schemas/i18n.schema";
 
-// <<-- CORRECCIÓN: Flexibilización del contrato. `any` es una solución pragmática
-// y segura en este contexto, ya que la validación real ocurre en los schemas de Zod
-// y el paso de props en el SectionRenderer.
-export type SectionProps = { [key: string]: any };
-
-// Define el contrato para una entrada en el registro de secciones.
+/**
+ * @interface SectionConfigEntry
+ * @description Define el contrato para cada entrada en el registro de secciones.
+ */
 interface SectionConfigEntry {
-  component: React.ComponentType<any>; // <<-- CORRECCIÓN APLICADA
+  /**
+   * @property component - La referencia al componente React. Se usa `React.ComponentType<any>`
+   *           porque cada sección tiene su propio contrato de props. La seguridad de tipos
+   *           se garantiza en la capa de datos a través de los esquemas de Zod.
+   */
+  component: React.ComponentType<any>;
+  /**
+   * @property dictionaryKey - La clave para buscar el objeto de contenido de esta
+   *           sección dentro del diccionario i18n global.
+   */
   dictionaryKey: keyof Dictionary;
 }
 
-// El array de solo lectura de los nombres de sección.
+/**
+ * @constant sectionNames
+ * @description La lista canónica y SSoT de todos los nombres de sección disponibles.
+ *              Se usa para generar el tipo `SectionName`.
+ */
 export const sectionNames = [
   "Hero",
   "SocialProofLogos",
@@ -53,7 +68,11 @@ export const sectionNames = [
 
 export type SectionName = (typeof sectionNames)[number];
 
-// El mapa que asocia el nombre de la sección con su implementación y clave de datos.
+/**
+ * @constant sectionsConfig
+ * @description El registro principal de secciones. Mapea un `SectionName` a su
+ *              configuración (`SectionConfigEntry`).
+ */
 export const sectionsConfig: Record<SectionName, SectionConfigEntry> = {
   Hero: { component: Hero, dictionaryKey: "hero" },
   SocialProofLogos: {
@@ -93,4 +112,4 @@ export const sectionsConfig: Record<SectionName, SectionConfigEntry> = {
     dictionaryKey: "productShowcase",
   },
 };
-// src/lib/config/sections.config.ts
+// frontend/src/lib/config/sections.config.ts

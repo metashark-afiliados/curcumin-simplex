@@ -1,36 +1,32 @@
-// .docs-espejo/app/[locale]/page.tsx.md
+# /.docs-espejo/app/[locale]/page.tsx.md
 /**
  * @file page.tsx.md
- * @description Documento espejo para la página de inicio del portal.
- * @version 2.0.0
+ * @description Documento Espejo y SSoT conceptual para la página de inicio.
+ * @version 1.0.0
  * @author RaZ podesta - MetaShark Tech
  */
 
-# Manifiesto Conceptual: Homepage del Portal
+# Manifiesto Conceptual: Orquestador de la Página de Inicio
 
 ## 1. Rol Estratégico
 
-La `HomePage` (`/[locale]`) es la **portada principal y el hub de contenido** del ecosistema Global Fitwell. Su objetivo estratégico es presentar una visión general de la marca, destacar el contenido más reciente y relevante, y actuar como un punto de partida para que los usuarios exploren las diferentes áreas del portal (Noticias, Tienda, etc.).
+Este aparato (`page.tsx`) es el **orquestador de contenido para la página de inicio del portal**. Su única responsabilidad es obtener los datos de contenido y ensamblar las secciones de UI correspondientes en el orden correcto.
 
-Es un **Server Component** puro, optimizado para un rendimiento de carga rápido y un excelente SEO.
+Funciona como el "director de escena" de la página más importante del sitio, definiendo qué componentes se muestran y qué datos se les proporciona, pero sin involucrarse en la lógica de presentación de dichos componentes.
 
 ## 2. Arquitectura y Flujo de Ejecución
 
-El componente sigue un patrón de **Ensamblaje Condicional Basado en Datos**:
+1.  **Obtención de Datos (Servidor):** Como Componente de Servidor `async`, invoca a `getDictionary` para obtener el objeto de contenido completo para el `locale` solicitado.
+2.  **Renderizado Condicional:** El cuerpo del componente es una secuencia de expresiones condicionales. Para cada sección potencial (`heroNews`, `socialProof`, etc.), verifica si la clave de contenido correspondiente existe en el diccionario (`t.heroNews && ...`).
+3.  **Delegación a Componentes de Sección:** Si la clave de contenido existe, el componente de sección correspondiente es renderizado, pasándole el objeto de contenido relevante como una única `prop` (`content={t.heroNews}`). Esto adhiere al principio de "props como objeto de contenido", simplificando el contrato entre la página y sus secciones.
+4.  **Resiliencia:** Si una sección no está definida en el diccionario para un `locale` particular, simplemente se omite sin causar un error de renderizado, permitiendo lanzamientos de contenido parciales o progresivos.
 
-1.  **Recepción de Locale:** Recibe el `locale` como parámetro desde la estructura de enrutamiento de Next.js.
-2.  **Carga de Diccionario:** Invoca a `getDictionary(locale)` para obtener el objeto de contenido completo para el idioma solicitado.
-3.  **Renderizado Condicional:** La estructura de la página no está hardcodeada. El componente verifica la existencia de claves de sección específicas en el diccionario (`t.heroNews`, `t.newsGrid`, etc.). **Solo si una clave de contenido existe, se renderiza la sección correspondiente**. Este mecanismo convierte a los archivos de contenido (`.i18n.json`) en la SSoT para el layout de la página, permitiendo al equipo de contenido activar o desactivar secciones sin tocar el código.
-4.  **Inyección de Props (Spread):** A cada componente de sección que se renderiza, se le pasan sus datos correspondientes del diccionario utilizando el operador de propagación (`...t.heroNews`), lo cual es una forma limpia y eficiente de inyectar las `props`.
-5.  **Inyección de Header de Desarrollo:** En modo de desarrollo (`process.env.NODE_ENV === 'development'`), el componente renderiza condicionalmente el `DevHomepageHeader`, proporcionando acceso a las herramientas de DX.
+## 3. Contrato de API (Props)
 
-## 3. Contrato de API (`Props`)
+*   `params`: `{ locale: Locale; }` - Define el idioma del contenido a renderizar.
 
--   `params: { locale: Locale }`: El objeto que contiene el `locale` de la URL, garantizando la carga del contenido correcto.
+## 4. Zona de Melhorias Futuras (Registro de Valor)
 
-## 4. Zona de Melhorias Futuras
-
-1.  **Layout Dinámico desde CMS:** Evolucionar el sistema para que el orden y la selección de secciones no solo dependan de la existencia de datos, sino de una lista explícita (`layout: ["HeroNews", "NewsGrid"]`) que podría provenir de un Headless CMS, dando control total al equipo de contenido.
-2.  **Personalización de Contenido:** Integrar lógica para mostrar diferentes secciones basadas en cookies de usuario o datos geográficos, permitiendo una experiencia de portada personalizada.
-3.  **Streaming de Secciones:** Para páginas con muchas secciones, implementar React Server Components con `Suspense` para hacer streaming del contenido, mostrando las secciones superiores inmediatamente mientras las inferiores se cargan.
-// .docs-espejo/app/[locale]/page.tsx.md
+1.  **Layout por Configuración:** Similar al `SectionRenderer` de las campañas, el orden y la selección de secciones podrían ser definidos por un objeto de configuración en el diccionario (ej. `homePageLayout: ['heroNews', 'socialProof', ...]`), haciendo la estructura de la página de inicio tan flexible como la de una campaña.
+2.  **Contenido Personalizado (A/B Testing):** Se podría implementar una lógica que, basada en una cookie o parámetro de URL, cargue una versión alternativa del contenido de la página de inicio desde un archivo diferente para realizar pruebas A/B.
+3.  **Streaming de Secciones con Suspense:** Envolver las secciones más pesadas (ej. `NewsGrid` que podría hacer una llamada a la base de datos) en `<Suspense>` para permitir el streaming de la página, mejorando el Time to First Byte (TTFB).

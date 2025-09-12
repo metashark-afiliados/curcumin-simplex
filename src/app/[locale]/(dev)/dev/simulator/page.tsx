@@ -1,12 +1,11 @@
 // frontend/src/app/[locale]/(dev)/dev/simulator/page.tsx
 /**
  * @file page.tsx (Campaign Simulator)
- * @description Página principal del Simulador de Campañas.
- *              - v5.0.0: Refactorización sistémica. Convertido a un Server Component `async`
- *                para manejar `params` asíncronas de Next.js. Se corrige también el uso
- *                incorrecto de `await` en el objeto `params` para una implementación robusta.
+ * @description Página principal del Simulador de Campañas, una herramienta de desarrollo
+ *              clave para previsualizar variantes de landing pages. Como RSC, es `async`
+ *              para cumplir con el contrato de API del App Router de Next.js.
  * @devonly
- * @version 5.0.0
+ * @version 6.0.0
  * @author RaZ podesta - MetaShark Tech
  * @see .docs-espejo/app/[locale]/(dev)/dev/simulator/page.tsx.md
  */
@@ -18,32 +17,30 @@ import { Container } from "@/components/ui/Container";
 import { getDictionary } from "@/lib/i18n";
 import { type Locale } from "@/lib/i18n.config";
 import { clientLogger } from "@/lib/logging";
-import campaignMapData from "@/content/campaigns/12157/campaign.map.json";
 import { routes } from "@/lib/navigation";
+import campaignMapData from "@/content/campaigns/12157/campaign.map.json";
 
-// --- CAPA DE DATOS Y TIPOS ---
-
-interface VariantData {
-  name: string;
-  description: string;
-  theme: string;
-  content: string;
-}
-interface CampaignMap {
-  productId: string;
-  campaignName: string;
-  description: string;
-  variants: Record<string, VariantData>;
+// --- TIPOS Y CONTRATOS ---
+interface CampaignSimulatorPageProps {
+  params: { locale: Locale };
 }
 interface Campaign {
   id: string;
   name: string;
-  variants: { id: string; name: string; description: string; url: string }[];
+  variants: Variant[];
+}
+interface Variant {
+  id: string;
+  name: string;
+  description: string;
+  url: string;
 }
 
+// --- LÓGICA DE DATOS ---
 async function getAvailableCampaigns(locale: Locale): Promise<Campaign[]> {
   clientLogger.trace("[Dev/Simulator] Procesando campaign.map.json...");
-  const campaignMap: CampaignMap = campaignMapData;
+  // NOTA: En un futuro, esta función podría leer múltiples archivos de mapa.
+  const campaignMap = campaignMapData;
   return [
     {
       id: campaignMap.productId,
@@ -60,19 +57,12 @@ async function getAvailableCampaigns(locale: Locale): Promise<Campaign[]> {
   ];
 }
 
-// --- CAPA DE PRESENTACIÓN ---
-
-interface CampaignSimulatorPageProps {
-  params: { locale: Locale };
-}
-
-// <<-- SOLUCIÓN: La función del componente DEBE ser `async`
+// --- COMPONENTE DE PÁGINA ---
 export default async function CampaignSimulatorPage({
   params,
 }: CampaignSimulatorPageProps): Promise<React.ReactElement> {
-  // <<-- CORRECCIÓN: Se elimina `await` y se usa `params` directamente.
   clientLogger.info(
-    `[CampaignSimulatorPage] Renderizando página del simulador para locale: ${params.locale}.`
+    `[CampaignSimulatorPage] Renderizando para locale: ${params.locale}.`
   );
 
   const [t, campaigns] = await Promise.all([
@@ -83,11 +73,11 @@ export default async function CampaignSimulatorPage({
 
   if (!content) {
     clientLogger.error(
-      "[CampaignSimulatorPage] Contenido 'devCampaignSimulatorPage' no encontrado en el diccionario."
+      "[CampaignSimulatorPage] Fallo crítico: contenido 'devCampaignSimulatorPage' no encontrado en el diccionario."
     );
     return (
       <Container className="py-12 text-center text-destructive">
-        <h1>Error: Contenido de la página no encontrado</h1>
+        <h1>Error: Contenido de la página no encontrado.</h1>
         <p>
           Asegúrese de que la clave 'devCampaignSimulatorPage' existe en los
           archivos i18n.

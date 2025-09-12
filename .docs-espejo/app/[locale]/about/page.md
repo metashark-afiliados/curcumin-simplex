@@ -1,38 +1,34 @@
-# /.docs-espejo/app/[locale]/about/page.md
+# /.docs-espejo/app/[locale]/about/page.tsx.md
 /**
- * @file page.md
- * @description Documento espejo para la página "Acerca de Nosotros".
+ * @file page.tsx.md
+ * @description Documento Espejo y SSoT conceptual para la página "Acerca de Nosotros".
  * @version 1.0.0
  * @author RaZ podesta - MetaShark Tech
  */
 
-# Manifiesto Conceptual: Página "Acerca de Nosotros"
+# Manifiesto Conceptual: Página de Contenido Estático (Arquetipo "About")
 
 ## 1. Rol Estratégico
 
-Este aparato es una **página de contenido estático** dentro del dominio del Portal. Su propósito principal es construir confianza y autoridad de marca (señales E-E-A-T de Google) proporcionando información transparente sobre la misión, visión y compromiso de Global Fitwell.
+Este aparato (`about/page.tsx`) sirve como el **arquetipo para todas las páginas de contenido textual estático** del portal (ej. "Política de Privacidad", "Términos de Servicio"). Su propósito es presentar información de formato largo de una manera clara, legible y optimizada para SEO.
 
-Actúa como un punto de contacto fundamental para los usuarios que desean saber más sobre la empresa antes de considerar una compra o suscripción.
+Estas páginas son cruciales para construir la confianza del usuario y para enviar señales de E-E-A-T (Experience, Expertise, Authoritativeness, and Trust) a los motores de búsqueda.
 
 ## 2. Arquitectura y Flujo de Ejecución
 
-1.  **Enrutamiento:** La página responde a la ruta `/`[locale]`/about`.
-2.  **Recepción de `params`:** Como Server Component en una ruta dinámica, recibe el objeto `params` de Next.js como una `Promise`.
-3.  **Resolución de `params`:** Utiliza `await` para resolver la promesa y acceder al valor de `locale`.
-4.  **Obtención de Contenido:** Invoca a `getDictionary(locale)` para obtener el diccionario de contenido completo para el idioma solicitado.
-5.  **Extracción de Datos:** Accede a la clave `aboutPage` del diccionario. El contenido está estructurado según el `TextPageLocaleSchema`, que define un título, subtítulo y un array de bloques de contenido (párrafos o títulos `h2`).
-6.  **Renderizado Delegado:**
-    -   Pasa el `title` y `subtitle` al componente de presentación `PageHeader`.
-    -   Renderiza los bloques de contenido dentro de un `Container`, aplicando estilos de tipografía (`prose`) para una legibilidad óptima.
+1.  **Obtención de Datos (Servidor):** Como Componente de Servidor `async`, obtiene el diccionario de contenido para el `locale` actual a través de `getDictionary`.
+2.  **Selección de Contenido:** Accede a la clave específica para esta página (ej. `t.aboutPage`). Implementa una guarda de seguridad para manejar el caso en que el contenido para un `locale` específico no exista.
+3.  **Renderizado de Layout:** Utiliza componentes de UI atómicos y reutilizables:
+    *   `PageHeader`: Para renderizar el título y subtítulo de forma consistente en todas las páginas de contenido.
+    *   `TextSection`: Un componente de layout especializado que aplica el padding vertical estándar y, crucialmente, los estilos de `prose` de Tailwind para formatear automáticamente el contenido textual (márgenes, espaciado de párrafos, estilos de `h2`, etc.), garantizando una legibilidad óptima.
+4.  **Renderizado de Contenido Dinámico:** Itera sobre el array `content` del diccionario y renderiza elementos `<h2 />` o `<p />` según la propiedad `type` de cada bloque.
 
 ## 3. Contrato de API (Props)
 
--   `params`: `Promise<{ locale: Locale }>` - Objeto que contiene los parámetros dinámicos de la ruta, proveído por Next.js como una promesa.
+*   `params`: `{ locale: Locale; }` - Define el idioma del contenido a renderizar.
 
-## 4. Zona de Melhorias Futuras
+## 4. Zona de Melhorias Futuras (Registro de Valor)
 
-1.  **Contenido Enriquecido:** Evolucionar el `TextPageLocaleSchema` para soportar más tipos de bloques de contenido, como listas (`ul`, `ol`), imágenes (`img`) o citas (`blockquote`), para crear páginas de contenido más ricas y visualmente atractivas.
-2.  **Integración con CMS:** Refactorizar la lógica de obtención de datos para que el contenido de la página provenga de un CMS headless (como Strapi o Contentful) en lugar de los archivos JSON estáticos. Esto permitiría al equipo de marketing actualizar el contenido sin necesidad de un despliegue de código.
-3.  **Componente de Equipo:** Crear un nuevo componente de sección para mostrar perfiles de los miembros clave del equipo, con fotos y biografías, y añadirlo a la página "Acerca de" para humanizar la marca.
-4.  **Metadatos Dinámicos:** Mejorar la función `generateMetadata` de la página para que utilice el título y subtítulo del contenido de la página como metadatos SEO (`<title>` y `<meta name="description">`).
-# /.docs-espejo/app/[locale]/about/page.md
+1.  **Renderizador de Markdown:** En lugar de un array de objetos JSON, el `content` podría ser una única cadena de texto en formato Markdown. La página podría usar una librería como `react-markdown` para renderizarlo, dando más flexibilidad a los editores de contenido.
+2.  **Tabla de Contenidos Automática:** Se podría generar una tabla de contenidos dinámica a partir de los bloques `h2`, que se mostraría en una barra lateral para facilitar la navegación en documentos largos.
+3.  **Metadatos de Última Actualización:** El diccionario podría incluir una fecha de `lastUpdated`, y la página podría mostrar un mensaje como "Última actualización: [fecha]" para aumentar la confianza.

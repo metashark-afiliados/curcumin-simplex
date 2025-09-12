@@ -1,16 +1,19 @@
 // frontend/src/app/layout.tsx
 /**
  * @file layout.tsx (Raíz)
- * @description Layout raíz definitivo.
- *              - v5.0.0: Refactorización sistémica para manejar la prop `params`
- *                asíncrona, resolviendo un error de build de Next.js.
- * @version 5.0.0
+ * @description Layout raíz de la aplicación. Es el componente servidor que define
+ *              la estructura <html> y <body> principal. Como RSC, es `async`
+ *              para cumplir con el contrato del App Router de Next.js.
+ * @version 6.0.0
  * @author RaZ podesta - MetaShark Tech
+ * @see .docs-espejo/app/layout.tsx.md
  */
+import React from "react";
 import { Inter, Poppins } from "next/font/google";
 import { type Locale } from "@/lib/i18n.config";
 import "@/app/globals.css";
 
+// --- CONFIGURACIÓN DE FUENTES GLOBALES ---
 const inter = Inter({ subsets: ["latin"], variable: "--font-sans" });
 const poppins = Poppins({
   subsets: ["latin"],
@@ -18,16 +21,23 @@ const poppins = Poppins({
   variable: "--font-serif",
 });
 
+// --- TIPOS Y CONTRATOS ---
 interface RootLayoutProps {
   children: React.ReactNode;
   params: { locale: Locale };
 }
 
-// <<-- SOLUCIÓN SISTÉMICA: La función del componente DEBE ser `async`.
+// --- LAYOUT RAÍZ ---
 export default async function RootLayout({
   children,
   params,
-}: RootLayoutProps) {
+}: RootLayoutProps): Promise<React.ReactElement> {
+  // La observabilidad a este nivel tan alto usualmente no es necesaria,
+  // pero se mantiene por consistencia.
+  console.log(
+    `[Observabilidad] Renderizando RootLayout para locale: ${params.locale}`
+  );
+
   return (
     <html
       lang={params.locale}
@@ -37,5 +47,4 @@ export default async function RootLayout({
     </html>
   );
 }
-
 // frontend/src/app/layout.tsx
