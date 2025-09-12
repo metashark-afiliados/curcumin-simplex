@@ -1,4 +1,4 @@
-// src/app/[locale]/page.tsx
+// frontend/src/app/[locale]/page.tsx
 /**
  * @file page.tsx (Homepage)
  * @description Página de inicio del portal de contenidos "Global Fitwell".
@@ -51,4 +51,4 @@ export default async function HomePage({
     </>
   );
 }
-// src/app/[locale]/page.tsx
+// frontend/src/app/[locale]/page.tsx

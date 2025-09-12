@@ -1,4 +1,4 @@
-// src/app/[locale]/(dev)/dev/layout.tsx
+// frontend/src/app/[locale]/(dev)/dev/layout.tsx
 /**
  * @file layout.tsx (Grupo de Desarrollo)
  * @description Layout para el entorno de desarrollo.
@@ -35,4 +35,4 @@ export default async function DevLayout({
     </div>
   );
 }
-// src/app/[locale]/(dev)/dev/layout.tsx
+// frontend/src/app/[locale]/(dev)/dev/layout.tsx

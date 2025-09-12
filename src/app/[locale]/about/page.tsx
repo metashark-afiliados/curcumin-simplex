@@ -1,4 +1,4 @@
-// src/app/[locale]/about/page.tsx
+// frontend/src/app/[locale]/about/page.tsx
 /**
  * @file page.tsx (About)
  * @description Página "Acerca de Nosotros" del portal.
@@ -60,4 +60,4 @@ export default async function AboutPage({
     </>
   );
 }
-// src/app/[locale]/about/page.tsx
+// frontend/src/app/[locale]/about/page.tsx

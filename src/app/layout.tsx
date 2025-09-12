@@ -1,4 +1,4 @@
-// src/app/layout.tsx
+// frontend/src/app/layout.tsx
 /**
  * @file layout.tsx (Raíz)
  * @description Layout raíz definitivo.
@@ -37,4 +37,4 @@ export default async function RootLayout({
     </html>
   );
 }
-// src/app/layout.tsx
+// frontend/src/app/layout.tsx

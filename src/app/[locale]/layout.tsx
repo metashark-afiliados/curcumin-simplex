@@ -1,4 +1,4 @@
-// src/app/[locale]/layout.tsx
+// frontend/src/app/[locale]/layout.tsx
 /**
  * @file layout.tsx (Principal con Locale)
  * @description Layout para rutas internacionalizadas.
@@ -65,4 +65,4 @@ export default async function LocaleLayout({
     </>
   );
 }
-// src/app/[locale]/layout.tsx
+// frontend/src/app/[locale]/layout.tsx

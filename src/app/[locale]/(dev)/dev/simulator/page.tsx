@@ -1,4 +1,4 @@
-// src/app/[locale]/(dev)/dev/simulator/page.tsx
+// frontend/src/app/[locale]/(dev)/dev/simulator/page.tsx
 /**
  * @file page.tsx (Campaign Simulator)
  * @description Página principal del Simulador de Campañas.
@@ -146,4 +146,4 @@ export default async function CampaignSimulatorPage({
     </Container>
   );
 }
-// src/app/[locale]/(dev)/dev/simulator/page.tsx
+// frontend/src/app/[locale]/(dev)/dev/simulator/page.tsx

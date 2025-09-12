@@ -1,4 +1,4 @@
-// src/app/[locale]/(dev)/dev/page.tsx
+// frontend/src/app/[locale]/(dev)/dev/page.tsx
 /**
  * @file page.tsx (Developer Command Center Dashboard)
  * @description Página de inicio para el entorno de desarrollo.
@@ -32,6 +32,7 @@ interface DevDashboardPageProps {
  * @param {DevDashboardPageProps} props Las props de la página.
  * @returns {Promise<React.ReactElement>} El elemento JSX del dashboard.
  */
+// <<-- SOLUCIÓN SISTÉMICA: La función del componente DEBE ser `async`.
 export default async function DevDashboardPage({
   params,
 }: DevDashboardPageProps): Promise<React.ReactElement> {
@@ -141,4 +142,4 @@ export default async function DevDashboardPage({
     </Container>
   );
 }
-// src/app/[locale]/(dev)/dev/page.tsx
+// frontend/src/app/[locale]/(dev)/dev/page.tsx

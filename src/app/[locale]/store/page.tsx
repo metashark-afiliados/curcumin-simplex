@@ -1,4 +1,4 @@
-// src/app/[locale]/store/page.tsx
+// frontend/src/app/[locale]/store/page.tsx
 /**
  * @file page.tsx (Store)
  * @description Página orquestadora de la tienda.
@@ -62,4 +62,4 @@ export default async function StorePage({
     </div>
   );
 }
-// src/app/[locale]/store/page.tsx
+// frontend/src/app/[locale]/store/page.tsx

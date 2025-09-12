@@ -1,4 +1,4 @@
-// src/app/[locale]/(dev)/dev/components/[componentName]/page.tsx
+// frontend/src/app/[locale]/(dev)/dev/components/[componentName]/page.tsx
 /**
  * @file page.tsx (Dev Component Canvas Page Host)
  * @description Página anfitriona que renderiza un componente individual de forma aislada.
@@ -50,6 +50,7 @@ export async function generateStaticParams() {
  * @param {DevComponentCanvasPageProps} props - Las propiedades de la página.
  * @returns {Promise<React.ReactElement>} El elemento JSX de la página.
  */
+// <<-- SOLUCIÓN SISTÉMICA: La función del componente DEBE ser `async`.
 export default async function DevComponentCanvasPage({
   params,
 }: DevComponentCanvasPageProps): Promise<React.ReactElement> {
@@ -66,4 +67,4 @@ export default async function DevComponentCanvasPage({
     </Container>
   );
 }
-// src/app/[locale]/(dev)/dev/components/[componentName]/page.tsx
+// frontend/src/app/[locale]/(dev)/dev/components/[componentName]/page.tsx
