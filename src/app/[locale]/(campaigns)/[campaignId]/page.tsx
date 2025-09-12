@@ -2,13 +2,15 @@
 /**
  * @file page.tsx (Campaña Dinámica)
  * @description Ensamblador principal para todas las landing pages de campañas.
- *              Este es un Componente de Servidor (RSC) y su función es `async` por
- *              diseño para cumplir con el contrato de API del App Router de Next.js,
- *              que puede pasar props como `params` de forma asíncrona.
- * @version 8.0.0
+ *              - v9.0.0: Refactorizada la función `generateStaticParams` para que
+ *                descubra dinámicamente las campañas desde el sistema de archivos,
+ *                eliminando datos harcodeados y haciendo el sistema robusto y escalable.
+ * @version 9.0.0
  * @author RaZ podesta - MetaShark Tech
  */
 import React from "react";
+import fs from "fs/promises";
+import path from "path";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import { CampaignThemeProvider } from "@/components/layout/CampaignThemeProvider";
@@ -25,19 +27,59 @@ interface CampaignPageProps {
 
 type MetadataProps = Omit<CampaignPageProps, "searchParams">;
 
-// --- GENERACIÓN DE RUTAS ESTÁTICAS ---
+// --- GENERACIÓN DE RUTAS ESTÁTICAS (DINÁMICA) ---
 export const dynamicParams = true;
 
+/**
+ * @function generateStaticParams
+ * @description Descubre dinámicamente las campañas existentes leyendo los directorios
+ *              en `src/content/campaigns` y genera los parámetros para todas las
+ *              combinaciones de campaña y locale soportadas.
+ * @returns {Promise<{ campaignId: string; locale: Locale }[]>}
+ */
 export async function generateStaticParams() {
-  // En el futuro, esto podría leer el directorio de campañas dinámicamente.
-  const campaigns = [{ id: "12157" }];
-  const params = campaigns.flatMap((campaign) =>
-    supportedLocales.map((locale) => ({
-      campaignId: campaign.id,
-      locale: locale,
-    }))
+  clientLogger.info(
+    "[generateStaticParams] Descubriendo campañas para pre-renderizado..."
   );
-  return params;
+  try {
+    const campaignsDir = path.join(process.cwd(), "src/content/campaigns");
+    const campaignDirs = await fs.readdir(campaignsDir, {
+      withFileTypes: true,
+    });
+
+    const campaignIds = campaignDirs
+      .filter((dirent) => dirent.isDirectory())
+      .map((dirent) => dirent.name);
+
+    if (campaignIds.length === 0) {
+      clientLogger.warn(
+        "[generateStaticParams] No se encontraron directorios de campaña."
+      );
+      return [];
+    }
+
+    clientLogger.info(
+      `[generateStaticParams] Campañas descubiertas: ${campaignIds.join(", ")}`
+    );
+
+    const params = campaignIds.flatMap((campaignId) =>
+      supportedLocales.map((locale) => ({
+        campaignId,
+        locale,
+      }))
+    );
+
+    clientLogger.success(
+      `[generateStaticParams] Generados ${params.length} parámetros estáticos.`
+    );
+    return params;
+  } catch (error) {
+    clientLogger.error(
+      "[generateStaticParams] Fallo al leer directorios de campaña. El pre-renderizado puede ser incompleto.",
+      { error }
+    );
+    return [];
+  }
 }
 
 // --- METADATOS DINÁMICOS ---
@@ -51,9 +93,12 @@ export async function generateMetadata({
       params.locale,
       "01"
     );
+    // Asumiendo que el diccionario global o de campaña contendrá una clave 'metadata'
     return {
-      title: dictionary.metadata.title, // Asumiendo que el diccionario de campaña lo incluirá
-      description: dictionary.metadata.description,
+      title: dictionary.metadata?.title || `Campaña ${params.campaignId}`,
+      description:
+        dictionary.metadata?.description ||
+        `Contenido de la campaña ${params.campaignId}`,
     };
   } catch (error) {
     clientLogger.warn(

@@ -2,10 +2,10 @@
 /**
  * @file next.config.ts
  * @description Manifiesto de Configuración y SSoT para Next.js. Este archivo es el
- *              "Cerebro de Compilación" del proyecto. Implementa nuestra arquitectura
- *              de despliegue dual, generando una salida diferente según el valor de
- *              la variable de entorno `NEXT_PUBLIC_DEPLOY_TARGET`.
- * @version 13.0.0
+ *              "Cerebro de Compilación" del proyecto. Esta versión está optimizada
+ *              exclusivamente para despliegues en Vercel, eliminando la lógica de
+ *              despliegue dual para estabilizar el build y maximizar el rendimiento.
+ * @version 14.0.0
  * @author RaZ podesta - MetaShark Tech
  */
 import type { NextConfig } from "next";
@@ -15,24 +15,19 @@ console.log(
   "\x1b[36m%s\x1b[0m",
   "🔄 [NextConfig] Iniciando configuración del manifiesto de compilación de Next.js..."
 );
-
-// --- Lógica de Arquitectura de Despliegue Dual ---
-const deployTarget = process.env.NEXT_PUBLIC_DEPLOY_TARGET || "vercel";
-const isStaticExport = deployTarget === "hostinger";
-
 console.info(
-  `\x1b[34m[NextConfig] 🎯 Objetivo de despliegue detectado: '${deployTarget}'.\x1b[0m`
+  `\x1b[34m[NextConfig] 🎯 Objetivo de despliegue: 'vercel' (configuración unificada).\x1b[0m`
 );
 console.info(
-  `\x1b[34m[NextConfig]    - Exportación Estática (output: 'export'): ${isStaticExport ? "ACTIVADA" : "DESACTIVADA"}\x1b[0m`
+  `\x1b[34m[NextConfig]    - Optimización de Imágenes: ACTIVADA.\x1b[0m`
 );
 console.info(
-  `\x1b[34m[NextConfig]    - Cabeceras de Seguridad Dinámicas (headers): ${!isStaticExport ? "ACTIVADAS" : "DESACTIVADAS"}\x1b[0m`
+  `\x1b[34m[NextConfig]    - Cabeceras de Seguridad: ACTIVADAS.\x1b[0m`
 );
 
 /**
  * @function getDynamicHeaders
- * @description Genera las cabeceras de seguridad HTTP. Solo se utiliza en despliegues dinámicos.
+ * @description Genera las cabeceras de seguridad HTTP para todos los despliegues.
  * @returns {Promise<Array<object>>} Configuración de cabeceras para Next.js.
  */
 async function getDynamicHeaders() {
@@ -71,20 +66,21 @@ async function getDynamicHeaders() {
 
 /**
  * @type {NextConfig}
- * @description El objeto de configuración final para Next.js.
+ * @description El objeto de configuración final para Next.js, optimizado para Vercel.
  */
 const nextConfig: NextConfig = {
-  output: isStaticExport ? "export" : undefined,
-  headers: isStaticExport ? undefined : getDynamicHeaders,
+  // `output` se deja sin definir; Vercel gestiona esto automáticamente.
+  // `headers` se aplica incondicionalmente para máxima seguridad.
+  headers: getDynamicHeaders,
 
   eslint: {
     ignoreDuringBuilds: false,
   },
 
-  images: {
-    // La optimización de imágenes de Next.js no es compatible con 'next export'.
-    unoptimized: true,
-  },
+  // La optimización de imágenes se reactiva al eliminar la clave `images`.
+  // Next.js/Vercel usarán la optimización por defecto.
+  // Si se necesita permitir dominios externos, se añadirá la clave `remotePatterns`.
+
   trailingSlash: false,
 };
 
